@@ -93,23 +93,50 @@ dominated by `bucket`/`threshold`, Politics is unusually `binary`-heavy (233 of 
 which is why the per-category documents in [categories/](categories/) treat each domain
 separately.
 
-### Tiling is a structural property, not a presentational one
+### Exhaustiveness cannot be decided by arithmetic
 
-A mutually exclusive bucket partition only supports a sum-to-one constraint if its legs
-actually tile the number line with no gap. They frequently do not:
+A mutually exclusive partition only supports a sum-to-one constraint if its legs are
+collectively exhaustive. Checking that structurally is subtler than it looks.
 
-| Category | Tiled | Untiled |
+| Category | Gaps consistent with a quantum | Genuine gaps |
 | --- | --- | --- |
 | Crypto | 31 | 0 |
+| Economics | 18 | 2 |
 | Financials | 8 | 0 |
-| Economics | 2 | 16 |
-| Politics | 1 | 3 |
 | Elections | 2 | 1 |
 | Climate and Weather | 2 | 0 |
+| Politics | 1 | 3 |
 | Commodities | 1 | 0 |
 
-Economics is inverted relative to Crypto — most of its partitions have holes. A concrete
-example of the failure mode: `KXGREENLANDPRICE-29JAN21` offers "$0 / No Acquisition"
-and then "$1 billion to $9 billion", so an acquisition priced under $1B pays no leg at
-all. Buying every leg's YES is not a synthetic $1 there. Tiling must be checked
-structurally before any basket constraint is applied.
+Kalshi writes **closed** ranges against a **quantised** underlying. `KXGDPYEAR` lists
+"0.1% to 0.5%" and then "0.6% to 1.0%"; the 0.1 gap is not a hole, because
+`rules_secondary` says *"All stated bounds are inclusive"* and the statistic is
+published to one decimal place. Nothing can land between the buckets.
+
+Now compare `KXGREENLANDPRICE-29JAN21`: "$1 billion to $9 billion" followed by
+"$10 billion to $99 billion". **Identical gap structure, opposite meaning** — an
+acquisition can settle at $9.5B and no leg pays.
+
+The two cases are arithmetically indistinguishable. Any purely numeric tiling test must
+therefore either accept both or reject both, and which way it errs is decided by an
+arbitrary tolerance. An early version of this repo's checker used a tolerance relative
+to the *index level*, which made the verdict depend on the magnitude of the underlying
+rather than its structure: it rejected GDP growth (values ~2, gap 0.1) while accepting
+labour-force participation (values ~61, gap 0.1) despite identical construction. That
+produced a headline finding — "16 of 18 Economics partitions have settlement gaps" —
+which was entirely an artefact. The corrected figure is 18 of 20.
+
+The working rule is therefore split in two:
+
+1. `partition_is_tiled()` — a **necessary** condition: unbounded at both ends, no
+   overlaps, and every gap negligible against neighbouring bucket widths. The bound is
+   relative to bucket width, not index level, which also accommodates the segmented tick
+   sizes crypto ladders use within a single event (1e-5 in the low range, 1e-4 in the
+   high range).
+2. `quantisation_evidence()` — the **sufficient** condition, found only in the contract
+   text: a sentence like *"rounded to one decimal place"* or *"all stated bounds are
+   inclusive"*. Without it, only `sum(P) <= 1` may be used, never `== 1`.
+
+The general lesson generalises past this one check: **displayed strikes are not
+settlement strikes.** `KXGDPYEAR` shows "6.1% or Above" on a leg whose `rules_primary`
+reads *"is above 6.0%"*. Never take a number that settles money from `yes_sub_title`.

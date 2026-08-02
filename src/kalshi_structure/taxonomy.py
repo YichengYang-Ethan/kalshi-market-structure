@@ -34,14 +34,32 @@ for _i, _m in enumerate(
 
 _RE_DEADLINE_FULL = re.compile(r"^(?:before|by)\s+([a-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})$")
 _RE_DEADLINE_YEAR = re.compile(r"^(?:before|by)\s+(\d{4})$")
-_RE_THRESHOLD_PLUS = re.compile(r"^(?P<subject>.*?),?\s*(?P<level>-?[\d.]+)\+\s*(?:pts|points|%)?$")
+# A threshold leg is a subject (optional) plus a comparator and a level. The grammar
+# varies widely across categories -- "Republicans, 26+ pts", "6+ wins",
+# "Arizona over 1.5 runs scored", "Above $150,000", "<9", "150,000 or above" -- so each
+# shape gets its own pattern and a trailing unit noun is always tolerated.
+_UNIT = r"(?:\s+[a-z%.\-'’ ]+)?"
+_RE_THRESHOLD_PLUS = re.compile(
+    rf"^(?P<subject>.*?),?\s*(?P<level>-?[\d.,]+)\+{_UNIT}$"
+)
 _RE_THRESHOLD_ABOVE = re.compile(
-    r"^(?:above|at least|over|greater than)\s*\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?", re.I
+    rf"^(?P<subject>.*?)(?:^|\b)(?:above|at least|over|greater than|more than)\s*\$?"
+    rf"(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?{_UNIT}$", re.I
 )
 _RE_THRESHOLD_OR = re.compile(
-    r"^\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?\s*(?:or\s+(?:above|higher|more))$", re.I
+    rf"^(?P<subject>.*?)\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?\s*or\s+"
+    rf"(?:above|higher|more|greater){_UNIT}$", re.I
 )
-_RE_BELOW = re.compile(r"^(?:below|under)\s*\$?(?P<level>[\d.,]+)|^\$?(?P<level2>[\d.,]+)\s*or\s+(?:below|less)$", re.I)
+_RE_BELOW_WORD = re.compile(
+    rf"^(?P<subject>.*?)(?:^|\b)(?:below|under|less than|fewer than)\s*\$?"
+    rf"(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?{_UNIT}$", re.I
+)
+_RE_BELOW_OR = re.compile(
+    rf"^(?P<subject>.*?)\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?\s*or\s+"
+    rf"(?:below|less|fewer){_UNIT}$", re.I
+)
+# Compact comparators used by the *TWEETS / post-count series: "<9", ">20", ">=15".
+_RE_COMPACT = re.compile(r"^(?P<op>[<>]=?)\s*\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?$")
 _RE_BUCKET = re.compile(
     r"^\$?(?P<lo>-?[\d.,]+)\s*(?P<lm>[kmbt])?\s*(?:to|-|–)\s*\$?(?P<hi>-?[\d.,]+)\s*(?P<hm>[kmbt])?", re.I
 )
@@ -69,26 +87,35 @@ def parse_deadline(subtitle: str | None):
 def parse_threshold(subtitle: str | None):
     """Return (subject, level, direction) for one-sided threshold legs, else None.
 
-    direction is '>=' for 'above'/'N+' style legs and '<=' for 'below'/'or less' legs.
-    subject separates otherwise-identical ladders that differ by entity, e.g.
-    'Republicans, 26+ pts' vs 'Democrats, 26+ pts'.
+    ``direction`` is '>=' for above/N+ style legs and '<=' for below/or-less legs.
+    ``subject`` separates otherwise-identical ladders that differ by entity
+    ('Republicans, 26+ pts' vs 'Democrats, 26+ pts'; 'Arizona over 1.5 runs scored' vs
+    the opposing team's ladder) — comparing levels across different subjects is a
+    category error, so callers must group on it.
+
+    The level carries no information about whether the bound is inclusive: subtitles
+    and rule text routinely disagree (``KXGDPYEAR`` shows '6.1% or Above' for a leg whose
+    rules read 'is above 6.0%'). Use this for structure, never for a strike value that
+    settles money.
     """
     if not subtitle:
         return None
     t = subtitle.strip().lower().replace("%", "")
-    m = _RE_THRESHOLD_PLUS.match(t)
+    m = _RE_COMPACT.match(t)
     if m:
-        return (m.group("subject").strip(" ,"), float(m.group("level")), ">=")
-    m = _RE_THRESHOLD_ABOVE.match(t)
-    if m:
-        return ("", _num(m.group("level"), m.group("mult")), ">=")
-    m = _RE_THRESHOLD_OR.match(t)
-    if m:
-        return ("", _num(m.group("level"), m.group("mult")), ">=")
-    m = _RE_BELOW.match(t)
-    if m:
-        lvl = m.group("level") or m.group("level2")
-        return ("", _num(lvl, None), "<=")
+        direction = ">=" if m.group("op").startswith(">") else "<="
+        return ("", _num(m.group("level"), m.group("mult")), direction)
+    for rx, direction in ((_RE_THRESHOLD_PLUS, ">="), (_RE_THRESHOLD_OR, ">="),
+                          (_RE_BELOW_OR, "<="), (_RE_THRESHOLD_ABOVE, ">="),
+                          (_RE_BELOW_WORD, "<=")):
+        m = rx.match(t)
+        if not m:
+            continue
+        try:
+            level = _num(m.group("level"), m.groupdict().get("mult"))
+        except ValueError:
+            continue
+        return (m.group("subject").strip(" ,"), level, direction)
     return None
 
 
@@ -123,16 +150,47 @@ def classify_event(event: dict) -> str:
         return TEMPLATE_BUCKET_PARTITION
     if n_thresh >= max(2, n * 0.6):
         return TEMPLATE_THRESHOLD_LADDER
-    if any(re.search(r"\band\b", s, re.I) for s in subs) and event.get("mutually_exclusive"):
+    if _is_combination(legs):
         return TEMPLATE_COMBINATION
     return TEMPLATE_ENTITY_MENU
 
 
-def partition_is_tiled(event: dict, tol: float = 1e-6) -> bool:
-    """True when bucket legs tile a contiguous line with no gap and no overlap.
+_RE_COMBINATION_RULE = re.compile(r"if\s+all\s+of\s+the\s+following", re.I)
 
-    A tiled partition of a mutually exclusive event is the precondition for
-    sum-to-one basket constraints; an untiled one is not (a hole means no leg pays).
+
+def _is_combination(legs: Sequence[dict]) -> bool:
+    """Detect conjunction contracts from rule text rather than from the word 'and'.
+
+    Leg subtitles are an unreliable signal because entity names contain conjunctions
+    ('Bosnia and Herzegovina', 'Antigua and Barbuda'). Combination contracts are
+    generated from a template whose rule text opens 'If ALL of the following occur',
+    which is unambiguous.
+    """
+    hits = sum(1 for m in legs if _RE_COMBINATION_RULE.search(m.get("rules_primary") or ""))
+    return hits >= max(1, len(legs) * 0.5)
+
+
+def partition_is_tiled(event: dict, tol: float = 1e-9) -> bool:
+    """Necessary condition for a partition to be collectively exhaustive.
+
+    Checks that the legs cover an unbounded line, never overlap, and leave only gaps
+    that are negligible against the neighbouring bucket widths. Kalshi writes closed
+    ranges against a quantised underlying — '0.1% to 0.5%' is followed by '0.6% to 1.0%'
+    because the statistic is published to one decimal place — so a small consistent gap
+    is the quantum of the underlying, not a hole.
+
+    **This is not sufficient.** Arithmetic cannot separate a quantum from a settlement
+    hole: '$1B to $9B' followed by '$10B to $99B' has the same shape as the GDP ladder,
+    but an acquisition can settle at $9.5B and no leg pays. Call
+    :func:`quantisation_evidence` and read the contract text before relying on
+    exhaustiveness; without it, only ``sum(P) <= 1`` is supported, never ``== 1``.
+
+    The gap bound is relative to bucket width rather than to the index level. An
+    absolute or level-relative tolerance makes the verdict depend on the magnitude of
+    the underlying instead of its structure, which wrongly rejects low-valued ladders
+    (GDP growth ~2%) while accepting identically-built high-valued ones (labour-force
+    participation ~61%), and rejects the segmented tick sizes crypto ladders use
+    (1e-5 in the low range, 1e-4 in the high range of the same event).
     """
     legs = [m for m in event.get("markets", []) if m.get("status") == "active"]
     rngs = []
@@ -143,22 +201,58 @@ def partition_is_tiled(event: dict, tol: float = 1e-6) -> bool:
             rngs.append(r)
             continue
         t = parse_threshold(sub)
-        if t:
-            _, lvl, direction = t
-            rngs.append((lvl, float("inf")) if direction == ">=" else (float("-inf"), lvl))
-        else:
+        if t is None:
             return False
+        _, lvl, direction = t
+        rngs.append((lvl, float("inf")) if direction == ">=" else (float("-inf"), lvl))
     if len(rngs) < 2:
         return False
     rngs.sort()
     if rngs[0][0] != float("-inf") or rngs[-1][1] != float("inf"):
         return False
-    for (lo1, hi1), (lo2, _) in zip(rngs, rngs[1:]):
+    widths = [hi - lo for lo, hi in rngs if lo != float("-inf") and hi != float("inf")]
+    if not widths:
+        return False
+    scale = min(w for w in widths if w > 0) if any(w > 0 for w in widths) else 0.0
+    for (_, hi1), (lo2, _) in zip(rngs, rngs[1:]):
         gap = lo2 - hi1
-        scale = max(1.0, abs(hi1))
-        if gap < -tol or gap > 0.011 * scale:
+        if gap < -tol:            # overlap: legs are not mutually exclusive by value
+            return False
+        # A gap comparable to a bucket is a hole; a gap orders of magnitude smaller is
+        # the reporting quantum of the underlying.
+        if gap > tol and gap > 0.5 * scale:
             return False
     return True
+
+
+_RE_QUANTISATION = re.compile(
+    r"(rounded to|to the nearest|one[- ]decimal|two[- ]decimal|decimal place|"
+    r"bounds are inclusive|inclusive of (?:their|the) upper|whole (?:number|dollar|cent))",
+    re.I,
+)
+
+
+def quantisation_evidence(event: dict) -> str | None:
+    """Return the rule sentence that justifies treating gaps as a quantum, if any.
+
+    Arithmetic cannot distinguish a quantised underlying from a settlement hole: a
+    ladder of '$1B to $9B' then '$10B to $99B' and one of '0.1% to 0.5%' then
+    '0.6% to 1.0%' have identical gap structure, but an acquisition can settle at
+    $9.5B (no leg pays) while GDP growth cannot land between 0.5% and 0.6% because it
+    is published to one decimal place.
+
+    ``partition_is_tiled`` therefore establishes only that the gaps are *consistent*.
+    A basket constraint that depends on exhaustiveness additionally requires this
+    evidence from the contract text.
+    """
+    for m in event.get("markets", []):
+        for field in ("rules_secondary", "rules_primary"):
+            text = m.get(field) or ""
+            hit = _RE_QUANTISATION.search(text)
+            if hit:
+                start = max(0, hit.start() - 90)
+                return text[start:hit.end() + 90].strip()
+    return None
 
 
 # --- Ticker grammar ----------------------------------------------------------------

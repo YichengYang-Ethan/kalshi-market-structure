@@ -26,6 +26,31 @@ structure itself makes possible. Concretely:
 - The fee surface is not uniform: a per-series `fee_multiplier` (including zero-fee
   series) and a maker/taker asymmetry change which structures are economically live.
 
+## What the first full pass found
+
+A census of the whole exchange on 2026-08-02 — 8,478 open events, 73,964 open markets,
+12,370 series — followed by roughly 120,000 executable constraint checks:
+
+- **The exchange is structurally consistent to the tick almost everywhere.** Crypto and
+  Financials produced zero violations across ~90,600 checks. Sports produced two, both
+  tick-floor artefacts, together worth under $0.42.
+- **Violations concentrate in Elections and Politics** (~12 surviving fees, ~$46 total).
+  Not because the venue is loose, but because that is the one corner where long-dated,
+  low-attention derivative ladders sit beside actively-quoted base markets with nobody
+  enforcing consistency between them.
+- **Category is not a usable grouping key.** `series.category` and `event.category`
+  disagree on 100+ live events, and "who will lead Iran" is filed under `Financials`.
+- **Exhaustiveness cannot be decided arithmetically.** A quantised ladder and a ladder
+  with a genuine settlement hole are indistinguishable by numbers alone; only the
+  contract text separates them. An early tolerance bug here manufactured a false
+  finding, documented in [taxonomy.md](docs/taxonomy.md).
+- **Displayed text is not the contract.** A market showing a candidate's name settles on
+  party; a leg showing "6.1% or Above" settles at "above 6.0%"; a series called
+  `SENATELA-26` is titled "Kentucky Senate winner?" and settles on Kentucky.
+
+Start with [settlement-patterns.md](docs/settlement-patterns.md) for the synthesis, then
+the per-category profiles.
+
 ## Repository layout
 
 ```
