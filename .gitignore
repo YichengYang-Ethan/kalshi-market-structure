@@ -1,0 +1,21 @@
+# Market data is NOT redistributable under Kalshi's terms — never commit it.
+data/
+*.jsonl
+*.jsonl.gz
+*.parquet
+snapshots/
+*.csv
+!docs/**/*.csv
+
+# Secrets
+.env
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
