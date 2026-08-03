@@ -1,0 +1,754 @@
+{
+ "discovered_families": 46,
+ "verified": 46,
+ "survivors": [
+  {
+   "name": "spread-implies-moneyline",
+   "verdict": "CONFIRMED",
+   "board": "sports",
+   "binding": "None needed - direction and condition are correct as proposed (SPREAD margin>X.5 leg implies same-team moneyline win; P(spread)<=P(moneyline)). One clarifying guardrail on detection: join must use the EXACT full-match series token <LEAGUE>SPREAD and reject 1H/half-period spread series (<LEAGUE>1HSPREAD and quarter/half variants), whose \"1st Half\" window does not imply the full-90' moneyline. Scope note: the same logical containment also holds for non-soccer point spreads (CFL/MLB/KBO/NPB/WNBA \"wins by over X.5 points\"), but those lack a soccer_team strike and fall outside this soccer-UUID-joined family by construction.",
+   "detection": "Join by game-key = event_ticker suffix after the series prefix (e.g. 26AUG04CINPAC). For every soccer league carrying both a <LEAGUE>SPREAD series and a <LEAGUE>GAME series, each SPREAD leg ticker <...>-<TEAM><n> (custom_strike.soccer_team = team UUID) implies GAME leg <...>-<TEAM> whose structured strike soccer_team = same UUID. Team identity matched on the soccer_team UUID, not the 3-letter code, so home/away order is irrelevant.",
+   "exactness": "exact",
+   "est": 321,
+   "priority": "high",
+   "example": [
+    "KXLEAGUESCUPSPREAD-26AUG04CINPAC-CIN2",
+    "KXLEAGUESCUPGAME-26AUG04CINPAC-CIN",
+    "KXUCLWSPREAD-...",
+    "KXEFLCUPSPREAD-..."
+   ],
+   "evidence": "Rule text binds the prices, exactly and in the claimed direction (implication, one-sided inequality P(spread)<=P(moneyline)). SPREAD leg KXLEAGUESCUPSPREAD-26AUG04CINPAC-CIN2: \"If Cincinnati wins by more than 1.5 goals in the Cincinnati vs Pachuca professional Leagues Cup soccer game originally scheduled for Aug 4, 2026 after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" GAME leg KXLEAGUESCUPGAME-26AUG04CINPAC-CIN: \"If Cincinnati wins the Cincinnati vs Pachuca professional Leagues Cup soccer game originally scheduled for Aug 4, 2026 after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" Same subject, same custom_strike.soccer_team UUID 0d8decc6-c81f-407a-aeaf-3877020182ce, identical 90'+stoppage window. Soccer margins are integers, so \"wins by more than 1.5 goals\" == margin>=2, a strict subset of \"wins\" == margin>=1; thus SPREAD=Yes forces GAME=Yes. Corpus verification (Sports.jsonl.gz): 26 soccer leagues carry exact-paired <LEAGUE>SPREAD/<LEAGUE>GAME series; ALL 1071 soccer SPREAD legs read \"wins by more than X.5 goals\" (0 reverse-handicap/\"+X.5\"/does-not-lose legs); soccer_team UUID join SPREAD->GAME matched 1071/1071 with 0 failures; the 90'+stoppage clause appears in 100% of SPREAD and GAME legs sampled across UCL/UEL/UCLW/EFLCUP/Copa. The GAME leg's rules_secondary voids on cancellation (\"If the game is cancelled or rescheduled to over 48 hours away, the market will resolve to a fair price\") - a void state cannot make SPREAD=Yes while GAME=No, so it does not break the implication.",
+   "detection_sound": true
+  },
+  {
+   "name": "correct-score-refines-outcome",
+   "verdict": "CONFIRMED",
+   "board": "sports",
+   "binding": "Binding is genuine and rule-forced; tighten two things. (1) Scope \"exact\" to the edge: each present SCORE cell (h,a) deterministically fixes BOTH the Yes and the No of every coarser same-window leg (GAME via h><=a with the TIE pseudo-team UUID; TOTAL Over (k-0.5)=[h+a>=k]; BTTS=[h>0 & a>0]; SPREAD margin=h-a; TEAMTOTAL per-team via soccer_team UUID). The partition-SUM (\u03a3 home-win cells = P(GAME home)) is only a <= bound because the grid is mutually-exclusive but NON-exhaustive (truncates ~5/side; residual high-scoring tail has no cell). So: cell->coarse = exact/CONFIRMED; aggregation = one-directional. (2) Detection must add a full-match WINDOW GUARD: match coarse legs only when their rules carry the \"90 minutes plus stoppage time\" clause (or restrict to the exact base series, not the *1H* variants), and join teams on the custom_strike UUIDs (home_team_id/away_team_id vs soccer_team), never on tri-code, mapping draws through the dedicated TIE UUID. Keep FTTS excluded \u2014 its window includes extra time and encodes goal order, not final score.",
+   "detection": "For each market in <LEAGUE>SCORE (custom_strike has home_score, away_score, home_team_id, away_team_id) compute (h,a) and the team UUIDs, then evaluate the settlement predicate of every other same-game leg in GAME/TOTAL/BTTS/SPREAD/TEAMTOTAL (joined by game-key). Emit an implication edge SCORE-cell -> any coarse leg the cell satisfies.",
+   "exactness": "exact",
+   "est": 60,
+   "priority": "high",
+   "example": [
+    "KXLEAGUESCUPSCORE-26AUG04CINPAC-CIN2PAC0",
+    "KXLEAGUESCUPGAME-26AUG04CINPAC-CIN",
+    "KXLEAGUESCUPTOTAL-26AUG04CINPAC-2",
+    "KXLEAGUESCUPBTTS-26AUG04CINPAC-BTTS"
+   ],
+   "evidence": "All coarse legs share SCORE's exact settlement window, verbatim. SCORE (KXLEAGUESCUPSCORE-26AUG04CINPAC-CIN2PAC0): \"If FC Cincinnati wins 2-0 in the ... Leagues Cup soccer game ... after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" GAME-CIN: \"If Cincinnati wins ... after 90 minutes plus stoppage time (does not include extra time or penalties)...\"; GAME secondary: \"If the game ends in a tie, the market called \\\"Tie\\\" resolves to Yes.\" TOTAL-2: \"If over 0.5 goals are scored ... after 90 minutes plus stoppage time (does not include extra time or penalties)...\" BTTS: \"If Cincinnati and Pachuca both score a goal ... after 90 minutes plus stoppage time (does not include extra time or penalties)...\" (secondary: \"Own goals count towards the team awarded the goal.\"). SPREAD-CIN3: \"If Cincinnati wins by more than 2.5 goals ... after 90 minutes plus stoppage time (does not include extra time or penalties)...\" TEAMTOTAL-CIN1: \"If Cincinnati records above 0.5 goals ... after 90 minutes plus stoppage time (does not include extra time or penalties)...\" (own goals count). FTTS is correctly OUTSIDE the family \u2014 different window: \"the first goal during the entire game (regulation, stoppage and any extra time periods).\" Structural: all 51 KXLEAGUESCUPGAME events carry exactly 3 legs including TIE (0 missing), so the moneyline is uniformly a regulation 3-way with penalties excluded \u2014 the penalty-shootout break does not exist. SCORE ME=True but non-exhaustive (CINPAC = 30 cells; 3-5/4-4/4-5/5-3/5-4/5-5 and all >=6 goals absent).",
+   "detection_sound": false
+  },
+  {
+   "name": "firsthalf-subset-fulltime",
+   "verdict": "CONFIRMED",
+   "board": "sports",
+   "binding": "Direction and subject are correct as proposed; no reversal needed. Only refine the exactness claim: exact for matches that reach full time OR whose Over/BTTS outcome is already determined at abandonment; the 1H leg settles at halftime, so exactness on a 2nd-half abandonment relies on the FT leg settling already-determined Overs/BTTS as Yes rather than voiding \u2014 a settlement convention the boilerplate FT rules_secondary does not spell out.",
+   "detection": "Join by game-key. For leagues carrying <LEAGUE>1HTOTAL + <LEAGUE>TOTAL, map 1HTOTAL leg -i (Over (i-0.5)) to TOTAL leg with the same 'Over (i-0.5)' threshold => implication. Likewise <LEAGUE>1HBTTS-BTTS -> <LEAGUE>BTTS-BTTS. Thresholds parsed from yes_sub_title ('Over 1.5 1H goals' vs 'Over 1.5 goals').",
+   "exactness": "exact",
+   "est": 206,
+   "priority": "high",
+   "example": [
+    "KXLEAGUESCUP1HTOTAL-26AUG04CINPAC-2",
+    "KXLEAGUESCUPTOTAL-26AUG04CINPAC-2",
+    "KXLEAGUESCUP1HBTTS-26AUG04CINPAC-BTTS",
+    "KXLEAGUESCUPBTTS-26AUG04CINPAC-BTTS"
+   ],
+   "evidence": "1H TOTAL Over 1.5 (KXLEAGUESCUP1HTOTAL-26AUG04CINPAC-2) RP: \"If the total goals scored by Cincinnati and Pachuca is more than 1.5 goals in the 1st Half ... then the market resolves to Yes.\" RS: \"Only goals scored during the 1st Half count towards this market.\" FT TOTAL Over 1.5 (KXLEAGUESCUPTOTAL-26AUG04CINPAC-2) RP: \"If over 1.5 goals are scored in the ... game ... after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" 1H BTTS RP: \"If Cincinnati and Pachuca both score a goal in the 1st Half ... resolves to Yes\"; FT BTTS RP: \"If Cincinnati and Pachuca both score a goal in the ... match ... after 90 minutes plus stoppage time ... resolves to Yes.\" The 1st-Half counting window is a strict subset of the full-regulation window, both counting the SAME quantity (combined-team goals; both-teams-scored). Therefore G_1H <= G_FT always, so at a matched threshold {1H Over k.5} implies {FT Over k.5} and {1H BTTS} implies {FT BTTS}: P(1H) <= P(FT). Direction is correct, it is a settlement subset (not correlation), and the proposer correctly excludes 1H spread/1X2 where a half-time lead is not monotone into full time.",
+   "detection_sound": true
+  },
+  {
+   "name": "teamtotal-implies-total",
+   "verdict": "CONFIRMED",
+   "board": "sports",
+   "binding": "Direction and condition are CORRECT as stated (team implies total; P(team over X.5) <= P(match over X.5), holds for either team). Two refinements, neither a defect: (1) generalize the unit from \"goals\" to \"one participant's count <= combined count\" \u2014 MLB TEAMTOTAL/TOTAL are in RUNS (full game incl. extra innings for both legs) and the implication holds identically; the \"team tops at 2.5 / game to 5.5\" threshold note is soccer-specific. (2) Detection MUST join on the parsed 'over k' threshold value, NOT the ticker numeric suffix (MLB offsets menus: TEAMTOTAL MIL2=over1.5 vs TOTAL suffix-3=over2.5), and MUST map TEAMTOTAL -> full-game TOTAL only, excluding the 1HTOTAL first-half sibling (a full-game team leg vs first-half total leg would break the same-window requirement). The game-key plus exact sibling mapping structurally prevents cross-sport/unit joins.",
+   "detection": "Join by game-key for leagues with <LEAGUE>TEAMTOTAL + <LEAGUE>TOTAL. Map TEAMTOTAL leg <TEAM><n> (yes_sub_title 'Team over k goals') to TOTAL leg with the same 'Over k' threshold => implication (holds for either team).",
+   "exactness": "exact",
+   "est": 72,
+   "priority": "medium",
+   "example": [
+    "KXLEAGUESCUPTEAMTOTAL-26AUG04CINPAC-CIN2",
+    "KXLEAGUESCUPTOTAL-26AUG04CINPAC-2",
+    "KXLEAGUESCUPTEAMTOTAL-26AUG04CINPAC-PAC1"
+   ],
+   "evidence": "TEAMTOTAL leg KXLEAGUESCUPTEAMTOTAL-26AUG04CINPAC-CIN2: \"If Cincinnati records above 1.5 goals in the Cincinnati vs Pachuca professional Leagues Cup soccer game originally scheduled for Aug 4, 2026 after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" TOTAL leg KXLEAGUESCUPTOTAL-26AUG04CINPAC-2: \"If over 1.5 goals are scored in the Cincinnati vs Pachuca professional Leagues Cup soccer game originally scheduled for Aug 4, 2026 after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" Same game, identical window (90'+stoppage, excl. extra time/penalties), same 0.5-strike threshold, same unit. TEAMTOTAL secondary: \"Own goals count towards the team awarded the goal\" \u2014 own goals increment both the awarded team AND the match total, so team_goals <= total_goals holds. Verified at scale: 72/72 TEAMTOTAL game-keys join 1:1 to a full-game TOTAL sibling across exactly 6 leagues (Brasileirao, EFLCup, LeaguesCup, MLB, UECL, UEL), matching the \"only 6 leagues\" claim.",
+   "detection_sound": true
+  },
+  {
+   "name": "btts-implies-teamtotal",
+   "verdict": "CONFIRMED",
+   "board": "sports",
+   "binding": "No correction needed \u2014 direction and conditions are right. BTTS is the conjunction (the smaller event): P(BTTS) <= P(home over0.5) and P(BTTS) <= P(away over0.5), with Frechet lower bound P(BTTS) >= P(home over0.5)+P(away over0.5)-1; because it is an exact identity BTTS = home-o0.5 AND away-o0.5, both the per-leg upper implications and the joint lower bound are enforced. The one non-negotiable implementation constraint: emit ONLY the -1 (0.5) team-total leg; never the -2/-3 legs.",
+   "detection": "Join by game-key for leagues with both <LEAGUE>BTTS and <LEAGUE>TEAMTOTAL. Emit BTTS-BTTS -> TEAMTOTAL-<TEAM>1 (the 0.5 leg) for each of the two teams (team UUIDs from custom_strike.soccer_team).",
+   "exactness": "exact",
+   "est": 72,
+   "priority": "medium",
+   "example": [
+    "KXLEAGUESCUPBTTS-26AUG04CINPAC-BTTS",
+    "KXLEAGUESCUPTEAMTOTAL-26AUG04CINPAC-CIN1",
+    "KXLEAGUESCUPTEAMTOTAL-26AUG04CINPAC-PAC1"
+   ],
+   "evidence": "Pulled from the actual snapshot for the exact example event KXLEAGUESCUPBTTS/TEAMTOTAL-26AUG04CINPAC. BTTS (custom_strike=null): \"If Cincinnati and Pachuca both score a goal in the Cincinnati vs Pachuca Leagues Cup match ... after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" rules_secondary: \"Own goals count towards the team awarded the goal.\" CIN1 (strike_type=greater, soccer_team UUID): \"If Cincinnati records above 0.5 goals in the Cincinnati vs Pachuca ... game ... after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" PAC1: identical for Pachuca. Goals are integers, so \"records above 0.5 goals\" == \"scores >=1 goal\" == \"score a goal\"; identical match, identical window, identical own-goal crediting => BTTS Yes <=> (CIN1 Yes AND PAC1 Yes), an exact conjunction identity. Family-wide over all 31 matched game keys: every BTTS market has null strike + \"both score\" rule; every TEAMTOTAL event has exactly two \"-1\" legs, both strike_type=greater at threshold 0.5, each with a distinct team UUID, same window + own-goal text. Zero anomalies (0 BTTS, 0 TT, 0 same-team-twice).",
+   "detection_sound": true
+  },
+  {
+   "name": "no-goals-equality",
+   "verdict": "CONFIRMED",
+   "board": "sports",
+   "binding": "Proposer's directions are correct; tighten wording. Load-bearing arbitrage relation (EXACT, rule-guaranteed, tradeable): P(SCORE-0-0) = 1 - P(TOTAL-Over0.5), equivalently SCORE-0-0 YES \u2261 TOTAL-Over0.5 NO. FTTS leg is NOT an equality \"up to a caveat\" \u2014 it is a strict one-directional SUBSET: FTTS-NONE YES \u27f9 SCORE-0-0 YES (and \u27f9 TOTAL-Over0.5 NO), never the converse, so P(FTTS-NONE) \u2264 P(SCORE-0-0) = 1 - P(TOTAL-Over0.5). Trade FTTS-NONE only as the cheap side of that inequality (short FTTS-NONE vs long TOTAL-Over0.5 has bounded downside; the reverse is unbounded when a 0-0 regulation game scores in ET). In Leagues Cup 2026 the inequality is empirically tight (no ET) but that is not a rule guarantee.",
+   "detection": "Join by game-key. SCORE leg where custom_strike home_score=0 & away_score=0, the TOTAL leg 'Over 0.5' (suffix -1), and FTTS 'No Goal' leg (suffix -NONE). Assert P(SCORE-0-0)=1-P(TOTAL-Over0.5); flag FTTS-NONE as one-directional superset check.",
+   "exactness": "exact",
+   "est": 60,
+   "priority": "medium",
+   "example": [
+    "KXLEAGUESCUPSCORE-26AUG04CINPAC-CIN0PAC0",
+    "KXLEAGUESCUPTOTAL-26AUG04CINPAC-1",
+    "KXLEAGUESCUPFTTS-26AUG04CINPAC-NONE"
+   ],
+   "evidence": "Fetched rules_primary of the three legs (game 26AUG09PHINCX; text is identical across all 31 Leagues Cup games checked). SCORE 0-0 cell (KXLEAGUESCUPSCORE-...-PHI0NCX0): \"If the result is a 0-0 draw ... after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" TOTAL Over 0.5 (KXLEAGUESCUPTOTAL-...-1): \"If over 0.5 goals are scored ... after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" Both legs cite the SAME regulation-only window verbatim; goals are non-negative integers so \"over 0.5\" \u2261 \"\u22651 goal\" \u2261 \"not 0-0\". They partition the outcome space exactly => P(SCORE-0-0)+P(TOTAL-Over0.5)=1, i.e. SCORE-0-0 YES = TOTAL-Over0.5 NO. Machine check: 31/31 games have SCORE-0-0 and TOTAL-1 both regulation-only, and TOTAL-1 is exactly \"Over 0.5\" in 31/31. FTTS No Goal (-NONE): \"If no team records the first goal during the entire game (regulation, stoppage and any extra time periods) ... resolves to Yes\" \u2014 31/31 use the WIDER entire-game window.",
+   "detection_sound": true
+  },
+  {
+   "name": "regulation-win-implies-advance",
+   "verdict": "NEEDS-RULE-CHECK",
+   "board": "sports",
+   "binding": "Direction is already correct (regulation win -> advance, one-directional; draw -> ET/pens so advance does NOT imply a regulation win). The fix is a mandatory single-leg gate the proposed detection omits: bind P(GAMEwin)<=P(ADVANCE) ONLY when (a) the ADVANCE rules_primary round label denotes a single-leg round, AND (b) exactly one GAME event exists for that tie with no reversed home/away return leg (e.g. no CAPVIT alongside VITCAP). Whitelist confirmed single-leg from rule text: EFL Cup Round 1, Coppa Italia Round of 64, AFC Champions League Preliminary Round 1. Blacklist two-legged rounds proven in-data/by rule label: Copa do Brasil Round of 16, Europa League Qualification Round 3, UCLW Preliminary Round 2 (and generally UCL/UEL/UWCL two-legged qualifying and knockout rounds). Crucially, two-leggedness is NOT detectable by a structural game-key join or an event-count ratio \u2014 the snapshot shows Copa do Brasil at ~1:1 GAME:ADVANCE because legs load as they are scheduled \u2014 so the round-format must be parsed from the ADVANCE rule text, which is exactly why exactness is needs-rule-check, not exact.",
+   "detection": "Join by game-key for cup leagues carrying both <LEAGUE>GAME (1X2) and <LEAGUE>ADVANCE (2-leg). Map GAME-<TEAM> -> ADVANCE-<TEAM> by soccer_team UUID / team code.",
+   "exactness": "needs-rule-check",
+   "est": 86,
+   "priority": "medium",
+   "example": [
+    "KXEFLCUPGAME-26AUG10PAEXC-...",
+    "KXEFLCUPADVANCE-26AUG10PAEXC-PA",
+    "KXCOPADOBRASILADVANCE-...",
+    "KXUCLWADVANCE-..."
+   ],
+   "evidence": "SINGLE-LEG (holds), EFL Cup Round 1 \u2014 GAME KXEFLCUPGAME-26AUG10PAEXC-PA: \"If Plymouth wins the Plymouth vs Exeter professional EFL Cup soccer game originally scheduled for Aug 10, 2026 after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes.\" ADVANCE KXEFLCUPADVANCE-26AUG10PAEXC-PA: \"If Plymouth advance past Exeter in the Plymouth vs Exeter soccer tie in the Round 1 of the EFL Cup, then the market resolves to Yes.\" In a single-leg tie a regulation win = winning the match = advancing, so P(GAMEwin)<=P(ADVANCE), one-directional. TWO-LEG (breaks), Copa do Brasil Round of 16 \u2014 ADVANCE KXCOPADOBRASILADVANCE-26AUG06VITCAP-VIT: \"If Vitoria advance past Paranaense in the Vitoria vs Paranaense soccer tie in the Round Of 16 of the Copa do Brasil...\" but TWO GAME legs exist for the one tie: KXCOPADOBRASILGAME-26AUG03CAPVIT (Paranaense vs Vitoria, leg 1) and KXCOPADOBRASILGAME-26AUG06VITCAP (Vitoria vs Paranaense, leg 2), each settling on one match's \"90 minutes plus stoppage time\". Same pattern for Europa League \"Qualification Round 3\" (KXUELGAME-26AUG06RBSPAF + KXUELGAME-26AUG06PAFRBS -> one KXUELADVANCE-26AUG06RBSPAF) and UCLW \"Preliminary Round 2 of the Champions League Womens\".",
+   "detection_sound": false
+  },
+  {
+   "name": "tennis-exactscore-refines-match",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "sports",
+   "binding": "REFINEMENT / one-directional nesting, not a full partition-equality. Correct part: each KX*EXACTMATCH leg <PLAYER><setscore> implies the corresponding KX*MATCH-<PLAYER> leg (subset), giving the arbitrage-safe bound P(exact leg) <= P(match-winner leg), robust because both markets share the same 'after a ball has been played' void trigger. INCORRECT part (drop it): 'winner's exact-score legs sum to P(MATCH winner) exactly.' A mid-match retirement/walkover/default awards the match to the opponent (MATCH resolves cleanly) but produces a non-2-set finishing score absent from the {2-0,2-1} menu, so all exact legs resolve No and the sum falls short of the moneyline. The menu is exhaustive over NATURALLY COMPLETED best-of-3 finishes, not over MATCH-WINNING finishes; retirement wins have no exact-score leg. The proposer's flagged failure mode (best-of-5 menu incompleteness) is real but secondary \u2014 the equality fails even with a 'complete' best-of-3 menu.",
+   "detection": "Join by (date, unordered player pair) \u2014 NOTE the codes differ between series (MATCH uses last-name codes e.g. WALBRO; EXACTMATCH/SETWINNER use initial+last e.g. WALJBRO), so join on parsed player identities from title, not raw substring. For each KXATPEXACTMATCH/KXWTAEXACTMATCH leg <PLAYER><setscore> emit implication to KX*MATCH-<PLAYER>; sum same-winner legs to compare against the moneyline.",
+   "exactness": "needs-rule-check",
+   "est": 33,
+   "priority": "high",
+   "example": [
+    "KXATPEXACTMATCH-26AUG03WALJBRO-WAL20",
+    "KXATPEXACTMATCH-26AUG03WALJBRO-WAL21",
+    "KXATPMATCH-26AUG03WALBRO-WAL"
+   ],
+   "evidence": "EXACTMATCH-26AUG03WALJBRO-WAL20 rules_primary: 'If Adam Walton wins the Adam Walton vs Jenson Brooksby professional tennis match in the 2026 ATP Montreal Round Of 128 by a set score of 2-0, then the market resolves to Yes.' MATCH-26AUG03WALBRO-WAL rules_primary: 'If Adam Walton wins the Walton vs Brooksby professional tennis match in the 2026 ATP Montreal Round Of 128 after a ball has been played, then the market resolves to Yes.' MATCH rules_secondary voids ONLY 'If the match does not occur (signaled by a ball being played) ... (all before the match starts)'. Survey of all 33 KXATPEXACTMATCH events: uniformly exactly 4 legs = {2-0, 2-1} per player, mutually_exclusive=True, no catch-all 'other score' leg. Winning 2-0 is a strict subset of winning the match, so per-leg implication holds; but the {2-0,2-1} menu is not exhaustive over match-WINNING outcomes.",
+   "detection_sound": true
+  },
+  {
+   "name": "mlb-player-stat-dominance",
+   "verdict": "CONFIRMED",
+   "board": "sports",
+   "binding": "No direction correction needed \u2014 all 7 edges and both exclusions are correct as claimed, exactness is deterministic at the stat level. Add two operational qualifiers: (a) the price inequality is a hard arbitrage bound only conditional on the shared live-settlement branch; under the identical 'fair market price' void clause both legs void together, leaving bounded basis risk rather than a clean unbounded arb, so treat it as a strong dominance/quasi-arb, not a pure static arb. (b) Only emit an edge when BOTH legs exist at the same k \u2014 in particular any HIT->TB or HR->TB edge exists only for k>=2 (no TB-1 market), so the 'P(Hits k+)<=P(TB k+)' example is vacuous at k=1.",
+   "detection": "Player node key = (game-key, player-id) parsed from ticker suffix, shared verbatim across KXMLBHR/KXMLBHIT/KXMLBTB/KXMLBRBI/KXMLBHRR (e.g. AZCCARROLL7). For the same (player,game,k) emit edges per the fixed DAG: HR->{HIT,RBI,TB,HRR}, HIT->{TB,HRR}, RBI->HRR.",
+   "exactness": "exact",
+   "est": 21,
+   "priority": "high",
+   "example": [
+    "KXMLBHR-26AUG032140SDAZ-AZCCARROLL7-1",
+    "KXMLBHIT-26AUG032140SDAZ-AZCCARROLL7-1",
+    "KXMLBTB-26AUG032140SDAZ-AZCCARROLL7-2",
+    "KXMLBRBI-26AUG032140SDAZ-AZCCARROLL7-1"
+   ],
+   "evidence": "All five example legs settle on the same subject/game with \"records k+\" semantics, verbatim from the data. HIT: \"If Corbin Carroll records 1+ hits in the San Diego vs Arizona ... game ... resolves to Yes.\" TB: \"records 2+ total bases\". HR: \"records 1+ home runs\". RBI: \"records 1+ RBIs\". HRR: \"records 1+ total hits + runs + rbis\" (so HRR = H+R+RBI). Each of the 7 DAG edges is a HARD pointwise MLB inequality at a common k, giving {A>=k} \u2286 {B>=k} \u27f9 P(A k+) <= P(B k+): HR<=HITS (a HR is by rule a hit), HR<=RBI (a HR always credits the batter >=1 RBI), HR<=TB (1 HR = 4 bases), HR<=HRR (HR<=H<=HRR), HITS<=TB (each hit >=1 base), HITS<=HRR (R,RBI>=0), RBI<=HRR (H,R>=0). No MLB scoring state reverses any edge (a legit HR that yields 0 RBI or isn't a hit does not exist; if a batter is called out passing a runner it is no longer scored a HR). The two deliberately-excluded edges are correctly excluded: TB->HRR fails (a solo double = TB 2 but HRR 1) and HITS<->RBI is genuinely independent (single with 0 RBI vs sac-fly RBI with 0 hits). Join key is sound: custom_strike.baseball_player UUID 73c3c2e2-ad65-411d-8b66-a95578c6d4aa is byte-identical across all five series and the suffix AZCCARROLL7 maps to exactly one UUID; each of the 5 SDAZ players appears in all 5 series; rules name the subject explicitly (no boilerplate-omits-subject trap).",
+   "detection_sound": true
+  },
+  {
+   "name": "crypto-range-ladder-identity",
+   "verdict": "CONFIRMED",
+   "board": "financials-crypto",
+   "binding": "Direction is CORRECT as proposed (bucket = negative first difference of the survival ladder: [f,f+step) price = P(D>=f) - P(D>=f+step); P(D>=f) = sum of range buckets with lower bound >= f). Two refinements, not corrections: (1) The alignment must be done on RESOLVED rule thresholds, i.e. match each range bucket's inclusive UPPER edge (the \"between LO-HI\" HI, e.g. 51999.99 / 0.5399) to a ladder \"above HI\" threshold \u2014 NOT on yes_sub_title/lower-bound display labels, which drift (XRP ladder shows 0.51991 for the >=0.52 rung). The ladder threshold is engineered to sit exactly one tick below the next range floor. (2) Only INTERIOR buckets are pure two-leg ladder differences; the range TOP \"greater\" bucket = a single ladder leg, the range BOTTOM \"less\" bucket = 1 - Ladder(first-interior-floor), and the ladder's extra bottom rung (>= the sub-floor, e.g. BTC $51,000) is redundant with no range boundary \u2014 so the family is exact leg-by-leg on interior buckets and via complement/single-leg at the two extremes.",
+   "detection": "Pair a mutually_exclusive=True range-partition event (series KX<COIN>, strike_type in {less,between,custom}) with the mutually_exclusive=False threshold-ladder event (series KX<COIN>D, or KX<COIN>E->KX<COIN>D for SOL) that shares the SAME markets[0].close_time. Confirm rules_primary of both quote the identical index+instant clause ('simple average of the sixty seconds of CF Benchmarks' <COIN> ... Real-Time Index ... at <T>'). Then align: every interior D floor must equal a range-bucket lower bound (verify numerically from yes_sub_title / custom_strike).",
+   "exactness": "exact",
+   "est": 22,
+   "priority": "high",
+   "example": [
+    "KXBTC-26AUG0717-B51750",
+    "KXBTCD-26AUG0717-T51499.99",
+    "KXSOLE-26AUG0717 vs KXSOLD-26AUG0717",
+    "KXDOGE-26AUG0717 vs KXDOGED-26AUG0717"
+   ],
+   "evidence": "Both legs settle off ONE scalar. BTC range bucket B51750 rules_primary: \"If the simple average of the sixty seconds of CF Benchmarks' Bitcoin Real-Time Index (BRTI) before 5 PM EDT is between 51500-51999.99 at 5 PM EDT on Aug 7, 2026, then the market resolves to Yes.\" BTC ladder T51499.99: \"...is above 51499.99 at 5 PM EDT on Aug 7, 2026...\"; T51999.99: \"...is above 51999.99...\". So {between 51500-51999.99} = {above 51499.99} minus {above 51999.99} EXACTLY \u2014 same index (BRTI), same instant, same markets[0].close_time 2026-08-07T21:00:00Z (verified equal on both legs, all 7 coins). Event-level alignment (range bucket UPPER edge from rules_primary \u2194 ladder \"above\" threshold): BTC 48/48 upper edges + top 75499.99 all present in ladder; ETH 48/48 + top 2809.99; DOGE 34/34 + top 0.1799999; XRP 48/48 + top 1.4799; SOL/HYPE aligned via subtitle (steps 1 / and matched). Ladder carries exactly one extra bottom rung per coin (BTC \"above 50999.99\"=$51,000+, SOL 44.9999, DOGE 0.0049999) sitting INSIDE the range's bottom \"less\" bucket \u2014 the documented 48/50 non-alignment, real. Step equal between range & ladder every coin (BTC 500, SOL 1, DOGE 0.005, XRP 0.02).",
+   "detection_sound": true
+  },
+  {
+   "name": "xe-threshold-nest",
+   "verdict": "CONFIRMED",
+   "board": "financials-crypto",
+   "binding": "Binding direction and inequality are correct as stated (P(higher floor) <= P(lower floor) for strike_type=greater; reversed for 'less'). One refinement to the exactness claim: it is unconditionally exact only for point-in-time legs (SOL case). For running-max/touch legs (BTC case) it is exact ONLY conditional on higher-strike-window being a SUBSET of lower-strike-window; the scanner must verify byte-level window bounds, not merely 'same year/same end date'. Group key must be (underlying, EXACT window bounds [start,end] for touch OR exact instant for point-in-time, byte-identical source clause) with observation mode kept as part of the source-clause byte match \u2014 never normalize touch and point-in-time to the same resolution timestamp. Distinct from L-threshold: this crosses event/series boundaries (KXSOL26500 != KXSOLD26; KXBTC2026250 != KXBTC2026200), where order books are not auto-coupled \u2014 a real, non-duplicate family.",
+   "detection": "Group ALL markets across event boundaries by the tuple (underlying asset, resolution timestamp OR resolution window [start,end], quoted source clause), extracted from rules_primary. Within a group, any two markets with strike_type='greater' and floors f1>f2 nest (f1 implies f2); with strike_type='less' the direction reverses. Distinct from L-threshold which is confined to legs inside one event.",
+   "exactness": "exact",
+   "est": 4,
+   "priority": "medium",
+   "example": [
+    "KXBTC2026250-27JAN01-250000",
+    "KXBTC2026200-27JAN01-200000",
+    "KXSOL26500-27JAN0100-T500",
+    "KXSOLD26-...-T449.99"
+   ],
+   "evidence": "Cross-event nesting is genuinely rule-enforced, not correlation. SOL (distinct series KXSOL26500 vs KXSOLD26, same instant): KXSOL26500-T500 rules_primary = \"If the simple average of the sixty seconds of CF Benchmarks' SOLUSD_RTI is above $500.00 at 12 AM EST on Jan 1, 2027, then the market resolves to Yes.\" KXSOLD26-T449.99 = identical clause with \"$449.99\"; every rung shares the byte-identical source clause, strike_type=greater, close 2027-01-01T05:00:00Z. Same-instant point comparison forces above-$500 => above-$449.99 => ... => above-$49.99, so P(>500) <= P(>449.99) <= ... EXACT, unconditionally. BTC (distinct series KXBTC2026250 vs KXBTC2026200, touch/running-max): KXBTC2026250 = \"is above $250000 starting 2025-10-18T14:00:00.000Z and before Jan 1, 2027\" (window W250=[10-18-25,01-01-27]); KXBTC2026200 = \"is above $200000 starting 2025-10-10 and before Jan 1, 2027\" (W200=[10-10-25,01-01-27]); both secondary: \"If the BRTI crosses the threshold at any point during the measurement period (triggering early expiration), the market immediately resolves.\" W250 subset of W200, so any BRTI>250000 at t in W250 => t in W200 and BRTI>200000 => BTC200 Yes. Direction P(higher floor) <= P(lower floor) is correct.",
+   "detection_sound": true
+  },
+  {
+   "name": "extremum-envelops-point",
+   "verdict": "NEEDS-RULE-CHECK",
+   "board": "financials-crypto",
+   "binding": "see above",
+   "detection": "Find a max/min series ('How high/low will X get', KX*MAX*/KX*MIN*, KXDJIA/KXNIKKEI/KX10Y2Y running-window ladders) and a point-in-time series on the SAME underlying whose resolution instant lies inside the max/min window and whose rules_primary quotes the same index. Enumerate shared strike levels (round numbers where a fine point-ladder grid intersects the coarse extremum grid).",
+   "exactness": "needs-rule-check",
+   "est": 12,
+   "priority": "medium",
+   "example": [
+    "KXDJIA-26DEC31-53000",
+    "KXDJI-26AUG0316-53000.00",
+    "KX10Y2YDATE-26DEC31-...",
+    "KX10Y2Y-26DEC31-..."
+   ],
+   "evidence": "The abstract implication is logically valid but binding is CONDITIONAL on same-feed + exact shared strike, and the flagship example is a break.\n\nCONFIRMED same-feed instance (10Y2Y): running-max KX10Y2Y-26DEC31-T.7 rules_primary = \"If the FRED T10Y2Y series ... on any daily observation dated between Issuance and Dec 31, 2026 (inclusive), is above .7%, then ... Yes.\" (source: Federal Reserve Bank of St. Louis). Point KX10Y2YDATE-26DEC31-T70 rules_primary = \"If the daily 10-Year Treasury Constant Maturity minus the 2-year ... for December 31, 2026 is above -/+bps ... Yes\" (source: Federal Reserve Bank of St. Louis). Both FRED, both strict \"greater\", shared strike 0.70% = 70bps (only overlap: point ladder -30..+70bps, running ladder +70..+100bps). Dec 31 IS one of the daily observations the running-max scans (inclusive endpoint) => {Dec31 obs > 0.70%} subset of {some daily obs in window > 0.70%}. Exact, same feed, correct direction P(point>=L) <= P(max>=L).\n\nBROKEN flagship instance (DJIA): running-max KXDJIA-26DEC31-53000 = \"value of Dow Jones Industrial Average (DJIA) is at least $53,000 ... from Jun 16, 2026 to Dec 31, 2026\" (source: Trading View). Point KXDJI-26AUG0316 = \"value of Dow Jones Industrial Average (Index.US30/USD) is at least $X at 4pm EDT on Aug 03, 2026\" (source: Pyth). DIFFERENT vendor feeds (Trading View cash DJIA vs Pyth synthetic Index.US30/USD). Also NO shared strike exists: KXDJI point ladder runs 52,425->52,770 in $5 steps; KXDJIA running ladder runs 53,000->60,000 in $1,000 steps. The proposer's cited KXDJI-26AUG0316-53000.00 market does not exist (phantom). This DJIA leg is REJECTED.",
+   "detection_sound": false
+  },
+  {
+   "name": "quarter-in-fiscalyear-flow",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "financials-crypto",
+   "binding": "Direction and condition are correct; two corrections needed. (1) Actionability clause: the relation only binds prices where an annual strike a <= a quarter strike q; on all observed additive grids this set is EMPTY (annual menu ~4x above quarter menu), so treat the family as a valid-but-currently-non-actionable one-directional constraint, not a live arb \u2014 it activates only if Kalshi lists an annual strike at or below a quarter strike, or intra-year once Q1..Q(n-1) have settled (then annual floor = known sum + open quarter). (2) Detection must join on (series-root AND metric-suffix), not series+'A' alone: KXLMTA carries both -F35 (additive) and -HEAD (level), and KXGOOG/KXGOOGA carry both -HEAD (level) and -CLICKS (rate/change). A bare X->X+'A' match would pair F-35 deliveries with headcount, a unit-mismatch false bind. Require both legs to parse to the SAME additive-flow metric and the quarter to be a subperiod of the same (calendar-aligned) fiscal year before asserting FY>=Q.",
+   "detection": "Match series X (quarter event, title '... in Q<n> <year>') with series X+'A' (annual event, title '... in fiscal <year>/... in <year>'). GATE on metric type parsed from title: additive flow = {delivered/deliveries, passengers, trips, orders, production, shipments, bookings, gross merchandise volume, generation/TWh, hours streamed/engaged, units, berth-days}. EXCLUDE stock levels (headcount, customers, accounts, restaurants, stores, rooms, subscribers) and rates (comparable-sales growth, margin) \u2014 those do NOT bind. Confirm the quarter is a sub-period of the annual event's fiscal year.",
+   "exactness": "soft(one-directional-only)",
+   "est": 12,
+   "priority": "low",
+   "example": [
+    "KXRIVN (Q3 vehicles delivered) / KXRIVNA (2026 vehicles delivered)",
+    "KXDASH (Q3 total orders) / KXDASHA (fiscal 2026 total orders)",
+    "KXTLN (Q2 TWh generation) / KXTLNA (fiscal 2026 TWh)",
+    "KXLMT / KXLMTA (F-35 deliveries)"
+   ],
+   "evidence": "The rule texts confirm the binding is a genuine, same-metric, subperiod-containment implication \u2014 not correlation. Quarter vs annual legs use IDENTICAL metric wording:\n- KXRIVN-26OCTDELIV: \"If Rivian Automotive Inc. reports Above 11500 total vehicles delivered in Q3 2026, then the market resolves to Yes.\" vs KXRIVNA-28JANDELIV: \"...Above 38000 total vehicles delivered in 2026...\"\n- KXDASH-26NOVORDERS: \"...Above 970000000 total orders in Q3 2026...\" vs KXDASHA-27FEBORDERS: \"...Above 3750000000.0 total orders in fiscal 2026...\" (secondary: \"the annual figure reported in DoorDash Inc.'s full fiscal year or Q4 earnings release\").\n- KXTLN-26AUGGEN: \"...Above 8.5 total generation (twh) in Q2 2026...\" vs KXTLNA-27FEBGEN: \"...Above 46 total generation (twh) in fiscal 2026...\"\n- KXLMT-26OCTF35: \"...Above 20 f-35 aircraft deliveries in Q3 2026...\" vs KXLMTA-27JANF35: \"...Above 100 f-35 aircraft deliveries in fiscal 2026...\"\nContrast the correctly-EXCLUDED level metric \u2014 KXGOOG-26NOVHEAD \"...Above 197000 headcount in Q3 2026...\" vs KXGOOGA-28JANHEAD \"...above 188000 total number of employees in 2026...\" \u2014 where the annual grid floor (188k) sits BELOW the quarter grid floor (197k), a level snapshot that can fall over the year, so FY>=Q does not hold. Direction of the proposed inequality (P(Q>=L) <= P(FY>=L)) is CORRECT for the additive cases.",
+   "detection_sound": false
+  },
+  {
+   "name": "econstat-pointmass-vs-ladder",
+   "verdict": "CONFIRMED",
+   "board": "economics-commodities",
+   "binding": "No direction/condition correction needed -- the proposer has it right. Two precision caveats to attach, not fixes: (a) The exact leg's own rules_primary is terse boilerplate (\"...is exactly v% in Nov 2026...\") and does NOT itself restate \"one-decimal value reported by BLS\" or the seasonal-adjustment/vintage; the one-decimal pin is carried only by the ladder text. Exactness therefore rests on the exact leg keying off the same published one-decimal figure, which is certain given the 0.1-grid menu + shared settlement source but is implicit in the exact leg's wording. (b) Among the five mapped pairs the CPICORE month-over-month ladder (\"increases by above 0.5%\") omits the explicit \"single-decimal\" qualifier that CPI-MoM, CPIYOY and CPICOREYOY ladders carry -- its exactness leans on BLS's one-decimal reporting convention rather than rule text, so that member is marginally softer than the U3/CPIYOY named examples. Detection is sound BUT must use the explicit STAT map, not a suffix strip: KXECONSTATCPI->KXCPI is MoM (not the KXCPIYOY YoY ladder) and KXECONSTATCORECPIYOY->KXCPICOREYOY reorders the CORE/CPI tokens (a naive strip yields the non-existent KXCORECPIYOY). All five mapped pairs verified unit-consistent (MoM<->MoM, YoY<->YoY), so no cross-unit false grouping; the templated dual settlement_sources on the ECONSTAT events is a packaging artifact and correctly ignored by keying on the STAT map + 'Exactly v%' + custom Value.",
+   "detection": "Pair series KXECONSTAT<STAT>-<PERIOD> (mutually_exclusive=True, strike_type=custom, yes_sub_title 'Exactly v%', custom_strike.Value=v) with the ladder KX<STAT>-<PERIOD> (mutually_exclusive=False, strike_type=greater, yes_sub_title 'Above t%'), same event-period suffix. STAT map: U3->U3, CPIYOY->CPIYOY, CORECPIYOY->CPICOREYOY, CPI->CPI, CPICORE->CPICORE. For each exact Value v, require ladder legs at t=v and t=v-0.1 for the exact identity; require only t=v-0.1 for the subset bound.",
+   "exactness": "exact",
+   "est": 354,
+   "priority": "high",
+   "example": [
+    "KXECONSTATU3-26NOV-T3.5",
+    "KXU3-26NOV-T3.4",
+    "KXU3-26NOV-T3.5",
+    "KXECONSTATCPIYOY-26NOV-T3.2"
+   ],
+   "evidence": "Rule text pulled from the data confirms both legs settle off the SAME one-decimal BLS print with STRICT '>'. Ladder KXCPIYOY-26NOV-T3.2: \"If the Consumer Price Index (CPI) increases by more than 3.2% in the twelve months ending November 2026 (as represented by the one-decimal place value reported by the Bureau of Labor Statistics), then the market resolves to Yes.\" Ladder KXU3-26NOV-T3.9: \"If the seasonally adjusted unemployment rate (U-3) reported by the Bureau of Labor Statistics in the Employment Situation Report is above 3.9%... resolves to Yes.\" Exact leg KXECONSTATCPIYOY-26NOV-T3.2 (strike_type=custom, Value=3.2, yes_sub 'Exactly 3.2%'): \"If the CPI year-over-year is exactly 3.2% in Nov 2026, then the market resolves to Yes.\" Grids are aligned 0.1-step: ladder KXCPIYOY 3.0->5.0, exact 2.0->3.5; ladder KXU3 3.7->5.0, exact 3.3->5.5. Because the print lives on a 0.1 grid and 'Above t' means print>t (i.e. print>=t+0.1), the vertical spread Above(v-0.1)-Above(v)=1{v-0.1<print<=v}=1{print==v}=Exactly(v). A brute-force check over every one-decimal print state returned identity=True for all interior bins. Direction and condition in the proposal are CORRECT.",
+   "detection_sound": true
+  },
+  {
+   "name": "combo-marginal-vs-standalone",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "economics-commodities",
+   "binding": "See corrected_binding field content above.",
+   "detection": "Series ending in COMBO, mutually_exclusive=True, yes_sub_title with two comma-separated 'Var: bin' clauses. Map each dimension to its standalone series for the same period suffix: KXCPICOMBO(Headline,Core)->KXCPI & KXCPICORE; KXEMPLOYMENTCOMBO(U3,NFP)->KXU3/KXECONSTATU3 & KXPAYROLLS; KXFEDCOMBO(Rate,Dissents)->KXFEDDECISION/KXFED & KXFOMCDISSENTCOUNT. Group combo legs by one dimension's bin label, sum, and compare to the standalone ladder-difference for the matching numeric bin.",
+   "exactness": "exact",
+   "est": 20,
+   "priority": "high",
+   "example": [
+    "KXCPICOMBO-26JULB-0102",
+    "KXCPI-26JUL-T0.0",
+    "KXCPICORE-26JUL-T0.2",
+    "KXEMPLOYMENTCOMBO-26JUL-4.2-100K"
+   ],
+   "evidence": "The relation is a real settlement identity, but only when the SUMMED-OVER dimension is an exhaustive partition \u2014 and one Fed axis is not.\n\n(1) The combo IS a component-ruleset product partition (supports the binding where it applies). KXEMPLOYMENTCOMBO-26JUL-4.2-50-99K rules_secondary: \"Each component is resolved according to its corresponding Kalshi ruleset: U3 uses ECONSTAT and NFP growth uses PAYROLLS. For economic data releases, resolution uses the first officially released value.\" KXFEDCOMBO-26SEPB-0-0 rules_secondary: \"Federal Funds Rate Decision uses FEDDECISION, Dissents uses FOMCDISSENTCOUNT.\" So each combo dimension settles off the identical released number as its standalone, and the grid is mutually exclusive (ME=True). For CPI (5x3: Headline {-0.1 or below,0.0,0.1,0.2,0.3 or above} x Core {0.1 or below,0.2,0.3 or above}) and employment (4x3: U3 {4.1 or below,4.2,4.3,4.4 or above} x NFP {below 50k,50-99k,100k or above}) BOTH dimensions have 'or below'/'or above' catch-alls, so both dims are exhaustive and every needed strike exists (KXCPI-26JUL has T-0.1..T0.2; KXPAYROLLS-26JUL has T50000 and T100000; KXU3 has T4.1..T4.3). Both marginals bind exactly in both directions here.\n\n(2) The break \u2014 Fed combo rate axis is NON-EXHAUSTIVE. The combo rate bins are ONLY {No change, 25bp cut, 25bp hike} (confirmed: 6 markets total, rate bins = ['25bp cut','25bp hike','No change']). But the standalone KXFEDDECISION-26SEP has FIVE outcomes: 'Cut >25bps' (C26), 'Cut 25bps' (C25), 'Fed maintains rate' (H0), 'Hike 25bps' (H25), 'Hike >25bps' (H26). KXFEDDECISION-26SEP-H0 rules_secondary confirms the tails are live: \"if the Federal Reserve hikes by 50bps, the 50bps market will resolve to Yes.\" The dissent axis {0,>0} IS exhaustive; standalone KXFOMCDISSENTCOUNT-26SEP = {0,1,2,3,4}.",
+   "detection_sound": true
+  },
+  {
+   "name": "extremum-window-envelope",
+   "verdict": "CONFIRMED",
+   "board": "economics-commodities",
+   "binding": "Direction is correct as proposed (soft, one-directional): P(point-value on date t > X) <= P(window-max > X) at shared strike X; P(point-value < X) <= P(window-min < X). Two refinements: (1) the window test must be on the point report's PUBLICATION time, not its reference-month-in-year, otherwise the last-month-of-year point (Dec YoY published Jan) is falsely admitted and genuinely breaks; (2) strike-overlap and thus tradeability is member-specific \u2014 CPI (HIGHINFLATION 3.8-5.0 vs CPIYOY 2.5/3.0-5.0) and U-3 (U3MAX-27 {4.5,4.8,5.0} vs U3 point {3.7-5.0}) overlap densely and carry real edge because the point is one uncertain future month; gas MAX/MIN vs same-underlying daily overlaps essentially never (and only when spot\u2248strike, where the max is already near-certain), so the gas leg is near-dead capacity. When pairing CPI point with KXLCPIMAXYOY (>=, integer strikes P4/P4.5) instead of HIGHINFLATION (>, one-decimal T-strikes), the implication still holds one-directionally but strike-matching is coarser and the two max series must not be conflated.",
+   "detection": "Series whose rule contains 'maximum'/'highest'/'any ... report'/'at any time from Issuance through' (max: KXAAAGASMAX, KXHIGHINFLATION, KXLCPIMAXYOY, KXU3MAX; min: KXAAAGASMIN) paired by identical measured quantity + source with point series inside the window (gas: KXAAAGASD/W/M/ED all 'according to AAA' national avg regular; CPI YoY: KXCPIYOY monthly; U3: KXU3 monthly). Match on shared numeric strike X and confirm the point date lies in the max/min window.",
+   "exactness": "soft(one-directional-only)",
+   "est": 120,
+   "priority": "medium",
+   "example": [
+    "KXHIGHINFLATION-26DEC-T3.9",
+    "KXCPIYOY-26NOV-T3.9",
+    "KXAAAGASMAX-26DEC31-4.60",
+    "KXAAAGASD-26AUG0417"
+   ],
+   "evidence": "Max leg KXHIGHINFLATION-26DEC-T3.9: \"If any Consumer Price Index (CPI YoY) report is above 3.9% for 2026, then the market resolves to Yes.\" Point leg KXCPIYOY-26NOV-T3.9: \"If the Consumer Price Index (CPI) increases by more than 3.9% in the twelve months ending November 2026 (as represented by the one-decimal place value reported by the Bureau of Labor Statistics), then the market resolves to Yes.\" Gas max KXAAAGASMAX-26DEC31-4.60: \"If AAA reports that the maximum price of national average regular gas for the US is greater than $4.60 at any time from Issuance through Dec 31, 2026, inclusive...\" Gas point KXAAAGASD-26AUG04: \"If average regular gas prices for United States are strictly greater than $4.055 on Aug 4, 2026 according to AAA...\" U-3 max KXU3MAX-27-4.5: \"If any U.S. seasonally adjusted U-3 unemployment rate for a month in 2026 is above 4.5%...\" vs point KXU3-26NOV-T4.5: \"above 4.5% in November 2026\". Same source and measured quantity on both legs, strict-greater on both sides; November is one of the \"any month\" reports the max ranges over, so point-Yes forces max-Yes state-by-state.",
+   "detection_sound": true
+  },
+  {
+   "name": "count-mean-vs-component-indicators",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "economics-commodities",
+   "binding": "Restrict the family to the DISSENT pairing only; drop the RATECUTCOUNT/FEDDECISION pairing entirely (25bp-increment count vs per-meeting magnitude buckets is a unit mismatch \u2014 the exact trap the detection is supposed to avoid). The count-noun + co-scoped-binaries heuristic is NOT sufficient: it must additionally require unit identity (menu increments = one component-Yes each) and menu exhaustiveness over the component support, or it wrongly groups the rate-cut legs.\n\nFor the surviving dissent pairing, the only settlement-guaranteed relations are ONE-DIRECTIONAL, and hold state-by-state ONLY under roster completeness (every possible recorded dissenter is one of the 12 listed members):\n  (a) Union bound (robust to the top-bin truncation): P(count>=1) = 1 - P(bin_0) <= sum_i P(I_i), i.e. price(KXFOMCDISSENTCOUNT-26SEP-0) >= 1 - sum_i price(KXFEDDISSENT-26SEP-*).\n  (b) Truncated-mean lower bound: sum_{k=1..4} k*C_k <= sum_i I_i in every state, so sum_{k=1..4} k*price(bin_k) <= sum_i price(indicator_i). Equality holds ONLY if P(>=5 dissents)=0.\nThe proposer's claimed EXACT mean equality sum_k k*P(count=k) = sum_i P(indicator_i) is NOT arbitrage-enforceable: it fails on state (1) whenever any mass sits on >=5 dissents, and on state (2) whenever the roster is incomplete. The proposer's own \"safe one-directional corollary\" has the correct direction (<=), but is itself contingent on roster completeness (needs-rule-check), which the rule text does not guarantee.",
+   "detection": "An 'Exactly k' integer mutex menu (KXFOMCDISSENTCOUNT, KXRATECUTCOUNT) paired with the set of individual indicator markets it counts for the same event: KXFOMCDISSENTCOUNT-<mtg> <-> the 12 KXFEDDISSENT-<mtg>-<MEMBER> legs; KXRATECUTCOUNT-26 <-> the 'Cut' legs of every 2026 KXFEDDECISION-<mtg> event. Detect by count-noun in title ('Number of', 'How many ... dissenting') plus a co-scoped family of binary component markets.",
+   "exactness": "needs-rule-check",
+   "est": 4,
+   "priority": "medium",
+   "example": [
+    "KXFOMCDISSENTCOUNT-26SEP-1",
+    "KXFEDDISSENT-26SEP-KEVI",
+    "KXFEDDISSENT-26SEP-JOHN",
+    "KXRATECUTCOUNT-26DEC31-T2"
+   ],
+   "evidence": "The proposed family bundles TWO structurally different pairings under one detection signature; they do not behave the same.\n\nDISSENT pairing (units match, but menu truncated). KXFOMCDISSENTCOUNT-26SEP has exactly 5 bins, top bin capped at \"exactly 4\": \"If there are exactly 4 dissenting votes at the next scheduled FOMC meeting (scheduled for Sep 16, 2026), then the market resolves to Yes.\" (no >=5 catch-all; mutually_exclusive=True, MECNET). The counted universe is the 12-name set KXFEDDISSENT-26SEP (mutually_exclusive=False), each: \"If Kevin Warsh formally dissented at the September 2026 FOMC meeting, then the market resolves to Yes.\" Both sides count \"members who formally dissent\" \u2014 unit = 1 per member, so a per-state identity is structurally possible. BUT the count menu tops out at 4 while up to 12 voters can dissent, so the support 5..12 is unmapped.\n\nRATECUTCOUNT pairing (UNIT MISMATCH \u2014 this is the documented trap, not an instance of this family). KXRATECUTCOUNT-26DEC31 rules_secondary is explicit: \"To be clear, 25bp of cuts is equal to one cut (so 25bp cut is 1, 50bp cut is 2, 75bp cut is 3, and so on).\" The count is in 25bp INCREMENTS. But the paired KXFEDDECISION-26SEP \"Cut\" legs are per-meeting magnitude buckets \u2014 \"Cut 25bps\" (C25) and \"Cut >25bps\" (C26) \u2014 a binary per meeting. Sum of the \"Cut\" indicators = number of meetings that cut, NOT number of 25bp increments, and C26 \">25bps\" cannot even distinguish a 50bp cut (=2) from a 75bp cut (=3). Additionally only 3 of ~8 in-year 2026 decision events survive in the snapshot (SEP/OCT/DEC; Jan-Jul already settled), so the \"Cut\"-leg sum is also non-exhaustive over the RATECUTCOUNT calendar-year window.",
+   "detection_sound": false
+  },
+  {
+   "name": "fed-decision-vs-nextmeeting-level",
+   "verdict": "CONFIRMED",
+   "board": "economics-commodities",
+   "binding": "No correction needed \u2014 the proposer's direction and offsets are right (no-change=current bracket, cut=one notch lower, etc.). One clarification that strengthens it: the open-ended decision buckets do NOT \"span multiple ladder notches\" in price terms \u2014 an open-ended decision maps to an open-ended ladder region that equals a single threshold's Yes/No side: C26 (Cut>25) = 1-T3.75 (No side of T3.75), H26 (Hike>25) = T4.50 (Yes side). Exact single-leg equalities. So all five legs are exactly expressible: {C26:1-T3.75, C25:T3.75-T4.00, H0:T4.00-T4.25, H25:T4.25-T4.50, H26:T4.50} for entering upper bound 4.25%.",
+   "detection": "Same meeting suffix on KXFEDDECISION-<mtg> (custom menu C26/C25/H0/H25/H26) and KXFED-<mtg> (level ladder, strike_type=greater on upper-bound %). Restrict to the earliest (next) meeting where entering upper bound = current published target range; add that constant to each decision offset to pick the matching adjacent ladder pair.",
+   "exactness": "needs-rule-check",
+   "est": 1,
+   "priority": "low",
+   "example": [
+    "KXFEDDECISION-26SEP-H0",
+    "KXFED-26SEP-T4.00",
+    "KXFED-26SEP-T4.25",
+    "KXFEDDECISION-26SEP-C25"
+   ],
+   "evidence": "Decision leg KXFEDDECISION-26SEP-H0 rules_primary: \"If the Federal Reserve does a Hike of 0bps on September 16, 2026, then the market resolves to Yes.\" KXFEDDECISION-26SEP-C25: \"If the Federal Reserve does a Cut of 25bps on September 16, 2026, then the market resolves to Yes.\" Level leg KXFED-26SEP-T4.00 rules_primary: \"If the upper bound of the target federal funds rate published on the Federal Reserve's official website is greater than 4.00% following the Federal Reserve's Sep 16, 2026 meeting, then the market resolves to Yes.\" KXFED-26SEP-T4.25: same, \"greater than 4.25%\". Both events share sub_title \"On Sep 16, 2026\"; decision menu is mutually_exclusive=True over {C26=Cut>25, C25=Cut25, H0=maintain, H25=Hike25, H26=Hike>25} (custom_strike Cut/Hike); level ladder is 11 strike_type=greater thresholds 2.75%..5.25% in 0.25 steps (mutually_exclusive=False, cumulative). With entering upper bound fixed at 4.25% (current range 4.00-4.25%; no FOMC meeting between today 2026-08-03 and Sep 16, so the constant is locked and public), \"no change\" and \"post upper bound in (4.00,4.25]\" are the identical event, so settlement forces P(H0)=T4.00-T4.25 (exactly the example pairing). Full map: C26=1-T3.75, C25=T3.75-T4.00, H0=T4.00-T4.25, H25=T4.25-T4.50, H26=T4.50 \u2014 bijective on the 25bp grid, both directions.",
+   "detection_sound": true
+  },
+  {
+   "name": "award-nom-win",
+   "verdict": "CONFIRMED",
+   "board": "entertainment-mentions",
+   "binding": "Direction and condition are correct as proposed: P(candidate X wins category C) <= P(candidate X nominated in category C), an inherently one-directional (implication) bound, settlement-exact. No correction to the binding is needed. Detection refinement (not a binding fix): key legs on normalized yes_sub_title (strip/collapse whitespace, casefold) rather than custom_strike['Nominee'], because custom_strike is None for all Grammy markets and yes_sub_title is the only universally-present name field; add fuzzy/near-string matching to catch confirmed same-entity spelling drift; verify the winner<->nominee series pairing by category TITLE, never by the 3-letter abbr (KXGRAMBNA Best New Artist vs KXGRAMMYNOMBRA Best Rap Album), and drop legs whose yes_sub_title == 'DEACTIVED'.",
+   "detection": "Pair a WINNER series with its NOMINEE series for the same ceremony+category, then match legs by entity. Oscar: KXOSCAR<CAT>-<yr> (winner, mutually_exclusive=True/MECNET) vs KXOSCARNOM<CAT>-<yr> (nominee slate, mutually_exclusive=False), CAT in {ACTO,ACTR,PIC,DIR,SUPACTO,SUPACTR,...}. Grammy: KXGRAM<abbr>-<n> vs KXGRAMMYNOM<abbr>-<n> (only AOTY maps cleanly). Match legs across the pair by custom_strike['Nominee'] value or yes_sub_title (NOT by 3-letter suffix token, which collides). A winner leg with a matching nominee leg is one instance.",
+   "exactness": "exact",
+   "est": 120,
+   "priority": "high",
+   "example": [
+    "KXOSCARACTO-27-JOH",
+    "KXOSCARNOMACTO-27-JOH",
+    "KXOSCARPIC-27-ODY",
+    "KXGRAMAOTY-69-LIF"
+   ],
+   "evidence": "Winner leg KXOSCARACTO-27-JOH rules_primary: 'If John Malkovich has won Best Actor at the 99th Academy Awards, then the market resolves to Yes.' (event KXOSCARACTO-27, mutually_exclusive=True, MECNET). Nominee leg KXOSCARNOMACTO-27-JOH rules_primary: 'If John Malkovich has been nominated for Best Actor at the 99th Academy Awards, then the market resolves to Yes.' (event KXOSCARNOMACTO-27, mutually_exclusive=False). Best Picture parallels: KXOSCARPIC-27 'If The Odyssey has won Best Picture at the 99th Academy Awards...' vs KXOSCARNOMPIC-27 'If The Odyssey has been nominated for Best Picture at the 99th Academy Awards...'. Grammy AOTY pairs cleanly: KXGRAMAOTY-69 'If The Life of a Showgirl has won Album of the Year at the 69th Annual Grammy Awards...' vs KXGRAMMYNOMAOTY-69 'If The Life of a Showgirl has been nominated for Album of the Year at the 69th Grammy Awards...'. Suffix-collision confirmed in real menus (same person, different tokens): winner MATT=Matt Damon vs nominee MAT=Matt Damon; winner JER vs nominee JERE=Jeremy Allen White. Abbr trap confirmed: KXGRAMBNA-69='Grammy Winner: Best New Artist' vs KXGRAMMYNOMBRA-69='Grammy nominees: Best Rap Album' (different category). Spelling drift confirmed: winner ROM='The Romantics' vs nominee ROM='The Romantic'; winner 'Jafar Jackson' vs nominee 'Jaafar Jackson'.",
+   "detection_sound": true
+  },
+  {
+   "name": "song-chart-depth",
+   "verdict": "NEEDS-RULE-CHECK",
+   "board": "entertainment-mentions",
+   "binding": "Rule-forced exact edge is only: P(#1 song, incl. features) <= P(top10 song, incl. features), same artist, Dec 26 2026 Billboard issue. The legs into top20 \u2014 P(top10) <= P(top20) and P(#1) <= P(top20) \u2014 are exact ONLY IF Kalshi settles \"top 20 single\" to include credited features; the rule text does not guarantee this (it drops the \"(including features)\" wording both sibling series carry). Treat #1=>top10 as hard arbitrage; treat any top20 leg as contingent-on-features-settlement, not exact. Direction of the overall chain (#1 tightest, top20 loosest) is correct.",
+   "detection": "Three sibling series for the same target year/issue-week: KX1SONG-<tok> (#1), KX10SONG-<tok> (top 10), KX20SONG-<tok> (top 20). Match legs by artist token suffix (e.g. -DRA, -WEE, -ARI) OR yes_sub_title. Each artist present in >=2 of the three series yields an implication edge; artist present in all three yields the full #1=>top10=>top20 chain.",
+   "exactness": "exact",
+   "est": 100,
+   "priority": "high",
+   "example": [
+    "KX1SONG-DEC2626-DRA",
+    "KX10SONG-26-DRA",
+    "KX20SONG-26DEC26-DRA"
+   ],
+   "evidence": "All quotes verbatim from Entertainment.jsonl.gz. #1 (KX1SONG-DEC2626-DRA): \"If Drake has a #1 song on the Billboard Hot 100 (including features), by the Billboard issue for the week of Dec 26, 2026, then the market resolves to Yes.\" top10 (KX10SONG-26-DRA): \"If Drake has a top 10 song on the Billboard Hot 100 (including features)...\" + secondary \"Features are encompassed by the Payout Criterion as long as they are credited by Billboard.\" top20 (KX20SONG-26DEC26-DRA): \"If Drake has a top 20 SINGLE on the Billboard Hot 100 by the Billboard issue for Dec 26, 2026...\" \u2014 no \"including features\", no features clause in secondary. Asymmetry is systematic: series #1 116/116 and top10 112/112 say \"song\"+features; top20 96/96 say \"single\" with 0 features language. Windows match (all cap at the Dec 26 2026 issue). No token collisions (0), no rule omits its subject (0/324).",
+   "detection_sound": true
+  },
+  {
+   "name": "albumunits-domination",
+   "verdict": "CONFIRMED",
+   "board": "entertainment-mentions",
+   "binding": "Direction and condition are correct as proposed; no reversal needed. One wording refinement: domination is WEAK, not strict -- AEU equals Pure Sales when track+streaming equivalents are zero, so \"units strictly dominate\" is slightly overstated. This is immaterial to the arbitrage bound, since weak domination (AEU >= Pure) already yields the exact inequality P(Pure Album Sales > X) <= P(Album Equivalent Units > Y) for every Y <= X on the same album+tracking-week. Detection guard to state explicitly: require EXACT event-token string equality (not prefix), and enforce equiv-threshold Y <= pure-threshold X -- with those two guards the signature selects only genuine same-album/same-week domination pairs (10 paired albums in this dataset: FRE/PRI/DON/WILD/LOS/THI/NOM/CHU/PET/OUT; BLA26SEP03 and WILD26AUG20B correctly yield no instance).",
+   "detection": "Pair KXPUREALBUMS-<evtok> with KXALBUMEQUIV-<evtok> sharing the same event token (album+tracking-week, e.g. FRE26OCT08). Within a shared event, match legs by threshold value (both use strike_type=greater, suffix like -15K). Every threshold present in both, or any pure-threshold X paired with an equiv-threshold Y<=X, is an instance.",
+   "exactness": "exact",
+   "est": 51,
+   "priority": "high",
+   "example": [
+    "KXPUREALBUMS-CHU26AUG13-15K",
+    "KXALBUMEQUIV-CHU26AUG13-15K",
+    "KXPUREALBUMS-FRE26OCT08-30K",
+    "KXALBUMEQUIV-FRE26OCT08-30K"
+   ],
+   "evidence": "Same event token CHU26AUG13, both strike_type=greater, rules differ only in the metric word. KXPUREALBUMS-CHU26AUG13-15K: \"If Chuck Timely & The Hourglass by ROLE MODEL has above 15K Pure Album Sales during the August 07, 2026 - August 13, 2026, tracking week, then the market resolves to Yes.\" KXALBUMEQUIV-CHU26AUG13-15K: \"If Chuck Timely & The Hourglass by ROLE MODEL has above 15K Album Equivalent Units during the August 07, 2026 - August 13, 2026, tracking week, then the market resolves to Yes.\" Identical album/artist/week; only Pure Album Sales vs Album Equivalent Units differs. Confirmed on FRE26OCT08 (Frequency Of Love by Victoria Monet) and WILD26AUG20 (WILD by KATSEYE, same Aug 14-20 week on both legs) as well. By Luminate definition AEU = Pure Sales + track-equivalent + streaming-equivalent (all >=0), so AEU >= Pure Sales for the same album/week deterministically; hence {Pure>X} subset of {AEU>X} subset of {AEU>Y} for Y<=X, giving P(Pure>X) <= P(AEU>Y). The rule text directly supports the claimed binding; both legs are symmetrically silent on geography (no US-vs-global wedge).",
+   "detection_sound": true
+  },
+  {
+   "name": "yt-window-nest",
+   "verdict": "CONFIRMED",
+   "board": "entertainment-mentions",
+   "binding": "Direction and condition are CORRECT as proposed (weekly-YES \u21d2 monthly-YES, same threshold, weekly window \u2286 monthly window). Two mandatory corrections belong to the detection signature, not the binding: (1) The literal template \"KXYTVIEWS-<ART>26SEP / KXYTVIEWSHIGH-<ART>26SEP\" is WRONG \u2014 the monthly ticker's month token is not uniform: 6 artists (TAY/MIC/JUS/DRA/BAD/ARI) use 26SEP but YoungBoy's monthly single is KXYTVIEWS-YOU26AUG (the proposer's own example), so a 26SEP-literal matcher silently drops valid instances. Key instead on the MEASUREMENT period parsed from rules_primary/title (\"August 2026\") + the full artist name (which the rules always spell out) + identical threshold suffix that exists on BOTH ladders. (2) Enforce calendar containment by parsing the weekly window from rules_primary (\"August 3, 2026 - August 9, 2026\") and confirming it lies wholly inside the monthly month; drop AUG02-style and any Aug\u2192Sep trailing weeks. Also: the monthly-single (KXYTVIEWS) and monthly-HIGH (KXYTVIEWSHIGH) same-strike legs are duplicate contracts (identical rules_primary/close/expiration for TAY) \u2014 pick one as the monthly leg, do not count both.",
+   "detection": "'at any point during [period]' YouTube-views markets nest by time containment. Map KXYTVIEWSW-<ART><weekend> (weekly ladder) to KXYTVIEWSHIGH-<ART>26SEP / KXYTVIEWS-<ART>26SEP (monthly). Match by artist token (first 3 chars, e.g. TAY/YOU/MOR) AND identical threshold suffix (e.g. 15.0M). Instance exists when the weekly window is a subset of the monthly window.",
+   "exactness": "exact",
+   "est": 23,
+   "priority": "medium",
+   "example": [
+    "KXYTVIEWSW-TAY26AUG09-15.0M",
+    "KXYTVIEWSHIGH-TAY26SEP-15.0M",
+    "KXYTVIEWSW-YOU26AUG09-8.0M",
+    "KXYTVIEWS-YOU26AUG-8.0M"
+   ],
+   "evidence": "The rule text makes both legs pure \"at-any-point maximum over a period exceeds X\" markets on the identical metric, so the subset-max implication is exact, not correlation. Weekly KXYTVIEWSW-TAY26AUG09-15.0M rules_primary: \"If Taylor Swift has above 15M Global daily views on YouTube at any point during August 3, 2026 - August 9, 2026, then the market resolves to Yes.\" Monthly KXYTVIEWSHIGH-TAY26SEP-15.0M and monthly-single KXYTVIEWS-TAY26SEP-15.0M rules_primary (both identical): \"If Taylor Swift has above 15M Global daily views on YouTube at any point during August 2026, then the market resolves to Yes.\" Both strike_type=greater, yes_sub_title \"Above 15M\", same subject named in-rule, same source (\"Global daily views ... via YouTube Charts ... Global location\"). Since Aug 3-9 \u2286 August, the very day whose value >15M that triggers weekly-YES is itself an August day that triggers monthly-YES; therefore max_week \u2264 max_month and {weekly=YES} \u2286 {monthly=YES}, i.e. P(weekly) \u2264 P(monthly). Direction is correct: shorter window is the antecedent (lower prob), longer window the consequent. Instance is real and tradeable \u2014 15.0M is a strike on BOTH the weekly and monthly TAY ladders; likewise YOU 8.0M appears on weekly KXYTVIEWSW-YOU26AUG09, monthly-single KXYTVIEWS-YOU26AUG, and monthly-HIGH KXYTVIEWSHIGH-YOU26SEP.",
+   "detection_sound": false
+  },
+  {
+   "name": "chart-rank-equality",
+   "verdict": "CONFIRMED",
+   "board": "entertainment-mentions",
+   "binding": "None needed. Equality is symmetric so there is no direction error, and the condition (album ranks #1 on the identical Billboard 200 chart/week) is stated correctly. Scope caveat only: the equality holds for the 14 albums present in BOTH series; the 6 KXTOPALBUM legs with no rank-1 chart partner (menu of 20 is a superset of the 14-album chart series) have no counterparty leg and are correctly not paired.",
+   "detection": "Match KXTOPALBUM-<date>-<tok> (one-hot #1 series) to the rank-1 leg KXBBCHARTPOSITIONALBUM-<date><tok>-1 (per-album rank partition) by shared custom_strike['album'] UUID and identical date token (26AUG15) and close_time. All 14 chart-position rank-1 legs matched a KXTOPALBUM leg by album UUID.",
+   "exactness": "exact",
+   "est": 14,
+   "priority": "medium",
+   "example": [
+    "KXTOPALBUM-26AUG15-THER",
+    "KXBBCHARTPOSITIONALBUM-26AUG15THER-1",
+    "KXTOPALBUM-26AUG15-ICE",
+    "KXBBCHARTPOSITIONALBUM-26AUG15ICE-1"
+   ],
+   "evidence": "Same real-world event, verified in data. KXTOPALBUM-26AUG15-THER rules_primary: \"If THE REAL ME is #1 on the Billboard 200 chart for the Week of Aug 15, 2026, then the market resolves to Yes.\" KXBBCHARTPOSITIONALBUM-26AUG15THER-1 rules_primary: \"If THE REAL ME by Future is ranked #1 on the Billboard 200 chart for the Week of Aug 15, 2026, then the market resolves to Yes.\" Both carry album UUID b42c6d87-82e0-4831-ba31-964b5235a9f2, settlement_source [Billboard, billboard.com], and identical close_time 2026-08-10T03:59:00Z. ICE pair identical (ICEMAN / ICEMAN by Drake, UUID c0c8b4b0-003c-4618-84ed-bcef69de300c). Cross-map: all 14 KXBBCHARTPOSITIONALBUM rank-1 legs matched a KXTOPALBUM leg by album UUID with 0 close-time mismatches and 0 token/UUID misalignments; 0 UUID collisions in KXTOPALBUM (each UUID -> exactly one market). The only per-leg text delta is the chart-position leg appending the musician (\"by Future\"), which is disambiguation, not a different event.",
+   "detection_sound": true
+  },
+  {
+   "name": "rank-position-exclusion",
+   "verdict": "CONFIRMED",
+   "board": "entertainment-mentions",
+   "binding": "No correction needed. Direction and condition are right: it is an upper bound of 1 (subset partition), not an equality and not a lower bound, because a fixed entity may hold neither rank. Distinct from Kalshi's built-in mutually_exclusive flag, which nets one-rank/many-entities WITHIN an event; this family is the transpose (one-entity/many-ranks) spanning distinct events, so it is not a duplicate of the exchange netting.",
+   "detection": "Group sibling rank-slot series that reference the SAME chart+date and share entity leg tokens: base + RUNNERUP [+ THIRD], or GLOBAL + GLOBAL2. Confirmed same-chart groups: {KXNETFLIXRANKMOVIE,KXNETFLIXRANKMOVIERUNNERUP}, {KXNETFLIXRANKMOVIEGLOBAL,KXNETFLIXRANKMOVIEGLOBAL2}, {KXNETFLIXRANKSHOW,KXNETFLIXRANKSHOWRUNNERUP}, {KXTOPARTIST,KXTOPARTISTRUNNERUP,KXTOPARTISTTHIRD}, {KXTOPARTISTUSA,KXTOPARTISTRUNNERUPUSA}, {KXTOPSONGSPOTIFY,KXTOPSONGSPOTIFYRUNNERUP}, {KXTOPALBUMSPOTIFY,KXTOPALBUMSPOTIFYRUNNERUP}. Match entity leg token across the group; each shared entity is one exclusion constraint.",
+   "exactness": "exact",
+   "est": 70,
+   "priority": "medium",
+   "example": [
+    "KXNETFLIXRANKMOVIE-26AUG03-ATO",
+    "KXNETFLIXRANKMOVIERUNNERUP-26AUG03-ATO",
+    "KXTOPARTIST-26B-DRA",
+    "KXTOPARTISTRUNNERUP-26-DRA"
+   ],
+   "evidence": "Rule text binds the prices exactly. KXNETFLIXRANKMOVIE-26AUG03-ATO: \"If A Toxic Love Story is #1 on the Netflix Top 10 US Movie on the chart published on Aug 4, 2026, then the market resolves to Yes.\" KXNETFLIXRANKMOVIERUNNERUP-26AUG03-ATO: \"If A Toxic Love Story is #2 on the Netflix Top 10 US Movie on the chart published on Aug 4, 2026, then the market resolves to Yes.\" Identical entity, chart, scope, and publication date; only the rank slot differs. Same structure verified for Netflix Show US (The Hawk: Season 1 #1/#2), Netflix Movie Global (72 HOURS #1/#2), Spotify Song Global (Golden #1/#2), and Top Artist Global (Drake: \"#1 most streamed Spotify artist in 2026\" / \"#2 ... Spotify's 2026 Spotify Wrapped Top 10 Artist Globally chart\" / \"#3 ...\"). One chart assigns each entity exactly one rank, so the YES outcomes are pairwise disjoint => P(#1)+P(#2)[+P(#3)] <= 1.",
+   "detection_sound": true
+  },
+  {
+   "name": "nominee-slate-cardinality",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "entertainment-mentions",
+   "binding": "Family survives as a one-directional (upper-bound) relation; the proposer's direction is correct but the basis is wrong and needs three fixes. (1) The binding is NOT in the rule text \u2014 each leg is an independent binary with collateral_return_type='' (no MECNET netting), so Kalshi's engine does not bind the sum; the cap is a purely external award-count fact. State it as: at settlement Sigma YES_i = (number of eventual nominees who are LISTED) <= N_cat, with N_cat = official slot count (5 acting/directing; 10 Best Picture for 2027; ~8 Grammy Big-Four for the 69th). (2) Equality holds only if the menu contains every eventual nominee AND there is no nomination tie; ties can push actual nominees to N_cat+1, so N_cat is a soft cap, not a hard one. (3) Only exploitable direction: SELL the whole basket (short every YES / buy every NO) when market Sigma YES > N_cat, profit >= Sigma YES - N_cat, but bearing nomination-tie tail risk; the buy side is not an arb (menu non-exhaustiveness). Detection is sound for selection but requires an externally-maintained, time-varying category->count table and tie handling, so it is a soft one-directional edge, not a rule-enforced riskless arb.",
+   "detection": "Within a single nominee-slate event KXOSCARNOM<CAT>-<yr> or KXGRAMMYNOM<CAT>-<n> (mutually_exclusive=False, collateral_return_type=''), sum the YES prices of all legs. The target constant is the fixed slot count per category (5 for the acting/directing categories, up to 10 for Best Picture).",
+   "exactness": "soft(one-directional-only)",
+   "est": 21,
+   "priority": "low",
+   "example": [
+    "KXOSCARNOMACTO-27",
+    "KXOSCARNOMSUPACTR-27",
+    "KXGRAMMYNOMAOTY-69"
+   ],
+   "evidence": "Per-leg rules are independent binaries with an identical template and NO cross-leg clause: KXOSCARNOMACTO-27-JOH rules_primary = \"If John Malkovich has been nominated for Best Actor at the 99th Academy Awards, then the market resolves to Yes.\" rules_secondary only gives \"The 99th Academy Awards Nominations are expected to be announced in January 2027\" plus a disclaimer \u2014 it never states a nominee count. Event-level fields: KXOSCARNOMACTO-27 mutually_exclusive=False, collateral_return_type='' (29 legs; Best Picture KXOSCARNOMPIC-27 has 43). Decisive contrast in the same file: the WINNER family (e.g. KXOSCARSUPACTR-27) is mutually_exclusive=True, collateral_return_type='MECNET', so Kalshi structurally nets that basket to sum=1. The NOM family has NO such netting \u2014 the sum-to-slot-count relation is NOT enforced by Kalshi settlement rules; it is an external Academy/Grammy nomination-count fact the rule text does not reference or guarantee.",
+   "detection_sound": true
+  },
+  {
+   "name": "mention-subphrase",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "entertainment-mentions",
+   "binding": "Direction and condition are CORRECT as proposed \u2014 no fix needed to the binding itself: P(longer specific phrase said) <= P(shorter whole-word-substring phrase said), same MENTION event. Two detection conditions must be enforced to keep the signature sound on other menus (they happen to hold trivially in this 59-event sample, giving 0 false positives): (1) Match on WHOLE, space-delimited words only, never raw character substrings (already specified by proposer). (2) EXCLUDE any leg whose yes_sub_title contains \"/\" from being treated as a spoken phrase \u2014 those are OR-basket alternate-term legs (e.g., \"Oil / Gas / Gasoline,\" ~200 of them here) where only ONE alternate need be uttered; flattening their slash tokens into a phrase would fabricate a bogus \"subphrase said\" pair with the opposite semantics. (3) Optional completeness fix: because the rules count plural/possessive forms, an exact-token matcher UNDER-counts the true family (e.g., a \"Game\" leg is implied by a \"... Games\" title); to enumerate all real pairs, allow plural/possessive equivalence, not just exact tokens.",
+   "detection": "Within a single KXEARNINGSMENTION<TICKER>-<date> / KX<...>MENTION event (mutually_exclusive=False, all custom strikes), find leg pairs where one yes_sub_title is a whole-word substring of another (e.g. 'Storage' inside 'Memories Storage'). The longer-phrase market implies the shorter-phrase market IF the shorter market counts any occurrence including within the longer phrase.",
+   "exactness": "soft(one-directional-only)",
+   "est": 3,
+   "priority": "low",
+   "example": [
+    "KXEARNINGSMENTIONSNAP-...-Memories Storage",
+    "KXEARNINGSMENTIONSNAP-...-Storage",
+    "KXMRBEASTMENTION-...-Beast Games",
+    "KXMRBEASTMENTION-...-Beast"
+   ],
+   "evidence": "Rule text genuinely binds the two legs of each pair to the SAME utterance. SNAP-STOR rules_primary: \"If Storage is said by any Snap Inc. representative (including the operator of the call) during the next Snap Inc. earnings call (including the Q+A), then the market resolves to Yes.\" SNAP-MEMO rules_primary: \"If Memories Storage is said ... then the market resolves to Yes.\" Both share rules_secondary: \"The exact phrase/word, or a plural or possessive form of the phrase/word, must be used. Grammatical/tense inflections are otherwise not included.\" The word \"Storage\" is a whole, space-delimited word inside \"Memories Storage,\" so uttering the phrase utters the exact word \"Storage\" \u2014 nothing in the rule requires the word be spoken in isolation. The MrBeast pair is identical (BEAS: \"If MrBeast says Beast ...\"; BEASG: \"If MrBeast says Beast Games ...\"), and its payout criterion adds \"Plural nouns occurring within proper nouns and noun phrases (e.g. names, titles, etc) are included,\" which REINFORCES rather than weakens the embedded-word reading. Third confirmed pair: CELH \"Electric Vibe\" => \"Vibe,\" same \"If X is said ... Yes\" template. All three pairs live inside a single mutually_exclusive=False MENTION event, same subject, same call/video, same settlement source \u2014 so no cross-event or unit mismatch.",
+   "detection_sound": true
+  },
+  {
+   "name": "matchup-outcome-split",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "elections-politics",
+   "binding": "P(matchup A v B) >= P(A defeats B) + P(B defeats A), NOT equality. Relation type is sub-additive dominance (parent coarsening >= sum of its finer sub-events), with gap = P(A and B both nominated AND neither A nor B wins the presidency). Enforceable direction: buy matchup YES / sell both outcome YES legs when matchup_ask < outcome_D_bid + outcome_R_bid, guaranteed non-negative at settlement. The opposite direction is not settlement-enforced. Not correlation and not a duplicate \u2014 the combo-subset structure (3-name outcome Combo strictly extending the 2-name matchup Combo with a PRESPERSON winner) genuinely binds the >= inequality via the ruleset, so the family qualifies as a one-directional bound, not as an exact partition.",
+   "detection": "For a *MATCHUP event with leg suffix <S> (e.g. GNEWJVAN) there exist exactly two *OUTCOME legs in the sibling *OUTCOME event with suffix <S>+'D' and <S>+'R'. Scanner: strip trailing party letter from every OUTCOME suffix, group by residue, match to the MATCHUP suffix of the same event date. Equality: matchup price == sum of its two outcome legs.",
+   "exactness": "exact",
+   "est": 16,
+   "priority": "high",
+   "example": [
+    "KXPRESMATCHUP-28NOV07-GNEWJVAN",
+    "KXPRESOUTCOME-28NOV07-GNEWJVAND",
+    "KXPRESOUTCOME-28NOV07-GNEWJVANR"
+   ],
+   "evidence": "MATCHUP KXPRESMATCHUP-28NOV07-GNEWJVAN rules_primary: \"If Gavin Newsom (D) and JD Vance (R) are the nominees for the 2028 presidential election, then the market resolves to Yes.\" custom_strike Combo = \"Gavin Newsom + JD Vance\" (2 components); secondary = Democratic Nominee (PRESNOM) + Republican Nominee (PRESNOM). OUTCOME_D GNEWJVAND rules_primary: \"If Gavin Newsom defeats JD Vance in the 2028 presidential election, then the market resolves to Yes.\" Combo = \"Gavin Newsom + JD Vance + Gavin Newsom\" (3 components); secondary adds Presidential Winner (PRESPERSON). OUTCOME_R GNEWJVANR: \"If JD Vance defeats Gavin Newsom...\" Combo = \"Gavin Newsom + JD Vance + JD Vance\". Each outcome leg is the matchup's exact condition set PLUS one added PRESPERSON win-component => each outcome event is a STRICT SUBSET of the matchup event. Detection verified clean across the full event: 16 matchups, 32 outcomes, every stripped-suffix residue maps to exactly {D,R} with 0 anomalies; combo arity uniformly 2 (matchup) vs 3 (outcome). No matchup suffix ends in D/R, so trailing-letter stripping never over-strips here.",
+   "detection_sound": true
+  },
+  {
+   "name": "exact-outcome-implies-party",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "elections-politics",
+   "binding": "Keep only the party-winner implication; drop the winner-nominee claim; split the two sub-families. (1) State senate: the OUTCOME combo has exactly TWO conjuncts -- GOP Nominee (SENATEPARTYNOM) = the Republican-side name, and General Election Winner (SENATEPARTY) = a PARTY. Sound implications: OUTCOME Yes => base party-winner leg SENATETX-<cycle>-<D|R> for the WINNING PARTY (the price ceiling P(outcome) <= P(party)); AND OUTCOME Yes => the Republican-side named candidate is the GOP nominee, whether that name is in the winner slot (CORTAL/PAXTAL) or the loser slot (TALCOR/TALPAX). Do NOT assert the Democratic-side named candidate is the Democratic nominee -- the senate combo never pins the winning candidate's identity. (2) Presidential is a DIFFERENT, three-conjunct combo (Dem Nominee + Rep Nominee + Presidential Winner (PRESPERSON)); there BOTH named candidates ARE pinned as their party's nominees. These two must not share one detection rule. Pairing: map the OUTCOME event year to the base ELECTION year (senate 27JAN -> SENATETX-26; president 28NOV07 -> KXPRESPARTY-2028), and read the winning party from the custom_strike Combo token (\"... + Democrat\"/\"... + Republican\"), not by inferring party from the winner name-code.",
+   "detection": "*OUTCOME event legs. Presidential: trailing letter D/R of KXPRESOUTCOME suffix => KXPRESPARTY-<year>-<letter>. State senate: KXTXSENOUTCOME-<..>-<WINCODE><LOSECODE> maps by winner's party to base SENATE<ST>-<yy>-<D|R>; also => named winner is the party's Senate nominee and named loser is the other party's nominee. Join base party event by state + cycle.",
+   "exactness": "exact",
+   "est": 40,
+   "priority": "high",
+   "example": [
+    "KXPRESOUTCOME-28NOV07-GNEWJVAND",
+    "KXPRESPARTY-2028-D",
+    "KXTXSENOUTCOME-27JAN-TALPAX",
+    "SENATETX-26-D"
+   ],
+   "evidence": "Core inequality is rule-grounded. Senate OUTCOME KXTXSENOUTCOME-27JAN-TALPAX rules_primary: \"If ALL of the following occur before Jan 2027: GOP Nominee: Ken Paxton, General Election Winner: Democrat, then the market resolves to Yes.\" rules_secondary components: \"GOP Nominee (SENATEPARTYNOM), General Election Winner (SENATEPARTY).\" Base SENATETX-26-D: \"If a representative of the Democratic party is sworn in as a Senator of Texas for the term beginning in 2027, then the market resolves to Yes.\" => the \"General Election Winner: Democrat\" conjunct is a strict sub-condition of \"a Democrat is sworn in,\" so OUTCOME Yes deductively forces base-D Yes, i.e. P(outcome) <= P(party). This is a genuine implication, not correlation. Presidential leg is airtight the same way: KXPRESOUTCOME-28NOV07-GNEWJVAND rules_secondary = \"Democratic Nominee (PRESNOM), Republican Nominee (PRESNOM), Presidential Winner (PRESPERSON)\"; Newsom (Dem) winning the presidency forces KXPRESPARTY-2028-D (\"a representative of the Democratic party is inaugurated as President\"). BUT the proposed nominee half is contradicted by the rules: the senate combo pins ONLY the GOP nominee (the Republican-side name) and the WINNING PARTY, never the Democratic candidate's identity. All 4 senate legs confirm it -- e.g. KXTXSENOUTCOME-27JAN-TALCOR is subtitled \"Talarico defeats Cornyn\" yet rules_primary pins only \"GOP Nominee: John Cornyn, General Election Winner: Democrat\"; \"Talarico\" is never a settlement condition.",
+   "detection_sound": false
+  },
+  {
+   "name": "matchup-implies-both-nominees",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "elections-politics",
+   "binding": "see above",
+   "detection": "*MATCHUP leg suffix decomposes into two candidate codes (GNEW|JVAN). Map each code by name to the presidential nominee events KXPRESNOMD-28 / KXPRESNOMR-28 (or KXPRESPERSON-28). Emit two implications per matchup leg.",
+   "exactness": "soft(one-directional-only)",
+   "est": 32,
+   "priority": "medium",
+   "example": [
+    "KXPRESMATCHUP-28NOV07-GNEWJVAN",
+    "KXPRESNOMD-28-GNEW",
+    "KXPRESNOMR-28-JVAN"
+   ],
+   "evidence": "The binding is a REAL settlement-enforced implication when (and only when) targeted at the nominee events, but the proposer's detection recipe and both example nominee tickers are fabricated.\n\nDECIDING CLAUSES (fetched from Elections.jsonl.gz):\n- KXPRESMATCHUP-28NOV07-GNEWJVAN rules_primary: \"If Gavin Newsom (D) and JD Vance (R) are the nominees for the 2028 presidential election, then the market resolves to Yes.\" rules_secondary: \"This is a combination market requiring ALL specified outcomes to occur... Each component is resolved according to its corresponding Kalshi ruleset: Democratic Nominee (PRESNOM), Republican Nominee (PRESNOM).\"\n- KXPRESNOMD-28-GN rules_primary: \"If Gavin Newsom wins and accepts the nomination for the Presidency for the Democratic party in 2028, then the market resolves to Yes.\"\nSo the matchup market IS the exact conjunction A\u2227B of the two nominee markets \u2192 P(A\u2227B) \u2264 min(P(A),P(B)) holds by settlement logic, not correlation. Two implications per leg, upper-bound (soft/one-directional) \u2014 as claimed.\n\nDETECTION IS BROKEN AS WRITTEN. Candidate codes do NOT agree across events:\n- Matchup vs KXPRESNOMD: Newsom GNEW\u2260GN, Shapiro JSHA\u2260JS, Harris KHAR\u2260KH, Buttigieg PBUT\u2260PB, Beshear ABES\u2260AB (only AOC, JOSS, JTAL coincide).\n- Matchup vs KXPRESNOMR: Vance JVAN\u2260JDV, Rubio MRUB\u2260MR.\n- Both proposer example tickers are NON-EXISTENT: KXPRESNOMD-28-GNEW is really KXPRESNOMD-28-GN; KXPRESNOMR-28-JVAN is really KXPRESNOMR-28-JDV.\n- Code split is not fixed-width: AOC (3 chars) breaks a naive 4+4 split (AOCJVAN, AOCMRUB).\n- Even a raw full-name join fails on punctuation: matchup \"JD Vance\" vs nominee \"J.D. Vance\".",
+   "detection_sound": false
+  },
+  {
+   "name": "control-marginal-sum",
+   "verdict": "CONFIRMED",
+   "board": "elections-politics",
+   "binding": "No correction needed -- direction and conditions are correct as stated (CONTROLH-2028-D = sum of DH legs; CONTROLS-2028-D = sum of DS legs; KXPRESPARTY-2028-D = sum of DP legs; and each single POWER leg <= each of its three component marginals). Exactness is 'exact' in every normal resolvable state. Recommend recording one operational caveat rather than a re-binding: treat the equality as exact only under the shared assumption that each chamber/office resolves to D or R (Kalshi's forced binary partition), and note the Senate marginal's 'control incl. VP tiebreak' scoring so an executor does not mistakenly re-derive POWER's Senate strike by raw seat count in a 50-50 scenario.",
+   "detection": "POWER-<yy> legs have suffix grammar <RH|DH>-<RS|DS>-<RP|DP> (mutex+exhaustive => sum=$1). Parse the three components; sum legs sharing a component and equate to CONTROLH-20<yy>-<D|R>, CONTROLS-20<yy>-<D|R>, KXPRESPARTY-20<yy>-<D|R>. Also each single leg implies its three component marginals.",
+   "exactness": "exact",
+   "est": 4,
+   "priority": "high",
+   "example": [
+    "POWER-28-DH-DS-DP",
+    "CONTROLH-2028-D",
+    "CONTROLS-2028-D",
+    "KXPRESPARTY-2028-D"
+   ],
+   "evidence": "This is a genuine marginalization identity, not correlation. POWER-28 is a complete, mutually-exclusive 2^3 partition over (House,Senate,President) each in {D,R}: verified 8 legs DH-DS-DP ... RH-RS-RP, mutually_exclusive:True, so the 8 legs sum to $1. Each POWER leg carries custom_strike {'House Winner','Senate Winner','President Winner'} (D/R), which robustly confirms the suffix grammar independently of the ticker string. The four DH legs [DH-DS-DP, DH-DS-RP, DH-RS-DP, DH-RS-RP] collectively pay $1 iff House=D, which is exactly CONTROLH-2028-D's event; likewise DS->CONTROLS-2028-D and DP->KXPRESPARTY-2028-D. Deciding rule text, POWER leg: 'If the Democratic party wins the House, the Democratic party wins the Senate, and the Democratic party wins the Presidency in the 2028 election, then the market resolves to Yes.' Marginal CONTROLH-2028-D: 'If the Democratic party has won control of the House in 2028, then the market resolves to Yes.' Because both POWER's House dimension and CONTROLH are forced binary D/R partitions resolved from the same underlying (event settlement_sources = United States Congress / congress.gov; CONTROLH secondary = party of the Speaker on Feb 1, 2029), P(House=D) is the same number both ways -> sum-bound equality binds. Direction/groupings are correct: DH group={legs with House=D}=CONTROLH-D (4 legs), DS group=CONTROLS-D (4 legs), DP group=KXPRESPARTY-D (4 legs). The secondary single-leg-implies-three-marginals bound (e.g. POWER-DH-DS-DP <= min(CONTROLH-D, CONTROLS-D, KXPRESPARTY-D)) is also valid as a one-directional cap. Year normalization POWER-28->2028 is clean; the tri-chamber sweep family only instantiates for the presidential cycle 2028 (CONTROLH/S-2026 exist but have no POWER-26 and no KXPRESPARTY-2026, so no false cross-cycle grouping).",
+   "detection_sound": true
+  },
+  {
+   "name": "removal-implies-impeachment",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "elections-politics",
+   "binding": "Keep the core inequality P(KXTRUMPREMOVE=Yes) <= P(KXIMPEACH-29-JAN20=Yes) as an exact one-directional implication, but tighten the family: (1) the impeach leg MUST have expiration >= the remove leg's expiration \u2014 of the KXIMPEACH universe only KXIMPEACH-29-JAN20 (2029-01-20T15:00Z) qualifies; explicitly exclude KXIMPEACH-26/27/28-* which break it. (2) Detection must match the exact predicate \"the President of the United States has been impeached [and convicted]\" AND same office-scope AND deadline(impeach) >= deadline(remove); the bare \"President of the United States\" phrase match is unsound and admits KXCALLIMPEACHRCONGRESS (call != impeachment), KXIMPEACHCABINET, KXIMPEACHJUDGE. (3) Drop KXAMEND25-29 and the resign/25th-Amendment => leaves-office extension entirely: Section IV does not entail leaving office and no aggregate departure market exists in this data. Residual (non-fatal) settlement-ambiguity: both Trump-titled markets settle on the generic \"President of the United States,\" so an incumbent change could in principle let REMOVE resolve on a successor; the literal texts read consistently on both legs, so this does not create a clean logical break.",
+   "detection": "Pair a 'impeached and removed'/'convicted' series with the matching 'impeached' series for the same subject and horizon. KXTRUMPREMOVE (impeach+convict before Jan20 2029) => KXIMPEACH-29-JAN20 (impeach before Jan20 2029). Match by subject phrase ('President of the United States') + close/expiration horizon. Generalizes to 25th-Amendment/resign => leaves-office where an aggregate departure market exists.",
+   "exactness": "exact",
+   "est": 3,
+   "priority": "medium",
+   "example": [
+    "KXTRUMPREMOVE",
+    "KXIMPEACH-29-JAN20",
+    "KXAMEND25-29"
+   ],
+   "evidence": "KXTRUMPREMOVE rules_primary (exp 2029-01-20T15:00Z): \"If the President of the United States has been impeached and convicted by the U.S. Senate before Jan 20, 2029, then the market resolves to Yes.\" secondary: \"The President must be the sitting President as of the day the Senate votes on conviction.\" KXIMPEACH-29-JAN20 rules_primary (exp 2029-01-20T15:00Z): \"If the President of the United States has been impeached before Jan 20, 2029, then the market resolves to Yes.\" secondary: \"The President must be in office at the time an impeachment resolution passes.\" The deciding clause is that \"impeached\" is a literal conjunct of REMOVE's \"impeached AND convicted,\" and Senate conviction constitutionally requires a prior House impeachment; with identical expiration (2029-01-20T15:00Z) this forces REMOVE=Yes => IMPEACH-29=Yes, i.e. P(remove) <= P(impeach). Rule-bound, not correlation. Contrast: KXIMPEACH (non-29) legs read identically but expire earlier \u2014 KXIMPEACH-28-JAN01: \"...impeached before Jan 1, 2028...\" (exp 2028-01-01); KXCALLIMPEACHRCONGRESS: \"...a Republican member of Congress calls for the impeachment of the President...\" (a call, not an impeachment); KXAMEND25-29: \"...the Vice President (and a majority of the Cabinet...) transmit to Congress a written declaration that the President is unable to discharge the powers...\".",
+   "detection_sound": false
+  },
+  {
+   "name": "pres-vp-nominee-mutex",
+   "verdict": "CONFIRMED",
+   "board": "elections-politics",
+   "binding": "Keep the core: for each party P and each person X in both KXPRESNOM<P>-28 and KXVPRESNOM<P>-28, P(X pres nominee) + P(X VP nominee) <= 1 (settlement-enforced, exact, one-directional/upper-bound). DROP the secondary parenthetical \"a person cannot be presidential nominee of two different parties\" \u2014 that is NOT rule-enforced disjointness (independent per-party clauses impose no cross-party constraint; multi-party/fusion nomination is not forbidden by the rules), it is merely real-world near-impossibility = correlation, not arbitrage. It also has zero instances in the data (D-pres vs R-pres name overlap = empty; Libertarian/Green pres menus overlap neither major party), so it is unsupported and would be a false family if included.",
+   "detection": "For each party P, intersect the person set of KXPRESNOM<P>-28 with KXVPRESNOM<P>-28 by yes_sub_title name; each shared person yields a mutual-exclusion pair. (Similarly a person cannot be presidential nominee of two different parties.)",
+   "exactness": "exact",
+   "est": 80,
+   "priority": "medium",
+   "example": [
+    "KXPRESNOMD-28-GNEW",
+    "KXVPRESNOMD-28-GN",
+    "KXPRESNOMR-28-JDV"
+   ],
+   "evidence": "Same-party pres vs VP legs resolve on disjoint roles. KXPRESNOMD-28-GN: \"If Gavin Newsom wins and accepts the nomination for the Presidency for the Democratic party in 2028, then the market resolves to Yes.\" KXVPRESNOMD-28-GN: \"If Gavin Newsom accepts the nomination for the Vice Presidency for the Democratic party in 2028, then the market resolves to Yes.\" R-side identical (KXPRESNOMR-28-JDV Presidency / KXVPRESNOMR-28-JDV Vice Presidency, Republican). A party ticket lists one person for President and a different person for VP, so a single named person cannot satisfy both clauses in the same cycle -> the two YES events are disjoint -> P(pres)+P(vp) <= 1 (exact upper bound; both can be No when the person is neither, so it is NOT equality). Detection intersections verified: 44 shared persons D-side (46 pres x 45 vp), 21 shared R-side (38 pres x 21 vp), matching the proposer's count.",
+   "detection_sound": true
+  },
+  {
+   "name": "senate-seatcount-control",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "elections-politics",
+   "binding": "Keep only the D-direction, per-leg and cumulative: for each cycle yy, every KXDSENATESEATS-yy (and higher-strike overlay KXDSENATESEATSH-yy) bucket whose Democratic caucus seat count is >=51 implies CONTROLS-20(yy-1)-D; equivalently P(bucket, count>=51) <= P(CONTROLS-D) and P(union of >=51 buckets) <= P(CONTROLS-D). Replace the R-direction: do NOT use \"Dem <=49 => CONTROLS-R\" (false complement). Use the symmetric Republican count series instead: RSENATESEATS-yy bucket with Republican caucus count >=51 implies CONTROLS-20(yy-1)-R. Exclude the 50-seat leg in both series (VP tiebreak makes control undefined from seat count). Cycle key: seat-suffix yy maps to election year 20(yy-1), not 20yy.",
+   "detection": "KXDSENATESEATS-<yy>-<E51|E50...> count buckets vs CONTROLS-20<yy>-D. The >=51 leg (and 'Above' legs) imply CONTROLS-D; the <=49 legs imply CONTROLS-R. Match by cycle.",
+   "exactness": "needs-rule-check",
+   "est": 4,
+   "priority": "low",
+   "example": [
+    "KXDSENATESEATS-29-E51",
+    "CONTROLS-2028-D",
+    "KXDSENATESEATS-27-51"
+   ],
+   "evidence": "Seat-count leg (KXDSENATESEATS-29-E51, verified via gz + API): rules_primary = \"If the Democratic party has exactly 51 Senate seats on Feb 1, 2029, then the market resolves to Yes.\" floor_strike=cap_strike=51, strike_type=between -> E51 is EXACTLY 51, not >=51 as the proposal states. Counting convention (KXDSENATESEATS-27-49 rules_secondary, the authoritative series definition): \"Individuals caucusing with either party will be included with them (e.g. an Independent who caucuses with a party, like Vermont Senator Bernie Sanders who caucuses with the Democrats, would be counted as a Democrat).\" -> caucus-based count. Control leg (CONTROLS-2028-D rules_secondary): \"victory will be determined by the party identification of the President pro tempore of the Senate on February 1, 2029.\" Cycle map confirmed from titles/subtitles: KXDSENATESEATS-29 = \"On Feb 1, 2029\" (2028 election) -> CONTROLS-2028; KXDSENATESEATS-27 = Feb 1, 2027 (2026 election) -> CONTROLS-2026, i.e. yy -> 20(yy-1). A parallel Republican count series RSENATESEATS-yy exists (RSENATESEATS-27-E51: \"If the Republican party has exactly 51 Senate seats...\"), and a higher-strike overlay event KXDSENATESEATSH-27 exists with OVERLAPPING, non-mutually-exclusive strikes vs KXDSENATESEATS-27.",
+   "detection_sound": false
+  },
+  {
+   "name": "severity-nested-count",
+   "verdict": "CONFIRMED",
+   "board": "science-climate-companies",
+   "binding": "Direction and condition are correct as proposed (stricter/major count <= looser/total count => P(stricter>N) <= P(looser>N); implication / price-ceiling on the stricter YES leg, not equality). Add one load-bearing detection constraint the spec only implies: the two legs must share the SAME settlement_sources string in addition to same basin + byte-identical window \u2014 required for the \"exact\" claim, since a strict subset over DIFFERENT agencies could in principle disagree on a borderline classification. In this data all four legs satisfy it (Atlantic pair = NOAA NHC; EPAC pair = \"NWS or equivalent\", identical on both legs), so the family is exact and tradeable at N in {4,5,6,7} (Atlantic) and {5,6,7,8} (EPAC).",
+   "detection": "Same count subject with nested category definitions over identical region+window. Scanner: group count-ladder events (strike_type 'greater', 'Above N') whose rules differ only by a severity qualifier \u2014 Atlantic KXHURCTOTMAJ ('category 3 or above') vs KXHURCTOT ('category 1 or above'); KXHURRICANE-<basin>MAJ vs KXHURRICANE-<basin>TOT; KXNAMEDSTORM-<basin> vs KXHURRICANE-<basin> ('named storm' superset of 'hurricane'). Match on basin+DEC01 date, then pair legs sharing the same integer strike N.",
+   "exactness": "exact",
+   "est": 15,
+   "priority": "high",
+   "example": [
+    "KXHURCTOTMAJ-26DEC01-T4",
+    "KXHURCTOT-26DEC01-T4",
+    "KXHURRICANE-26DEC01EPACMAJ-5",
+    "KXHURRICANE-26DEC01EPACTOT-5"
+   ],
+   "evidence": "Deciding clauses differ by exactly one token \u2014 the Saffir-Simpson floor \u2014 over an otherwise byte-identical region+window+source. Atlantic KXHURCTOTMAJ-26DEC01-T4: \"the NOAA's National Hurricane Center records more than 4 hurricanes of hurricane category 3 or above between January 1, 2026 and December 01, 2026, then the market resolves to Yes.\" vs KXHURCTOT-26DEC01-T4: \"...more than 4 hurricanes of hurricane category 1 or above between January 1, 2026 and December 01, 2026...\". EPAC KXHURRICANE-26DEC01EPACMAJ-5: \"more than 5 hurricanes of category 3 or above occur in the Eastern Pacific between May 15, 2026 and December 01, 2026 as confirmed by the National Weather Service or equivalent\" vs EPACTOT-5: \"...category 1 or above...\". Same NOAA NHC source on both legs. A category-3+ hurricane is definitionally a category-1+ hurricane counted in the same catalog, so #(cat3+) <= #(cat1+) in every settlement state; hence {major>N} subset of {total>N} for the same N, giving P(major>N) <= P(total>N). Confirmed strike overlap: Atlantic MAJ{0-7} \u2229 TOT{4,5,6,7,8,9,10,12,15}={4,5,6,7}; EPAC MAJ{3-8} \u2229 TOT{5-13}={5,6,7,8} \u2014 non-empty tradeable pairs. Named-storm superset (KXNAMEDSTORM) is exact but has zero integer-N overlap with KXHURRICANE (namedstorm-EPAC grid {16,17,18,19,20,22,24,26} vs hurricane-EPAC {5-13}), matching the proposer's \"grids rarely overlap\" caveat.",
+   "detection_sound": true
+  },
+  {
+   "name": "xhorizon-deadline",
+   "verdict": "NEEDS-RULE-CHECK",
+   "board": "science-climate-companies",
+   "binding": "Direction is correct (earlier deadline implies later deadline). Two required detector fixes. (a) Pair legs by SUBJECT string (yes_sub_title / custom_strike.Geography), not by ticker suffix: verified 3/16 Ebola legs carry different suffix codes for the identical subject (Canada CANA/CAN, Republic of the Congo RCON/DOC, Somalia SOM/SOMA), which a suffix-keyed matcher silently drops. (b) For \"after Issuance\" variants, additionally require open_time(later-deadline leg) <= open_time(earlier-deadline leg); then P(event in (open1,D1]) <= P(event in (open2,D2]) is exact. The unqualified \"exact\" claim holds unconditionally only for the no-lower-bound variant (LASTEXAM); the \"after Issuance\" variant (EBOLA) is exact only conditional on issuance order.",
+   "detection": "Two events under the SAME series_ticker whose markets are cumulative achievement clauses ('...before <date>' / 'reported before <date>' / 'achieves ... before <date>'), that share leg-suffix semantics (same threshold code or same subject code) and differ only in the deadline horizon encoded in the event_ticker. Scanner: for each series, find event pairs with >=2 identical leg suffixes where rules_primary contains 'before' and the only varying token is the date; pair matching legs; earlier-deadline leg implies later-deadline leg. Distinct from within-event L-deadline (this spans two event_tickers).",
+   "exactness": "exact",
+   "est": 22,
+   "priority": "high",
+   "example": [
+    "KXLASTEXAM-26DEC31-T60",
+    "KXLASTEXAM-27DEC31-T60",
+    "KXEBOLACOUNTRY-OCT26-USA",
+    "KXEBOLACOUNTRY-27-USA"
+   ],
+   "evidence": "KXLASTEXAM-26DEC31-T60: \"If any language model achieves an accuracy of at least 60% on Humanity's Last Exam before Dec 31, 2026, then the market resolves to Yes.\" KXLASTEXAM-27DEC31-T60: identical except \"before Dec 31, 2027.\" Latching best-ever score, no lower time bound; 2026 window strictly nested in 2027 window (both close year-end) => exact, unconditional implication. KXEBOLACOUNTRY-OCT26-USA: \"If a confirmed human case of Ebola disease in United States is officially reported before Oct 1, 2026, then the market resolves to Yes\" (open_time 2026-07-01). KXEBOLACOUNTRY-27-USA: \"...is officially reported AFTER ISSUANCE and before Jan 1, 2027...\" (open_time 2026-05-16). Latching once-reported; realized nesting holds only because the wider-deadline leg opened EARLIER (May 16 < Jul 1). Subject is embedded verbatim in rules_primary and both are mutually_exclusive=False leg-by-leg binaries.",
+   "detection_sound": false
+  },
+  {
+   "name": "first-of-set-membership",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "science-climate-companies",
+   "binding": "Direction and condition as proposed are correct: P(FIRST_X Yes) <= P(NAMES_X Yes) for matched storm X, same basin+window. Correct only the \"exactness\" claim: this is an exactly-enforced ONE-DIRECTIONAL implication (deterministic, rule-bound, no basis risk), NOT an equivalence -- do not treat it as prices-must-be-equal. Tradeable signal fires only when price(FIRST_X Yes) > price(NAMES_X Yes): sell/short FIRST_X Yes and buy NAMES_X Yes (equivalently buy FIRST_X No cheaper than the NAMES_X No it dominates), collecting the spread with non-negative settlement payoff net of fees. Detection should confirm equality of custom_strike.storm (not merely the 3-letter suffix) plus basin + window + the ME=True/ME=False pairing to guarantee the matched subject.",
+   "detection": "A 'which will be the first ...' partition event (ME=True, custom legs) paired with a 'which ... will be a ...' membership event (ME=False, same custom legs) under sibling series over the same universe+window. Scanner: match KXFIRSTHURRICANE-<window><basin>-<NAME> to KXHURRICANENAMES-<window><basin>-<NAME> on the 3-letter storm-name suffix + basin.",
+   "exactness": "exact",
+   "est": 21,
+   "priority": "medium",
+   "example": [
+    "KXFIRSTHURRICANE-26DEC01ATL-ART",
+    "KXHURRICANENAMES-26DEC01ATL-ART",
+    "KXFIRSTHURRICANE-26DEC01ATL-BER",
+    "KXHURRICANENAMES-26DEC01ATL-BER"
+   ],
+   "evidence": "Matched subject X = storm (identical custom_strike.storm across both series). NAMES leg KXHURRICANENAMES-26DEC01ATL-ART rules_primary: \"If a storm named Arthur is a storm categorized as a hurricane in the Atlantic between May 15, 2026 and December 01, 2026, then the market resolves to Yes.\" FIRST leg KXFIRSTHURRICANE-26DEC01ATL-ART rules_primary: \"If a storm named Arthur is the first storm categorized as a hurricane in the Atlantic between May 15, 2026 and December 01, 2026, then the market resolves to Yes.\" (BER/Bertha identical wording.) FIRST secondary: \"This market resolves Yes for the first named storm categorized as a hurricane... If there is no storm categorized as a hurricane... then all markets resolve to No.\" Same subject, basin, window (May 15 -> Dec 01, 2026), and categorization standard; FIRST only adds \"the first,\" which entails \"a.\" So FIRST_X=Yes => NAMES_X=Yes => P(FIRST_X) <= P(NAMES_X). Structural: both ATL events carry the identical 21-leg menu; custom_strike.storm matches on every 3-letter suffix (ART->Arthur ... WIL->William), zero mismatches; FIRST ME=True (partition) vs NAMES ME=False (membership); FIRST exists only for 26DEC01ATL while NAMES also covers EPAC/CPAC (no FIRST pair), so the basin-matched scanner cannot misfire on Pacific legs.",
+   "detection_sound": true
+  },
+  {
+   "name": "stage-precedence",
+   "verdict": "CONFIRMED",
+   "board": "science-climate-companies",
+   "binding": "No correction to direction \u2014 P(approve<D) <= P(submit<D) is correct, and it is a strict one-directional implication, NOT an iff (submission Yes does not force approval Yes: a drug can be submitted but not yet approved or outright rejected). This resolves the proposer's exactness \"needs-rule-check\": it is one-directional. One refinement to the binding/detection: generalize \"same D\" to D_submit >= D_approve, since approve<D_a implies submit<any D_s>=D_a. Under strict exact-D matching only 1 pair exists (CMPS Jan 1, 2027); under the correct D_submit>=D_approve rule, CMPS yields 3 pairs and the scanner should not discard (approve<Mar1'27, submit<Apr1'27). Detection notes: both legs are \"P(event before calendar date)\" \u2014 identical unit, no unit-mismatch trap; sponsor+drug token match (NTLA/LONV, CMPS/360) with the KXNEWDRUGAPP vs KXNEWDRUGAPPLICATION variant handled; the generic KXFDAAPPROVALPSYCHEDELIC-27 (\"any psychedelic before 2027\") carries no drug token and is correctly excluded \u2014 it belongs to a separate disjunction family, not this pairwise one; KXNEWDRUGAPPBEAM-RIST is submission-only (no approval ladder) and correctly yields no pair. Family is genuine regulatory stage-precedence, not correlation, not backwards, not a duplicate \u2014 QUALIFIES.",
+   "detection": "Pair an approval-deadline ladder series with a submission-deadline ladder series for the SAME drug: KXFDAAPPROVALDATE<SPONSOR>-<DRUG> vs KXNEWDRUGAPP(LICATION)<SPONSOR>-<DRUG>. Scanner matches on sponsor+drug tokens in series/event tickers and rules_primary drug name; approval-before-D leg implies submission-before-D leg (approval is procedurally impossible without a prior filing).",
+   "exactness": "needs-rule-check",
+   "est": 4,
+   "priority": "medium",
+   "example": [
+    "KXFDAAPPROVALDATENTLA-LONV-27JUL01",
+    "KXNEWDRUGAPPNTLA-LONV-26SEP01",
+    "KXFDAAPPROVALDATECMPS-360",
+    "KXNEWDRUGAPPLICATIONCMPS-360"
+   ],
+   "evidence": "The rule text forces the implication. Approval leg (KXFDAAPPROVALDATECMPS-360-27JAN01): \"If the FDA approves COMP360 Psilocybin for Treatment-Resistant Depression for marketing before Jan 1, 2027, then the market resolves to Yes.\" Submission leg (KXNEWDRUGAPPLICATIONCMPS-360-27JAN01): \"If COMPASS Pathways plc submits a NDA for COMP360 psilocybin to the FDA before Jan 1, 2027, then the market resolves to Yes.\" The clause \"approves ... for marketing\" is legally impossible without a prior submitted NDA/BLA, and submission must chronologically precede approval, so approve-before-D=Yes forces submit-before-D=Yes. Same drug confirmed by both legs naming \"COMP360 psilocybin\" (and, for the other pair, \"Lonvoguran Ziclumeran (lonvo-z)\"). Deciding binding: P(approve<D) <= P(submit<D). rules_secondary is empty on all legs \u2014 no hidden overriding condition. Settlement sources are FDA + sponsor for both legs, consistent.",
+   "detection_sound": true
+  },
+  {
+   "name": "spot-implies-cumulative",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "science-climate-companies",
+   "binding": "Binding direction is correct (spot <= cumulative), but must be stated polarity-symmetrically and gated. RISE family: P(settle > X on date D0) <= P(settle > X on some market day by D), for D0 in [Issuance, D]. FALL family (KXWTIWHEN-65): P(settle < X on D0) <= P(settle < X on some market day by D). Required match conditions for the implication to actually hold, ALL necessary: (1) identical strike X exactly (round WHEN grid 100/65 matches only the round DIRY grid, e.g. T100; it does NOT match the fine .99/.49/.50 daily grids); (2) identical settlement source/measurement -- both must be ICE front-month settle; a Pyth 1-min-candlestick spot leg (KXWTIH/KXWTI15M) must NOT be paired with an ICE-settle WHEN leg; (3) same crossing sense (above<->rise-above WHEN, below<->fall-below WHEN); (4) on date D0 the spot leg's referenced contract equals the front month (so its settle equals WHEN's front-month settle -- true for near-dated markets and for DIRY/WHEN on Dec 31); (5) D0 within the cumulative window [Issuance, D]. Under all five it is a genuine settlement-forced implication, not correlation.",
+   "detection": "Pair a snapshot-threshold market ('above X on <D0>', rules say 'on') with a cumulative first-passage market on the same underlying ('above X on any market day before <D>', rules say 'any market day'/'before'), matched on identical strike X and D0 <= D. Commodities: KX<COM>D / KX<COM>DIRY (spot) vs KX<COM>WHEN (cumulative). Compute: KXH100W/KXH100MON (spot 'on date') vs KXH100MAX ('by Dec 31').",
+   "exactness": "soft(one-directional-only)",
+   "est": 6,
+   "priority": "medium",
+   "example": [
+    "KXWTI-26AUG0414-T77.49",
+    "KXWTIWHEN-100-26AUG31",
+    "KXH100W-26AUG07-2.76",
+    "KXH100MAX-26DEC31-2.780"
+   ],
+   "evidence": "Cumulative leg KXWTIWHEN-100-26DEC31 rules_primary: \"If ICE reports that the WTI front-month settle price is above $100 on any market day between Issuance and Dec 31, 2026, then the market resolves to Yes.\" Matching spot leg KXWTIDIRY-26DEC31H1430-T100 rules_primary: \"If the settlement price of WTI Crude Oil on December 31, 2026 at 02:30 PM EST is above 100 USD/Bbl, then the market resolves to Yes.\" (ICE WTI daily settle window ends 14:30 ET, so DIRY's \"02:30 PM\" value IS the front-month settle for that day.) Because Dec 31 is a market day inside [Issuance, Dec 31], DIRY>100 forces WHEN=Yes -> P(spot on D0) <= P(ever by D>=D0). One-directional: WHEN=Yes does NOT imply DIRY=Yes (oil can touch 100 in Oct and settle below 100 on Dec 31). The proposer's HEADLINE example does not bind: KXWTI-26AUG0414-T77.49 rules_primary \"If the daily settlement price for WTI crude oil(September 2026 contract) on August 04, 2026 is above 77.49 USD/Bbl...\" carries strike 77.49, not the WHEN strike 100 -- different X, no implication. WHEN-65 (\"...front-month settle price is below $65 on any market day...\") is a fall-below passage, opposite polarity to an \"above X\" spot leg. Source split confirmed in data: KXWTI/KXWTIW/KXWTIDIRY/KXWTIWHEN = ICE settle; KXWTIH/KXWTI15M = \"Pyth - WTI\" 1-minute candlestick.",
+   "detection_sound": false
+  },
+  {
+   "name": "hierarchical-winner",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "science-climate-companies",
+   "binding": "Two DIFFERENT monotonicities are wrongly glued under one 'fine entity <= coarse parent' formula. (1) Granularity leg is correct as written: P(KXTOPMODEL-<claudeModel> is unique top model) <= P(KXLLM1-A Anthropic is top org). Keep. (2) Universe-restriction leg must be FLIPPED. The all-firms market KXLLM1 is the ANTECEDENT (lower probability) and the Chinese-only market KXCHINAAI is the CONSEQUENT (higher probability): correct binding is P(KXLLM1-26AUG31-<co>) <= P(KXCHINAAI-26AUG31-<co>), i.e. top-overall => top-among-Chinese, for co in {ALI/ALIB=Alibaba, MOON=Moonshot, etc.} whose HQ is mainland China. The proposal's entity->parent code map (ALIB treated as child of ALI, feeding the generic formula) yields the reverse and is refuted by the ordinary 'Chinese firm leads all Chinese firms without leading the world' outcome. Also note: detection SELECTS the right paired tickers (shared leaderboard URL + identical 10:00 AM ET snapshot + company code map is a tight signature that avoids the boilerplate/unit-mismatch/non-exhaustive-menu traps \u2014 the coarse legs KXLLM1-A and KXLLM1-ALI both exist), so it is not accidental grouping; the defect is a wrong-direction binding on the restricted-universe axis, which must be corrected before use.",
+   "detection": "Pair a fine-grained 'top' partition with a coarser 'top' partition derived from the SAME ranking metric and timestamp: model-level KXTOPMODEL-<date>-<claudeModel> implies company-level KXLLM1-<date>-A (Anthropic); restricted-universe KXCHINAAI-<date>-<co> is won by KXLLM1-<date>-<co> whenever that Chinese company is top overall. Scanner matches on identical date suffix + entity->parent code map (ALI/ALIB=Alibaba, MOON=Moonshot; claude-*=A).",
+   "exactness": "needs-rule-check",
+   "est": 8,
+   "priority": "medium",
+   "example": [
+    "KXTOPMODEL-26AUG31-CLAU5",
+    "KXLLM1-26AUG31-A",
+    "KXCHINAAI-26AUG31-ALIB",
+    "KXLLM1-26AUG31-ALI"
+   ],
+   "evidence": "All three series settle off the SAME LMArena source \u2014 settlement_sources.url = \"https://arena.ai/leaderboard/text/overall-no-style-control\" for KXTOPMODEL, KXLLM1, and KXCHINAAI (this REFUTES the proposer's 'KXLLM1 source unstated/may differ' worry). Rule texts: KXTOPMODEL-26AUG31-CLAU5 = \"If claude-opus-5-high is the top-ranked AI model on Aug 31, 2026 at 10:00 AM ET, then the market resolves to Yes.\" (its whole menu is claude-* models). KXLLM1-26AUG31-A = \"If Anthropic has the top-ranked LLM on Aug 31, 2026, then the market resolves to Yes.\" KXLLM1-26AUG31-ALI = \"If Alibaba has the top-ranked LLM on Aug 31, 2026, then the market resolves to Yes.\" KXCHINAAI-26AUG31-ALIB = \"If Alibaba is the Highest Ranked Chinese AI Company model on Arena AI Text Score (Remove Style Control) on Aug 31, 2026 at 10:00am ET, then the market resolves to Yes.\" + rules_secondary: \"Qualifying Chinese AI companies are defined as a company whose global or primary operational headquarters is located in mainland China.\" Identical tie-break ladder (Rank UB > Arena Score > votes > earlier release) appears in KXTOPMODEL and KXLLM1. So the settlement genuinely binds: same metric, same 10:00 AM ET snapshot, subset/superset winner logic \u2014 not mere correlation.",
+   "detection_sound": true
+  },
+  {
+   "name": "subperiod-count-nesting",
+   "verdict": "ONE-DIRECTIONAL",
+   "board": "science-climate-companies",
+   "binding": "Binding as stated is directionally CORRECT and exact: P(count in sub-window > N) <= P(count in containing window > N), for identical subject AND identical threshold N, both legs strict-greater. Correction is to the instances, not the direction: valid pairs require the SAME N in both events. The four example tickers (Aug-10 vs 26B-120, Aug-15 vs 26B-140) are invalid \u2014 they pair different thresholds positionally and imply nothing. A genuine tradeable instance would need an overlapping strike (e.g. an \"Above 12\" in both a monthly and the annual event), which does not exist in this snapshot because monthly grids (~10-18) and annual grids (~120-210) never intersect.",
+   "detection": "Same count series with two events whose windows nest (month inside year): KXSPACEXCOUNT-26AUG (Aug 2026) inside KXSPACEXCOUNT-26B (full 2026). Scanner: same series, rules windows where one date-range is a subset of the other, pair legs on identical strike N.",
+   "exactness": "soft(one-directional-only)",
+   "est": 1,
+   "priority": "low",
+   "example": [
+    "KXSPACEXCOUNT-26AUG-10",
+    "KXSPACEXCOUNT-26B-120",
+    "KXSPACEXCOUNT-26AUG-15",
+    "KXSPACEXCOUNT-26B-140"
+   ],
+   "evidence": "Fetched rules_primary from Science_and_Technology.jsonl.gz. KXSPACEXCOUNT-26AUG-10: \"If SpaceX has more than 10 launches in Aug 2026, then the market resolves to Yes.\" KXSPACEXCOUNT-26AUG-15: \"If SpaceX has more than 15 launches in Aug 2026...\" KXSPACEXCOUNT-26B-120: \"If SpaceX has more than 120 launches in 2026, then the market resolves to Yes.\" KXSPACEXCOUNT-26B-140: \"If SpaceX has more than 140 launches in 2026...\" Same subject (SpaceX launches), same source (26B rules_secondary cites FAA), both strike_type=greater (strict >). Window nesting confirmed by rules AND close_time: 26AUG closes 2026-09-01, 26B closes 2027-01-01 (Aug 2026 strictly inside CY2026).",
+   "detection_sound": false
+  },
+  {
+   "name": "class-membership-subset",
+   "verdict": "CONFIRMED",
+   "board": "science-climate-companies",
+   "binding": "Binding is correct as stated for the two coincident-window pairs, but the guarded form is: P(member M before D) <= P(aggregator ANY-of-class before D) HOLDS iff (1) close/deadline windows coincide exactly (only the -27JAN01 legs qualify; later-dated legs are supersets and do not bind), AND (2) M's active pharmaceutical ingredient has NOT been FDA-approved via NDA/BLA prior to the aggregator's Issuance, AND (3) M's qualifying approval mechanism is an NDA/BLA (not an ANDA/351(k) new-indication path the aggregator's 'NDA or BLA' scope excludes). Conditions (2)-(3) are satisfied by MDMA and COMP360 psilocybin, so both cited pairs confirm. The proposed detection signature (class-keyword containment) is UNSOUND without adding a window-equality guard and a novelty/NDA-BLA-mechanism guard; a bare keyword scanner would false-positive on later-dated legs and on members covering already-approved psychedelics (e.g. an esketamine/Spravato-style new-indication market). Logic is the same implication TYPE as the S-semantic geography aggregator family \u2014 genuinely novel only in the drug-class novelty carve-out, which geography aggregators lack.",
+   "detection": "Aggregator event whose rules say 'approves ANY <class> ... before <date>' paired with member events 'approves <specific drug in class> ... before <date>'. Scanner: detect aggregator markets with 'any <keyword>' in rules, then link member markets whose drug is in that class over the same window. (This is the S-semantic subset mechanism generalized from geography to drug classes via a class-keyword containment rule.)",
+   "exactness": "needs-rule-check",
+   "est": 2,
+   "priority": "low",
+   "example": [
+    "KXFDAAPPROVALPSYCHEDELIC-27",
+    "KXFDAAPPROVE-MDMA-27JAN01",
+    "KXFDAAPPROVALDATECMPS-360"
+   ],
+   "evidence": "Aggregator KXFDAAPPROVALPSYCHEDELIC-27-ANYPSYCH rules_primary: \"If the FDA approves any psychedelic substance for medical use for marketing before Jan 1, 2027, then the market resolves to Yes.\" Secondary: \"Psychedelic drugs include: LSD, Psilocybin, DMT, Mescaline, MDMA, MDA, ...\" \u2014 MDMA and Psilocybin are explicitly enumerated as qualifying. Member KXFDAAPPROVE-MDMA-27JAN01 rules_primary: \"If the FDA approves midomafetamine / MDMA for PTSD for marketing before Jan 1, 2027, then the market resolves to Yes.\" Member KXFDAAPPROVALDATECMPS-360-27JAN01 rules_primary: \"If the FDA approves COMP360 Psilocybin for Treatment-Resistant Depression for marketing before Jan 1, 2027, then the market resolves to Yes.\" All three close 2027-01-01T04:59:00Z (windows coincide). So member Yes (specific novel psychedelic, specific indication, same deadline) logically forces aggregator Yes: P(member) <= P(aggregator). Direction is correct; it is a hard settlement subset, not correlation.",
+   "detection_sound": false
+  }
+ ],
+ "rejected": [
+  {
+   "name": "count-subset-tail-dominance",
+   "why": "Top link (changes >= cuts) breaks pathwise, and the FOSD direction is not just wrong but indeterminate. State A: 2026's only action is one 50bp cut at a regular meeting -> changes=1 (one decision), cuts=2 (two 25bp units), emergency=0. Here cuts(2) > changes(1). Take the degenerate distribution where this is certain: P(cuts>=2)=1 but P(changes>=2)=0, so the claimed P(changes>=k) >= P(cuts>=k) becomes 0>=1, FALSE \u2014 changes does NOT stochastically dominate cuts. State B (opposite): one 25bp hike, no cuts -> changes=1, cuts=0, so changes>cuts. Since the ordering flips with the state, the settlement rules force NO FOSD in either direction between changes and cuts; there is no arbitrage on that pair. Only the lower link survives: every 25bp emergency-meeting cut increment is also a 2026 cut increment, so cuts_total(w) >= emergency(w) in every settlement state -> P(cuts>=k) >= P(emergency>=k) is genuinely rule-forced and tradeable (YES on emergency-tail implies YES on cuts-tail; sum of emergency legs T_k.. <= sum of cuts legs T_k..). Secondary defect: FEDCHGCOUNT says only 'before 2027' with no explicit Jan-1-2026 start bound, a possible window mismatch, but the unit mismatch alone is fatal so this is not load-bearing."
+  },
+  {
+   "name": "primary-victory-nominee",
+   "why": "Concrete settlement state (SC GOP Senate special, in-data, Aug 11 2026): crowded field, round 1 = Norman 40%, Fry 28%, rest split; no one clears the majority threshold, so a runoff is triggered (KXSCRSENSOUTRIGHT resolves No). Round-1 derivatives: KXPRIMARYPLACE-SCRSENS26-1-RNOR resolves YES (Norman 1st in round 1) and KXPRIMARYMOV-SCRSENS26DNOR-RNOR-P55 (>=10% round-1 margin, 40-28=12%) resolves YES. Runoff (Aug 25): Fry wins. Nominee/winner KXSCRSENS-26-RNOR resolves NO. Result: derivative Yes while nominee No => the claimed implication price(deriv) <= price(nominee) is violated; buying deriv-Yes cheap and nominee-No is NOT an arbitrage lock, it just loses. A trader who is long nominee-No and long PLACE-1st-Yes on Norman is fully exposed, not hedged. For routes (a)/(c) no settlement state guarantees the lock in any runoff/majority jurisdiction (SC here; also LA, and top-two/jungle systems). Route (b) has NO such break: >=50% forces an outright win (KXSCRSENSOUTRIGHT logic), hence nominee. The only residual route-(b) exposures are (i) top-two/jungle primaries (AK KXVOTEPRIMARY-KXAKSENADVANCE 'ADVANCE', WA top-two) where >=50% confers no party nomination and no nominee market exists to join \u2014 but current AK legs are labeled <50% so the '>=50%' detection filter happens to exclude them \u2014 and (ii) win-then-withdraw/die/replaced before certification. Both rare/structural, unlike routes (a)/(c) which break on an ordinary runoff."
+  },
+  {
+   "name": "primary-place-antinominee",
+   "why": "Both-YES settlement state exists, so the claimed P(C k-th)+P(C nominee) <= 1 is not rule-enforced and an over-$1 price pair is not risklessly arbitrageable. Concrete state: candidate A finishes certified 1st, C finishes certified 2nd -> place-2 leg for C resolves YES. After certification but before the nomination is formalized, A dies/withdraws/is DQ'd; the Florida Republican Executive Committee names C (the runner-up) as the replacement nominee -> nominee leg for C resolves YES. Now P(C 2nd)+P(C nominee)=2>1. Feasible in the real data because the nominee market stays open to 2026-11-03, months after the primary certification that already settled the place leg. The nominee leg's empty rules_secondary and its \"wins the nomination\" trigger (not \"finishes 1st\") admit this path. Ties/proportional resolution do not save exactness either; the anti-nominee link is a plurality convention, not a settlement identity."
+  },
+  {
+   "name": "seatcount-vs-district-winners",
+   "why": "Two independent breaks. (1) DIRECTION: the claimed \"E0(Yes) => every district -R resolves Yes\" is false. E0 only says 0 Democrats; the other seats need not all be Republican. Concrete state: TN elects 8 Republicans and one district's winner dies before seating, leaving that seat vacant at term start. WINSTATE counts 0 Democrats (rules_secondary: vacant/unfilled seats are not counted as won), so E0 = Yes; but that district's -R leg resolves No (no Republican is \"sworn in\"), and -D also No. The R-implication breaks. Same break with a third-party/independent winner (the series structurally lists such candidates), where -R = No while Dems stay at 0. (2) MEAN IDENTITY is unrealizable on every listed instance: replicating the realized seat count S requires holding k units of each singleton bucket E_k, but the top bucket is \"Above 2\" (flat $1 for S in {3..9}), so S>=3 cannot be replicated; FL additionally has an open \"Below 4\" bucket. Every one of the 6 live menus is open-ended, so the \"sum of D-race prices = sum_k k*P(k)\" arbitrage binds ZERO real instances. Coverage also fails outright for UT (1/4) and FL (26/28), so the district portfolio cannot even be assembled there."
+  },
+  {
+   "name": "intraday-implies-dailyhigh",
+   "why": "Two concrete settlement states break it with ZERO rule violation. (1) HARD, Chicago Aug 3 2026: The Weather Company reports KORD (O'Hare) 4 PM = 84.0\u00b0F, so KXTEMPCHIH-26AUG0316-T83.99 (\">83.99\", i.e. >=84) resolves YES; the NWS Climatological Report for Chicago MIDWAY (KMDW) posts a daily max of 83\u00b0F, so the daily \"max>=84\" composite (KXHIGHCHI-...-T83 bin) resolves NO. Different stations ~15 mi apart, no rule links them \u2014 intraday-YES coexists with daily-below-threshold. (2) SOFT, NYC same station: TWC reports KNYC 4 PM = 80\u00b0F, so KXTEMPNYCH-26AUG0316-T79.99 resolves YES; the NWS official Central Park Climatological daily max is 79\u00b0F after its own QC/rounding, so the daily \"max>=80\" composite resolves NO. The intraday rules_secondary itself concedes TWC values carry \"rounding and conversion differences from the final reported value,\" so a 1\u00b0F TWC-vs-NWS disagreement straddling the traded cut point is anticipated and rule-permitted, not an anomaly. Because the \"max dominates any single reading\" inequality is a property of ONE measurement series and these legs are always settled by two independent authorities, no joint-settlement lock exists \u2014 the family is breakable on every city, hardest on Chicago."
+  }
+ ]
+}
