@@ -157,28 +157,60 @@ FAMILY_NOTES: dict[str, dict] = {
             "runner-up's, so a positive margin exists only if the subject won."
         ),
         "failure_modes": (
-            "MOV settles on the election result; House/Senate winner markets settle on "
-            "the party of the member sworn in.",
-            "Death, resignation, disqualification or refusal to serve between election "
-            "and oath, followed by a special election won by the other party.",
-            "Fusion voting: the party credited with the win may differ from the formal "
-            "party membership of the person sworn in.",
+            "The margin contract resolves on the certified election result; the winner "
+            "contract resolves on the party of the member sworn in. Any path that "
+            "separates those two facts breaks the implication.",
+            "The certified winner changes party registration before the oath and is "
+            "sworn in as an independent or as the other party. This needs no vacancy "
+            "and no special election, which makes it the cheapest counterexample.",
+            "Death, resignation, disqualification or refusal to serve between "
+            "certification and oath, followed by a special election won by the other "
+            "party.",
+            "Fusion voting: the party credited with the electoral win and the formal "
+            "party membership of the person sworn in need not be the same. Still open "
+            "-- deciding it needs the series glossary, which the contract text does not "
+            "contain.",
         ),
-        "exactness": "needs-rule-check",
-        "mitigation": (
-            "House winner markets carry an accelerated-determination clause on media "
-            "consensus, which closes most of the election-to-oath window. Senate series "
-            "state early close *following the swearing in*, so the window stays open."
+        "exactness": "broken",
+        "review": (
+            "Two independent reviewers returned BROKEN on 2026-08-02, both quoting the "
+            "contracts' different named resolution events, and both passed the "
+            "calibration anchors. Estimated 1e-4 to 1e-3 per pair per cycle. The "
+            "relation still holds in almost every state, but 'almost every' is not what "
+            "a lock means, so packages built on it carry an unhedged tail rather than a "
+            "floor."
+        ),
+        "timing": (
+            "Early-close behaviour is per winner-series, not per chamber, and the "
+            "difference is large. HOUSE{ST}{N} closes on the swearing in (TX-34 is in "
+            "this family). KXHOUSERACE carries no early-close condition at all on any "
+            "of its 704 legs and relies on media-consensus accelerated determination. "
+            "The margin leg closes on publication of certified results. A package can "
+            "therefore have its legs settle weeks apart, and which weeks depends on "
+            "which winner-series the district happens to use."
         ),
     },
     "semantic_subset": {
         "pattern": "specific acquisition => any acquisition, matched deadlines",
-        "basis": "One event's resolution condition is a strict subset of the other's.",
-        "failure_modes": (
-            "Verb mismatch across contracts ('acquires' vs 'gains control of').",
-            "Deadline mismatch of even one day breaks the nesting.",
+        "basis": (
+            "Both contracts define the operative test in identical words -- the "
+            "territory 'must come under formal governance or jurisdiction of the United "
+            "States, either as a state, territory, or other classification within the "
+            "US system, where it was not previously' -- and both exclude leases with "
+            "the same sentence about a military base on leased territory. The headline "
+            "verbs differ ('acquires' vs 'gains control of') but neither carries "
+            "independent weight: the payout criterion is the same operative clause."
         ),
-        "exactness": "needs-rule-check",
+        "failure_modes": (
+            "Deadline mismatch of even one day breaks the nesting. Verified identical "
+            "to the second for the Greenland pair.",
+        ),
+        "exactness": "exact",
+        "review": (
+            "Two independent reviewers returned EXACT on 2026-08-02. The verb-mismatch "
+            "concern this repo previously recorded is resolved by the contract text and "
+            "has been withdrawn."
+        ),
     },
     "combination_marginal": {
         "pattern": "P(A and B) + P(not-A and B) = P(B) over a 2x2 combination event",
@@ -210,12 +242,29 @@ FAMILY_NOTES: dict[str, dict] = {
         "pattern": "resign => leaves office; convict => leaves office",
         "basis": "Specific exit routes are subsets of leaving office.",
         "failure_modes": (
-            "Resignation and conviction are not mutually exclusive: the Senate may try "
-            "an official after departure, so a NO/NO basket on both routes has a state "
-            "in which both legs lose.",
-            "Death is excluded from some 'leaves office' contracts and handled by a "
-            "special last-price rule.",
+            "Conviction and departure are not the same instant. The removal contract "
+            "requires the subject to be sitting on the day the Senate votes, but the "
+            "contract text does not say when conviction becomes effective removal, so "
+            "there may be a window in which removal resolves Yes while the office is "
+            "not yet vacated.",
+            "Death is excluded from the 'leaves office' contract and settled at the "
+            "last traded price, or by committee determination of fair allocation. The "
+            "long leg's payoff is therefore undefined in that state rather than zero.",
+            "The route contracts and the departure contract express their deadlines "
+            "differently ('before his term ends' vs 'before January 20, 2029'), and a "
+            "resignation on the final day may satisfy one and not the other.",
         ),
         "exactness": "needs-rule-check",
+        "review": (
+            "Reviewers split on 2026-08-02: one returned BROKEN, the other "
+            "NEEDS-RULE-CHECK. Both passed the calibration anchors, so the "
+            "disagreement is substantive rather than a quality signal, and it is "
+            "recorded here unresolved. Settling it requires three documents the audit "
+            "pack did not contain: the full KXTRUMPREMOVE definition and its primary "
+            "settlement source establishing when conviction becomes effective removal; "
+            "the exact expiration timestamps and time zones of the resignation and "
+            "departure contracts; and the complete death-allocation provision. Until "
+            "those are read, this family must not be treated as a floor."
+        ),
     },
 }

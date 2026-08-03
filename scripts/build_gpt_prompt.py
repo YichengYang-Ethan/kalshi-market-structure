@@ -46,6 +46,12 @@ explanation about undiscovered quotes that the data then refuted. Do not re-deri
 these, and do not repeat them. If you believe any conclusion in those documents is
 wrong, say so explicitly and give your reasoning — that is more valuable than agreement.
 
+If the connector cannot reach that repository — it is private and was created recently,
+so it may not be inside your authorised scope — say so in one line and proceed anyway.
+Everything required to adjudicate is inlined below; the repository supplies context and
+prior corrections, not evidence. Do not stall, and do not substitute recalled knowledge
+of the repo's contents for having read it.
+
 STEP 2 — note what is deliberately absent.
 
 No market data is committed to that repository, because Kalshi's terms prohibit
