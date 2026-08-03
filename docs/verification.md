@@ -1,7 +1,7 @@
 # Verification manifest
 
 Every count this repository asserts, and the public API call that reproduces it. No
-authentication is required for any of these. Snapshot taken 2026-08-02T20:52Z; counts
+authentication is required for any of these. Snapshot taken 2026-08-03T19:41:45Z; counts
 drift as Kalshi lists and settles markets, so reproduce the *method*, not the digits —
 a mismatch of a few percent on a later date is expected, a mismatch of a category is not.
 
