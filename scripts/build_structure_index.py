@@ -82,12 +82,41 @@ for e in iter_all_events():
             "can_close_early": int(bool(m.get("can_close_early"))),
         })
 
-for name, data in (("events_index", rows), ("markets_index", mrows)):
-    path = os.path.join(OUT_DIR, f"{name}.csv.gz")
-    with gzip.open(path, "wt", newline="") as f:
+def write_csv(path, data, compress):
+    opener = (lambda: gzip.open(path, "wt", newline="")) if compress else (lambda: open(path, "w", newline=""))
+    with opener() as f:
         w = csv.DictWriter(f, fieldnames=list(data[0].keys()))
         w.writeheader(); w.writerows(data)
-    print(f"wrote {path}  {len(data):,} rows  {os.path.getsize(path)/1e6:.1f} MB")
+    print(f"wrote {path}  {len(data):,} rows  {os.path.getsize(path)/1e6:.2f} MB")
+
+
+# Every published format is written here, in one pass, from the same rows. An earlier
+# version wrote only gzip and the plain CSV was produced by hand; when the classifier
+# changed, the two diverged and the plain file kept serving the previous run's labels.
+write_csv(os.path.join(OUT_DIR, "events_index.csv.gz"), rows, True)
+write_csv(os.path.join(OUT_DIR, "events_index.csv"), rows, False)
+write_csv(os.path.join(OUT_DIR, "markets_index.csv.gz"), mrows, True)
+
+series_agg = {}
+for m in mrows:
+    a = series_agg.setdefault(m["series_ticker"], dict(
+        series_ticker=m["series_ticker"], n_markets=0, n_active=0, n_ever_traded=0,
+        n_traded_24h=0, n_two_sided=0, _tpl=set()))
+    a["n_markets"] += 1
+    a["n_active"] += int(m["status"] == "active")
+    a["n_ever_traded"] += m["ever_traded"]
+    a["n_traded_24h"] += m["traded_24h"]
+    a["n_two_sided"] += m["two_sided"]
+    a["_tpl"].add(m["template"])
+roll = []
+for tk in sorted(series_agg):
+    a = series_agg[tk]
+    a["templates"] = "|".join(sorted(a.pop("_tpl")))
+    roll.append(a)
+write_csv(os.path.join(OUT_DIR, "series_rollup.csv"), roll, False)
+
+for name, data in ():
+    pass
 
 readme = """# data/
 

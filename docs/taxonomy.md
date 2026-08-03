@@ -86,12 +86,12 @@ differs for 44 events whose ladders have all but one rung finalised.
 
 | Template | Events | Leg grammar | Structural constraint it supports |
 | --- | --- | --- | --- |
-| `entity_menu` | 4,073 | one leg per candidate/person/team/option | sum-to-one when mutex **and** exhaustive |
-| `threshold` | 2,959 | "N+ pts", "Above $X", "X or above" | nesting: higher level implies lower |
-| `binary` | 1,142 | single yes/no proposition | none internally; cross-event only |
-| `deadline` | 219 | "Before \<date\>" | nesting: earlier deadline implies later |
+| `entity_menu` | 4,087 | one leg per candidate/person/team/option | sum-to-one when mutex **and** exhaustive |
+| `threshold` | 2,961 | "N+ pts", "Above $X", "X or above" | nesting: higher level implies lower |
+| `binary` | 1,098 | single yes/no proposition | none internally; cross-event only |
+| `deadline` | 245 | "Before \<date\>" | nesting: earlier deadline implies later |
 | `bucket` | 69 | "A to B" ranges tiling a line | sum-to-one when tiled |
-| `combination` | 16 | conjunction of two base outcomes | marginal identities against the bases |
+| `combination` | 18 | conjunction of two base outcomes | marginal identities against the bases |
 
 Template mix differs sharply by category — Mentions is 100% `entity_menu`, Crypto is
 dominated by `bucket`/`threshold`, Politics is unusually `binary`-heavy (233 of 493) —

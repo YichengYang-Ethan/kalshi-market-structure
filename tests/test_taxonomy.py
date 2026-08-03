@@ -160,3 +160,31 @@ def test_buy_all_requires_explicit_exhaustiveness():
     for grade, expect_edge in (("explicit", True), ("implicit", False), ("none", False)):
         p = Partition(legs=("A", "B"), tiled=True, basis="test", exhaustiveness=grade)
         assert (p.evaluate_buy_all(q) is not None) is expect_edge
+
+
+def test_published_index_formats_agree():
+    """Every published format must come from the same run.
+
+    The plain CSV was once produced by hand from the gzip file; when the classifier
+    changed, the two diverged and the plain file kept serving the previous run's labels
+    for as long as nobody compared them.
+    """
+    import csv, gzip
+    from collections import Counter
+    root = os.path.join(os.path.dirname(__file__), "..", "data")
+    if not os.path.exists(os.path.join(root, "events_index.csv")):
+        return  # index not built in this checkout
+    with open(os.path.join(root, "events_index.csv")) as f:
+        plain = [dict(r) for r in csv.DictReader(f)]
+    with gzip.open(os.path.join(root, "events_index.csv.gz"), "rt") as f:
+        packed = [dict(r) for r in csv.DictReader(f)]
+    assert plain == packed
+
+    with gzip.open(os.path.join(root, "markets_index.csv.gz"), "rt") as f:
+        markets = [dict(r) for r in csv.DictReader(f)]
+    with open(os.path.join(root, "series_rollup.csv")) as f:
+        roll = [dict(r) for r in csv.DictReader(f)]
+    assert sum(int(r["n_markets"]) for r in roll) == len(markets)
+    # The truthiness bug made this exactly 100%; it must never be 100% again by accident.
+    two_sided = sum(int(r["n_two_sided"]) for r in roll)
+    assert 0 < two_sided < len(markets)
