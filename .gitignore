@@ -7,6 +7,7 @@
 snapshots/
 *.csv
 !data/*.csv.gz
+!data/*.csv
 !docs/**/*.csv
 
 # Secrets
