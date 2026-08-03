@@ -1,10 +1,12 @@
 # Market data is NOT redistributable under Kalshi's terms — never commit it.
-data/
+# The one exception is data/, which holds identifiers and derived classifications with
+# every price, size, volume and rule text stripped; see data/README.md.
 *.jsonl
 *.jsonl.gz
 *.parquet
 snapshots/
 *.csv
+!data/*.csv.gz
 !docs/**/*.csv
 
 # Secrets

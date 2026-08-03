@@ -73,6 +73,7 @@ src/kalshi_structure/
   history.py               Candlestick / trade-tape collection with checkpointing
 scripts/                   Analysis entry points (profile, inventory, classification)
 tests/                     Regression tests for every parser grammar that once failed
+data/                      Structure index: identifiers + derived classifications only
 ```
 
 ## Method
@@ -98,6 +99,11 @@ Kalshi's terms prohibit redistribution of exchange data. **No market data is com
 to this repository** — `.gitignore` excludes all data formats, and snapshots live outside
 the working tree. What is committed: code, schemas, documented structure, and analysis
 conclusions expressed in aggregate.
+
+`data/` carries the one publishable slice: every event and market identifier with the
+template, partition and activity classifications this repository derives, and with every
+price, size, volume and contract text stripped. Those classifications are inferences and
+are the most likely thing here to be wrong, which is why they are published in full.
 
 This is also why [verification.md](docs/verification.md) publishes assertions and the
 calls that regenerate them rather than the corpus itself. Handing a reviewer the data
