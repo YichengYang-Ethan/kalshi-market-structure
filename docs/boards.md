@@ -1,10 +1,15 @@
 # Every board, compared
 
 > **Scope.** Every figure here describes the events that were *open* at the
-> 2026-08-02 snapshot. Roughly 100,000+ settled events exist and none are included,
-> so nothing below is a statement about the exchange's history. Crypto alone has
-> settled over 43,000 events against 108 open ones — a board can look small here and
-> be among the most active by turnover.
+> 2026-08-02 snapshot: **8,478 of the 524,710** this exchange has listed. A full
+> crawl of `status=settled` on 2026-08-03 returned **516,232** distinct events over
+> 2,582 pages, so the open surface is **1.6%** of the whole and nothing below is a
+> statement about the exchange's history.
+>
+> The ratio is wildly uneven by board. Crypto shows 108 open events here and has
+> settled **219,237** — a 2,030:1 ratio, because its ladders roll hourly. Sports is
+> 226,858 settled against 3,920 open, 58:1. Politics is 2,570 against 493, 5:1. A
+> board that looks small on the open surface can be the most active on the venue.
 
 Each API category has been inventoried with the same pipeline used for Elections +
 Politics: union universe, contract-template classification, activity flags, fee surface,

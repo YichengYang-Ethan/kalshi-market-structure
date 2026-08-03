@@ -30,8 +30,9 @@ structure itself makes possible. Concretely:
 
 A census of the exchange's **open surface** on 2026-08-02 — 8,478 open events, 73,964
 open markets, 12,370 series — followed by roughly 120,000 executable constraint checks.
-Settled events are not included and vastly outnumber open ones, so nothing below is a
-statement about the exchange's history:
+Settled events are excluded: a full crawl found **516,232** of them, so this census
+covers **1.6%** of everything the exchange has listed and nothing below is a statement
+about its history:
 
 - **The constraints scanned held almost everywhere on that surface.** Crypto and
   Financials produced zero violations across ~90,600 checks. Sports produced two, both
