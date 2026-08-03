@@ -75,14 +75,26 @@ ANCHOR-EXACT — threshold-ladder nesting inside one event.
   Established EXACT: both legs are generated from the same template over the same
   subject and share all postponement and void language, so no rule mismatch is possible.
 
-ANCHOR-BROKEN — buy-all-YES on KXGREENLANDPRICE-29JAN21.
-  Legs run "$0 / No Acquisition", then "$1 billion to $9 billion", then "$10 billion to
-  $99 billion". Established BROKEN as an exhaustive partition: an acquisition settling
-  at $500 million pays no leg, so the legs do not sum to one despite the event being
-  mutually exclusive. Note the arithmetic here is identical to a quantised ladder such
-  as GDP growth (0.1%-0.5%, then 0.6%-1.0%) which IS exhaustive because the statistic is
-  published to one decimal place. The difference lives only in the contract text.
+ANCHOR-BROKEN — buy-all-YES on a soccer correct-score grid, e.g.
+KXBRASILEIROSCORE-26AUG09FLAVIT (30 legs, mutually_exclusive true).
+  Legs enumerate scorelines up to 5 goals per side but cover only 17 of the 36 cells in
+  the 0-5 x 0-5 grid: 4-4, 5-3, 5-4, 5-5, 3-5 and 4-5 are absent, and no scoreline of 6
+  or more goals is listed at all. Established BROKEN as an exhaustive partition: a 4-4
+  draw pays no leg, so the legs cannot sum to one despite the event being mutually
+  exclusive. Mutual exclusivity bounds the sum from above and says nothing about
+  whether any leg must pay.
 """
+
+# A note on how this anchor was chosen, because the first one was wrong. The original
+# ANCHOR-BROKEN used KXGREENLANDPRICE, on the reasoning that a $9.5B acquisition falls
+# between the "$1B to $9B" and "$10B to $99B" legs. Its rules_secondary says "Values are
+# rounded to the nearest $1 billion USD", so $9.5B rounds into a listed bucket and the
+# partition is exhaustive after all. The anchor asserted a verdict that the contract text
+# contradicts -- and because an anchor tells the reviewer the answer, it corrupts the
+# calibration it exists to provide. Two lessons are now enforced above: an anchor must
+# quote the contract text that decides it, and the same rule that applies to reviewers
+# (never assert a settlement fact without the clause in hand) applies to whoever writes
+# the pack.
 
 INSTRUCTIONS = """\
 YOUR TASK — adjudicate each relation family below on settlement logic alone.

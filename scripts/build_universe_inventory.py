@@ -10,9 +10,11 @@ dead surface before any research uses it.
 Writes CSV (portable, diffable) plus a JSON summary. Output goes to the data directory,
 never into the repository.
 """
+import argparse
 import csv
 import json
 import os
+import re
 import sys
 from collections import Counter, defaultdict
 
@@ -21,7 +23,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from kalshi_structure.taxonomy import classify_event, partition_is_tiled, quantisation_evidence
 from kalshi_structure.universe import DEFAULT_DATA, build, load_series
 
-OUT_DIR = os.path.join(DEFAULT_DATA, "elections_politics")
+def slug(categories):
+    return "_".join(re.sub(r"[^a-z0-9]+", "", c.lower()) for c in sorted(categories))
 
 
 def fnum(x) -> float:
@@ -40,9 +43,21 @@ def price(x):
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--categories", nargs="+", default=["Elections", "Politics"],
+                    help="API category values; the universe is the union of "
+                         "event.category and series.category over these")
+    ap.add_argument("--out", default=None)
+    args = ap.parse_args()
+    categories = args.categories
+    global OUT_DIR
+    OUT_DIR = args.out or os.path.join(DEFAULT_DATA, slug(categories))
     os.makedirs(OUT_DIR, exist_ok=True)
     series = load_series()
-    events = build()
+    events = build(categories=categories)
+    if not events:
+        print(f"no events for {categories}")
+        return
 
     ev_rows, mk_rows = [], []
     tpl_counts = Counter()

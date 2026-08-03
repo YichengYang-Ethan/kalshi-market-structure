@@ -59,6 +59,7 @@ docs/
   data-model.md            Series / event / market object model and field semantics
   fee-model.md             Verified fee formulas, per-series overrides, collateral netting
   settlement-patterns.md   Contract-template grammar and the constraint grammar it implies
+  boards.md                Every API category compared on the same measurements
   universe-inventory.md    Elections + Politics universe and its traded surface
   classification.md        The research taxonomy and its coverage
   categories/*.md          Per-category structural profile

@@ -87,13 +87,19 @@ exhaustiveness, and most menus are not exhaustive:
 - **Truncated grids.** The soccer correct-score grid stops at 5 goals per side and omits
   4-4, 5-3, 5-4, 5-5 and everything above; the implication to the 1X2 market runs one
   way only.
-- **Genuine holes.** `KXGREENLANDPRICE-29JAN21` jumps from "$0 / No Acquisition" to
-  "$1 billion to $9 billion" — a $500M acquisition pays nothing.
+- **Genuine holes.** A soccer correct-score grid such as `KXBRASILEIROSCORE-26AUG09FLAVIT`
+  lists 30 legs covering 17 of the 36 cells in the 0-5 x 0-5 scoreline grid, and nothing
+  above 5 goals. A 4-4 draw pays no leg. This is the cleanest non-exhaustive partition on
+  the exchange because the omission is in the enumeration, with no gap arithmetic to
+  misread.
 - **Quantum gaps that are not holes.** `KXGDPYEAR` jumps from "0.1% to 0.5%" to
   "0.6% to 1.0%", but GDP is published to one decimal place and `rules_secondary` says
-  the bounds are inclusive, so nothing can land in between.
+  the bounds are inclusive, so nothing can land in between. `KXGREENLANDPRICE` looks like
+  a hole for the same reason and is not one: it rounds values to the nearest billion.
 
-The last two are arithmetically identical. See
+Gap arithmetic cannot separate the last two cases — only the contract text can, and this
+repository got `KXGREENLANDPRICE` wrong for several passes by trusting the arithmetic.
+See
 [taxonomy.md](taxonomy.md#exhaustiveness-cannot-be-decided-by-arithmetic) for why the
 structural check is necessary but never sufficient, and how an earlier tolerance bug in
 this repo manufactured a false finding about Economics.

@@ -98,26 +98,35 @@ separately.
 A mutually exclusive partition only supports a sum-to-one constraint if its legs are
 collectively exhaustive. Checking that structurally is subtler than it looks.
 
-| Category | Gaps consistent with a quantum | Genuine gaps |
-| --- | --- | --- |
-| Crypto | 31 | 0 |
-| Economics | 18 | 2 |
-| Financials | 8 | 0 |
-| Elections | 2 | 1 |
-| Climate and Weather | 2 | 0 |
-| Politics | 1 | 3 |
-| Commodities | 1 | 0 |
+| Category | Tiled | `explicit` | `implicit` | `none` |
+| --- | ---: | ---: | ---: | ---: |
+| Crypto | 31 | 0 | 31 | 0 |
+| Economics | 18 | 13 | 5 | 0 |
+| Financials | 8 | 0 | 6 | 2 |
+| Elections | 2 | 0 | 2 | 0 |
+| Climate and Weather | 2 | 0 | 0 | 2 |
+| Commodities | 1 | 1 | 0 | 0 |
+| Politics | 1 | 0 | 0 | 1 |
+
+Only 14 partitions on the whole exchange carry an explicit guarantee; see
+[boards.md](boards.md#exhaustiveness-graded).
 
 Kalshi writes **closed** ranges against a **quantised** underlying. `KXGDPYEAR` lists
 "0.1% to 0.5%" and then "0.6% to 1.0%"; the 0.1 gap is not a hole, because
 `rules_secondary` says *"All stated bounds are inclusive"* and the statistic is
 published to one decimal place. Nothing can land between the buckets.
 
-Now compare `KXGREENLANDPRICE-29JAN21`: "$1 billion to $9 billion" followed by
-"$10 billion to $99 billion". **Identical gap structure, opposite meaning** — an
-acquisition can settle at $9.5B and no leg pays.
+The trap is that this cannot be checked by looking at the numbers. `KXGREENLANDPRICE`
+looks like the same construction — "$1 billion to $9 billion" then "$10 billion to $99
+billion" — and this repository initially recorded it as a partition with a hole, on the
+reasoning that a $9.5B acquisition falls between the buckets. **That was wrong.** Its
+`rules_secondary` says *"Values are rounded to the nearest $1 billion USD"*, so $9.5B
+rounds into a listed bucket, and a separate sentence assigns the no-acquisition case to
+the `$0` leg. The partition is exhaustive. The error survived several passes because the
+gap arithmetic looked decisive and nobody re-read the clause.
 
-The two cases are arithmetically indistinguishable. Any purely numeric tiling test must
+Two ladders with identical gap structure can differ in exhaustiveness, and the numbers
+never say which is which. Any purely numeric tiling test must
 therefore either accept both or reject both, and which way it errs is decided by an
 arbitrary tolerance. An early version of this repo's checker used a tolerance relative
 to the *index level*, which made the verdict depend on the magnitude of the underlying
@@ -133,7 +142,7 @@ The working rule is therefore split in two:
    relative to bucket width, not index level, which also accommodates the segmented tick
    sizes crypto ladders use within a single event (1e-5 in the low range, 1e-4 in the
    high range).
-2. `quantisation_evidence()` — the **sufficient** condition, found only in the contract
+2. `exhaustiveness_evidence()` — grades the **sufficient** condition, found only in the contract
    text: a sentence like *"rounded to one decimal place"* or *"all stated bounds are
    inclusive"*. Without it, only `sum(P) <= 1` may be used, never `== 1`.
 

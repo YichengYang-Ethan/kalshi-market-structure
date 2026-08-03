@@ -179,11 +179,13 @@ def partition_is_tiled(event: dict, tol: float = 1e-9) -> bool:
     because the statistic is published to one decimal place — so a small consistent gap
     is the quantum of the underlying, not a hole.
 
-    **This is not sufficient.** Arithmetic cannot separate a quantum from a settlement
-    hole: '$1B to $9B' followed by '$10B to $99B' has the same shape as the GDP ladder,
-    but an acquisition can settle at $9.5B and no leg pays. Call
-    :func:`quantisation_evidence` and read the contract text before relying on
-    exhaustiveness; without it, only ``sum(P) <= 1`` is supported, never ``== 1``.
+    **This is not sufficient**, for two independent reasons. Arithmetic cannot separate a
+    reporting quantum from a settlement hole, and a partition can also fail to be
+    exhaustive without any numeric gap at all -- a truncated grid simply stops listing
+    outcomes (a soccer correct-score event lists 17 of 36 scorelines and nothing above 5
+    goals, so a 4-4 draw pays no leg). Call :func:`exhaustiveness_evidence` and read the
+    contract text before relying on exhaustiveness; without it, only ``sum(P) <= 1`` is
+    supported, never ``== 1``.
 
     The gap bound is relative to bucket width rather than to the index level. An
     absolute or level-relative tolerance makes the verdict depend on the magnitude of
@@ -235,11 +237,12 @@ _RE_QUANTISATION = re.compile(
 def quantisation_evidence(event: dict) -> str | None:
     """Return the rule sentence that justifies treating gaps as a quantum, if any.
 
-    Arithmetic cannot distinguish a quantised underlying from a settlement hole: a
-    ladder of '$1B to $9B' then '$10B to $99B' and one of '0.1% to 0.5%' then
-    '0.6% to 1.0%' have identical gap structure, but an acquisition can settle at
-    $9.5B (no leg pays) while GDP growth cannot land between 0.5% and 0.6% because it
-    is published to one decimal place.
+    Arithmetic alone cannot decide whether a gap is a reporting quantum or a settlement
+    hole; the underlying's publication precision does, and that lives in the contract
+    text. GDP growth cannot land between 0.5% and 0.6% because it is published to one
+    decimal place, and an acquisition price cannot land between two billion-dollar
+    buckets because the contract rounds it to the nearest billion -- neither fact is
+    visible in the numbers.
 
     ``partition_is_tiled`` therefore establishes only that the gaps are *consistent*.
     A basket constraint that depends on exhaustiveness additionally requires this
@@ -253,6 +256,65 @@ def quantisation_evidence(event: dict) -> str | None:
                 start = max(0, hit.start() - 90)
                 return text[start:hit.end() + 90].strip()
     return None
+
+
+def _written_precision(subtitle: str | None) -> float | None:
+    """Smallest unit implied by how a bucket bound is written: 349.9999 -> 1e-4."""
+    if not subtitle:
+        return None
+    nums = re.findall(r"\d+\.(\d+)", subtitle)
+    if nums:
+        return 10.0 ** -max(len(d) for d in nums)
+    return 1.0 if re.search(r"\d", subtitle) else None
+
+
+def exhaustiveness_evidence(event: dict, tol: float = 1e-9) -> str:
+    """Grade the case that a tiled partition is genuinely collectively exhaustive.
+
+    Returns one of:
+
+    ``explicit``  the contract text states the reporting precision or that bounds are
+                  inclusive. Safe to use for a sum-to-one constraint.
+    ``implicit``  no such sentence, but every gap equals the precision to which the
+                  bounds are *written* and the buckets are equal width, which is what a
+                  ladder generated over a quantised feed looks like. Suggestive, not
+                  sufficient.
+    ``none``      neither. Only ``sum(P) <= 1`` is supported.
+
+    The distinction matters because ``implicit`` infers the underlying's precision from
+    how the bounds happen to be written, which is a weaker claim than reading it. Crypto
+    range ladders grade ``implicit``: bounds to four decimals, 1e-4 gaps, uniform width,
+    matching the index they settle against. That is almost certainly exhaustive, but the
+    contract never says so, and a ladder whose feed carries more precision than its
+    bounds suggest would look identical.
+
+    Note that neither grade addresses a partition that is simply truncated. A soccer
+    correct-score grid has no numeric gap to measure -- it stops enumerating -- so
+    exhaustiveness there is a question about coverage of the outcome space, not about
+    quantisation.
+    """
+    if quantisation_evidence(event):
+        return "explicit"
+    legs = [m for m in event.get("markets", []) if m.get("status") == "active"]
+    rngs, precisions = [], []
+    for m in legs:
+        sub = m.get("yes_sub_title")
+        r = parse_bucket(sub)
+        if r is None:
+            continue
+        rngs.append(r)
+        p = _written_precision(sub)
+        if p is not None:
+            precisions.append(p)
+    if len(rngs) < 2 or not precisions:
+        return "none"
+    rngs.sort()
+    widths = [round(hi - lo, 9) for lo, hi in rngs]
+    gaps = [round(lo2 - hi1, 9) for (_, hi1), (lo2, _) in zip(rngs, rngs[1:])]
+    if not gaps or len(set(widths)) != 1:
+        return "none"
+    q = min(precisions)
+    return "implicit" if all(abs(g - q) <= tol or abs(g) <= tol for g in gaps) else "none"
 
 
 # --- Ticker grammar ----------------------------------------------------------------
