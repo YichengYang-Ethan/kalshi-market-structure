@@ -4,8 +4,10 @@ Structure index for the 2026-08-02 census: identifiers and derived classificatio
 
 | File | Rows | Contents |
 | --- | ---: | --- |
-| `events_index.csv.gz` | 8,478 | one row per open event |
+| `events_index.csv` | 8,478 | one row per open event, plain CSV |
+| `events_index.csv.gz` | 8,478 | the same rows, gzip |
 | `markets_index.csv.gz` | 73,964 | one row per market |
+| `series_rollup.csv` | 3,083 | per-series counts aggregated from the market index |
 
 **No market data is here.** No prices, no sizes, no volumes, no open interest, no
 contract text — those belong to the exchange and its terms bar redistribution. What is

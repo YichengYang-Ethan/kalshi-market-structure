@@ -127,13 +127,27 @@ class Partition:
     def supports_sum_to_one(self) -> bool:
         return self.tiled and self.exhaustiveness == "explicit"
 
+    def _covers(self, quotes: Sequence[Quote]) -> bool:
+        """The quotes must be exactly this partition's legs, once each.
+
+        Neither evaluator previously compared quote tickers against ``legs``. A three-leg
+        partition priced with only two quotes returned an $0.80 edge, and a two-leg
+        partition priced with the same leg twice returned $0.60 — both packages pay zero
+        in states the partition covers. A basket's payoff is a claim about the whole
+        outcome space, so a subset of it prices nothing.
+        """
+        tickers = [q.ticker for q in quotes]
+        return len(tickers) == len(set(tickers)) == len(self.legs) and set(tickers) == set(self.legs)
+
     def evaluate_buy_all(self, quotes: Sequence[Quote]) -> Edge | None:
         """Buy every leg's YES: a synthetic $1 only under an explicit guarantee.
 
         Returns None rather than an edge when exhaustiveness is not established, because
         the payoff of the package is undefined in that case, not merely uncertain.
         """
-        if not self.supports_sum_to_one or any(q.yes_ask is None for q in quotes):
+        if not self.supports_sum_to_one or not self._covers(quotes):
+            return None
+        if any(q.yes_ask is None for q in quotes):
             return None
         cost = sum(q.yes_ask for q in quotes)
         fees = sum(taker_fee(q.yes_ask, q.fee_multiplier) for q in quotes)
@@ -146,8 +160,14 @@ class Partition:
         )
 
     def evaluate_sell_all(self, quotes: Sequence[Quote]) -> Edge | None:
-        """Buy every leg's NO: pays exactly (n-1) if exactly one leg can win."""
-        if any(q.yes_bid is None for q in quotes):
+        """Buy every leg's NO: pays exactly (n-1) if at most one leg can win.
+
+        This direction needs mutual exclusivity but not exhaustiveness — if no leg wins,
+        every NO pays and the package returns n, above the floor. It does need the quotes
+        to be the legs, once each: pricing a two-leg partition with the same leg twice
+        produced a package that pays zero whenever that leg wins.
+        """
+        if not self._covers(quotes) or any(q.yes_bid is None for q in quotes):
             return None
         cost = sum(1.0 - q.yes_bid for q in quotes)
         fees = sum(taker_fee(1.0 - q.yes_bid, q.fee_multiplier) for q in quotes)

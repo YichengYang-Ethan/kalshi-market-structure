@@ -106,8 +106,8 @@ def main():
         ("ever_traded", "lifetime volume > 0"),
         ("traded_last_24h", "volume in the last 24 hours > 0"),
         ("two_sided", "both sides quoted at snapshot time; a market can be two-sided and never traded"),
-        ("bid_size / ask_size", "TOP OF BOOK ONLY - the orderbook endpoint returns an empty book "
-                                "without authentication, so no depth beyond the touch is available"),
+        ("bid_size / ask_size", "top of book. Full depth IS available from "
+                                "/markets/{ticker}/orderbook under the orderbook_fp key"),
         ("partition_gaps_consistent", "necessary condition for a sum-to-one basket, NOT sufficient"),
         ("has_quantisation_evidence", "the contract text confirms the gaps are a reporting quantum "
                                       "rather than a settlement hole; required before assuming exhaustiveness"),

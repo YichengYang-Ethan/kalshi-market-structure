@@ -40,8 +40,7 @@ questions: `ever_traded` (lifetime volume > 0), `traded_last_24h`, and `two_side
 (both sides quoted right now). A market can be quoted on both sides and have never
 traded — most of this universe is exactly that.
 
-Depth beyond the touch is **not** available: `/markets/{ticker}/orderbook` returns an
-empty book without authentication, so `bid_size`/`ask_size` are top-of-book only.
+Full order-book depth **is** available without authentication, but it lives under the `orderbook_fp` key (`no_dollars` / `yes_dollars` arrays of `[price, size]`); the `orderbook` key returns empty and reading it produced the mistaken conclusion that only top-of-book was visible.
 
 ## Elections and Politics are two different exchanges
 

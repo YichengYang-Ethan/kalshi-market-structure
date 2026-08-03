@@ -71,10 +71,10 @@ about.
 
 | Template | Events |
 | --- | ---: |
-| `entity_menu` | 4,087 |
-| `threshold` | 2,961 |
+| `entity_menu` | 4,030 |
+| `threshold` | 2,972 |
 | `binary` | 1,098 |
-| `deadline` | 245 |
+| `deadline` | 291 |
 | `bucket` | 69 |
 | `combination` | 18 |
 

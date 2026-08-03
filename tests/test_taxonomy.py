@@ -172,8 +172,11 @@ def test_published_index_formats_agree():
     import csv, gzip
     from collections import Counter
     root = os.path.join(os.path.dirname(__file__), "..", "data")
-    if not os.path.exists(os.path.join(root, "events_index.csv")):
-        return  # index not built in this checkout
+    # Skipping silently when the index is absent means this test passes on a checkout
+    # where the artifacts were never built, which is exactly when it is needed.
+    for name in ("events_index.csv", "events_index.csv.gz",
+                 "markets_index.csv.gz", "series_rollup.csv"):
+        assert os.path.exists(os.path.join(root, name)), f"missing published artifact: {name}"
     with open(os.path.join(root, "events_index.csv")) as f:
         plain = [dict(r) for r in csv.DictReader(f)]
     with gzip.open(os.path.join(root, "events_index.csv.gz"), "rt") as f:
@@ -184,7 +187,90 @@ def test_published_index_formats_agree():
         markets = [dict(r) for r in csv.DictReader(f)]
     with open(os.path.join(root, "series_rollup.csv")) as f:
         roll = [dict(r) for r in csv.DictReader(f)]
-    assert sum(int(r["n_markets"]) for r in roll) == len(markets)
+    # Reconcile the rollup against the market index field by field, not just in total.
+    from collections import defaultdict
+    recomputed = defaultdict(lambda: dict(n_markets=0, n_active=0, n_ever_traded=0,
+                                          n_traded_24h=0, n_two_sided=0, templates=set()))
+    for m in markets:
+        a = recomputed[m["series_ticker"]]
+        a["n_markets"] += 1
+        a["n_active"] += int(m["status"] == "active")
+        a["n_ever_traded"] += int(m["ever_traded"])
+        a["n_traded_24h"] += int(m["traded_24h"])
+        a["n_two_sided"] += int(m["two_sided"])
+        a["templates"].add(m["template"])
+    assert len(roll) == len(recomputed)
+    for r in roll:
+        a = recomputed[r["series_ticker"]]
+        for field in ("n_markets", "n_active", "n_ever_traded", "n_traded_24h", "n_two_sided"):
+            assert int(r[field]) == a[field], f"{r['series_ticker']}.{field}"
+        assert r["templates"] == "|".join(sorted(a["templates"]))
+
+    # Every market's event and template must agree with the event index.
+    events = {r["event_ticker"]: r for r in plain}
+    for m in markets:
+        e = events.get(m["event_ticker"])
+        assert e is not None, m["ticker"]
+        assert m["template"] == e["template"], m["ticker"]
+    per_event = Counter(m["event_ticker"] for m in markets)
+    for e in plain:
+        assert int(e["n_markets"]) == per_event[e["event_ticker"]], e["event_ticker"]
+
     # The truthiness bug made this exactly 100%; it must never be 100% again by accident.
     two_sided = sum(int(r["n_two_sided"]) for r in roll)
     assert 0 < two_sided < len(markets)
+
+
+def test_partition_evaluators_require_exactly_their_legs():
+    """A basket prices the whole outcome space or nothing.
+
+    Both evaluators once ignored which markets they were handed: a three-leg partition
+    priced from two quotes reported +$0.80, and a two-leg partition priced from the same
+    leg twice reported +$0.60. Both packages pay zero in states the partition covers.
+    """
+    from kalshi_structure.relations import Partition, Quote
+    p3 = Partition(legs=("A", "B", "C"), tiled=True, basis="t", exhaustiveness="explicit")
+    two = [Quote("A", 0.09, 0.10, 100, 100), Quote("B", 0.09, 0.10, 100, 100)]
+    assert p3.evaluate_buy_all(two) is None
+    assert p3.evaluate_sell_all(two) is None
+
+    p2 = Partition(legs=("A", "B"), tiled=True, basis="t", exhaustiveness="explicit")
+    dupe = [Quote("A", 0.80, 0.81, 100, 100), Quote("A", 0.80, 0.81, 100, 100)]
+    assert p2.evaluate_buy_all(dupe) is None
+    assert p2.evaluate_sell_all(dupe) is None
+
+    wrong = [Quote("A", 0.30, 0.31, 100, 100), Quote("Z", 0.60, 0.62, 100, 100)]
+    assert p2.evaluate_buy_all(wrong) is None
+
+    ok = [Quote("A", 0.30, 0.31, 100, 100), Quote("B", 0.60, 0.62, 100, 100)]
+    assert p2.evaluate_buy_all(ok) is not None
+    assert p2.evaluate_sell_all(ok) is not None
+
+
+def test_deadline_grammar_covers_partial_dates():
+    """Ladders mix full dates with month+year and bare months.
+
+    A parser reading only full dates failed the majority vote on real ladders
+    (FEDHIKE, KXALBUMRELEASEDATETRIPPIE) and classified them as entity menus.
+    """
+    assert parse_deadline("Before July 2026") == (2026, 7, 1)
+    assert parse_deadline("Before June") == (0, 6, 1)     # year unstated
+    assert parse_deadline("before September") == (0, 9, 1)
+
+
+def test_threshold_grammar_tolerates_unit_glyphs():
+    assert parse_threshold("79° or below") == ("", 79.0, "<=")
+    assert parse_threshold("88° or above") == ("", 88.0, ">=")
+    assert parse_threshold("$4/MTok or below") == ("", 4.0, "<=")
+
+
+def test_tombstone_legs_do_not_sink_the_vote():
+    """Placeholder legs carry no strike and must leave the denominator."""
+    ladder = {"markets": [
+        {"status": "finalized", "yes_sub_title": "Before June"},
+        {"status": "finalized", "yes_sub_title": "Before August"},
+        {"status": "inactive", "yes_sub_title": "DEACTIVATED"},
+        {"status": "active", "yes_sub_title": "Before Sep 1, 2026"},
+        {"status": "active", "yes_sub_title": "Before Oct 1, 2026"},
+        {"status": "active", "yes_sub_title": "Before Nov 1, 2026"}]}
+    assert classify_event(ladder) == "deadline"

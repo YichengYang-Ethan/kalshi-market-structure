@@ -82,14 +82,14 @@ read `strike_type`, `custom_strike` or `mutually_exclusive`, though all three ar
 available and `strike_type` in particular would be a stronger signal than the subtitle
 grammar for numeric ladders. Counts below are the generator label, taken over all legs
 including settled ones; pass `active_only=True` for the currently tradeable shape, which
-differs for 44 events whose ladders have all but one rung finalised.
+differs for the events whose ladders have all but one rung finalised.
 
 | Template | Events | Leg grammar | Structural constraint it supports |
 | --- | --- | --- | --- |
-| `entity_menu` | 4,087 | one leg per candidate/person/team/option | sum-to-one when mutex **and** exhaustive |
-| `threshold` | 2,961 | "N+ pts", "Above $X", "X or above" | nesting: higher level implies lower |
+| `entity_menu` | 4,030 | one leg per candidate/person/team/option | sum-to-one when mutex **and** exhaustive |
+| `threshold` | 2,972 | "N+ pts", "Above $X", "X or above" | nesting: higher level implies lower |
 | `binary` | 1,098 | single yes/no proposition | none internally; cross-event only |
-| `deadline` | 245 | "Before \<date\>" | nesting: earlier deadline implies later |
+| `deadline` | 291 | "Before \<date\>" | nesting: earlier deadline implies later |
 | `bucket` | 69 | "A to B" ranges tiling a line | sum-to-one when tiled |
 | `combination` | 18 | conjunction of two base outcomes | marginal identities against the bases |
 

@@ -57,9 +57,12 @@ measurement.
 
 **Crypto is the extreme case, but not for the reason stated here originally.** 2,629
 active markets and only 28.5% of *legs* ever traded — the lowest of any board here — yet
-**87% of its events (94 of 108) have at least one traded leg**. The untouched tail is
-inside wide ladders, not across whole questions, and the same holds for Financials (44.8%
-of legs, 95.3% of events). Leg-level share measures ladder width as much as attention.
+**87% of its events (94 of 108) have at least one traded leg**, and Financials is 44.8%
+of legs against 95.3% of events. Most of the untouched tail is inside ladders that have
+seen trading — but not all of it: 14 Crypto events and 21 Financials events are wholly
+untouched, and they hold **30.4%** and **35.0%** of those boards' untraded legs. So
+leg-level share measures ladder width as much as attention, and a third of the inactivity
+really is whole questions nobody has traded.
 Crypto also carries 31 cleanly tiled partitions, the most anywhere, and its ladders are
 the tightest priced in this snapshot (`KXBTCY` sum-of-bids 0.9960 with zero fees) — the
 structure is already enforced where anyone looks.

@@ -131,17 +131,17 @@ KXHIGHLAX-26AUG02,KXHIGHLAX,Climate and Weather,Climate and Weather,entity_menu,
 KXHIGHDEN-26AUG02,KXHIGHDEN,Climate and Weather,Climate and Weather,entity_menu,1,MECNET,6,6,6,0,,1,quadratic,daily
 KXHIGHCHI-26AUG02,KXHIGHCHI,Climate and Weather,Climate and Weather,entity_menu,1,MECNET,6,6,6,0,,1,quadratic,daily
 KXHIGHAUS-26AUG02,KXHIGHAUS,Climate and Weather,Climate and Weather,entity_menu,1,MECNET,6,6,6,0,,1,quadratic,daily
-KXTEMPNYCH-26AUG0217,KXTEMPNYCH,Climate and Weather,Climate and Weather,entity_menu,0,DIRECNET,10,10,10,0,,1,quadratic,hourly
-KXTEMPLAXH-26AUG0217,KXTEMPLAXH,Climate and Weather,Climate and Weather,entity_menu,0,DIRECNET,10,10,9,0,,1,quadratic,hourly
-KXTEMPDCH-26AUG0217,KXTEMPDCH,Climate and Weather,Climate and Weather,entity_menu,0,DIRECNET,10,10,10,0,,1,quadratic,hourly
-KXTEMPCHIH-26AUG0217,KXTEMPCHIH,Climate and Weather,Climate and Weather,entity_menu,0,DIRECNET,10,10,9,0,,1,quadratic,hourly
-KXTEMPAUSH-26AUG0217,KXTEMPAUSH,Climate and Weather,Climate and Weather,entity_menu,0,DIRECNET,10,10,9,0,,1,quadratic,hourly
-KXOPUS48Y-27,KXOPUS48Y,Commodities,Commodities,entity_menu,0,,4,4,4,0,,1,quadratic,annual
-KXOPUS48OY-27,KXOPUS48OY,Commodities,Commodities,entity_menu,0,,4,4,4,0,,1,quadratic,annual
-KXGPT55Y-27,KXGPT55Y,Commodities,Commodities,entity_menu,0,,4,4,4,0,,1,quadratic,annual
-KXGEMINI35Y-27,KXGEMINI35Y,Commodities,Commodities,entity_menu,0,,4,4,4,0,,1,quadratic,annual
-KXGEMINI35OY-27,KXGEMINI35OY,Commodities,Commodities,entity_menu,0,,4,4,4,0,,1,quadratic,annual
-KXGBT55OY-27,KXGBT55OY,Commodities,Commodities,entity_menu,0,,4,4,4,0,,1,quadratic,annual
+KXTEMPNYCH-26AUG0217,KXTEMPNYCH,Climate and Weather,Climate and Weather,threshold,0,DIRECNET,10,10,10,0,,1,quadratic,hourly
+KXTEMPLAXH-26AUG0217,KXTEMPLAXH,Climate and Weather,Climate and Weather,threshold,0,DIRECNET,10,10,9,0,,1,quadratic,hourly
+KXTEMPDCH-26AUG0217,KXTEMPDCH,Climate and Weather,Climate and Weather,threshold,0,DIRECNET,10,10,10,0,,1,quadratic,hourly
+KXTEMPCHIH-26AUG0217,KXTEMPCHIH,Climate and Weather,Climate and Weather,threshold,0,DIRECNET,10,10,9,0,,1,quadratic,hourly
+KXTEMPAUSH-26AUG0217,KXTEMPAUSH,Climate and Weather,Climate and Weather,threshold,0,DIRECNET,10,10,9,0,,1,quadratic,hourly
+KXOPUS48Y-27,KXOPUS48Y,Commodities,Commodities,threshold,0,,4,4,4,0,,1,quadratic,annual
+KXOPUS48OY-27,KXOPUS48OY,Commodities,Commodities,threshold,0,,4,4,4,0,,1,quadratic,annual
+KXGPT55Y-27,KXGPT55Y,Commodities,Commodities,threshold,0,,4,4,4,0,,1,quadratic,annual
+KXGEMINI35Y-27,KXGEMINI35Y,Commodities,Commodities,threshold,0,,4,4,4,0,,1,quadratic,annual
+KXGEMINI35OY-27,KXGEMINI35OY,Commodities,Commodities,threshold,0,,4,4,4,0,,1,quadratic,annual
+KXGBT55OY-27,KXGBT55OY,Commodities,Commodities,threshold,0,,4,4,4,0,,1,quadratic,annual
 KXGOLDDIRY-26DEC31H1700,KXGOLDDIRY,Commodities,Commodities,threshold,0,DIRECNET,13,13,13,0,,1,quadratic,annual
 KXWTIDIRY-26DEC31H1430,KXWTIDIRY,Commodities,Commodities,threshold,0,DIRECNET,11,11,11,0,,1,quadratic,annual
 KXWTI-26NOV03,KXWTI,Commodities,Commodities,threshold,0,DIRECNET,45,45,45,0,,1,quadratic,daily
@@ -163,7 +163,7 @@ KXGOLDD-26AUG0317,KXGOLDD,Commodities,Commodities,threshold,0,DIRECNET,40,40,33,
 KXCOPPERD-26AUG0317,KXCOPPERD,Commodities,Commodities,threshold,0,DIRECNET,50,50,29,0,,1,quadratic,daily
 KXBRENTD-26AUG0317,KXBRENTD,Commodities,Commodities,threshold,0,DIRECNET,30,30,30,0,,1,quadratic,daily
 KXWTI-26AUG0314,KXWTI,Commodities,Commodities,threshold,0,DIRECNET,30,30,30,0,,1,quadratic,daily
-KXWTIWHEN-100,KXWTIWHEN,Commodities,Commodities,entity_menu,0,,6,5,5,0,,1,quadratic,one_off
+KXWTIWHEN-100,KXWTIWHEN,Commodities,Commodities,deadline,0,,6,5,5,0,,1,quadratic,one_off
 KXWTIWHEN-65,KXWTIWHEN,Commodities,Commodities,deadline,0,,11,6,6,0,,1,quadratic,one_off
 KXAGICO-COMP,KXAGICO,Companies,Science and Technology,deadline,0,,13,12,12,0,,1,quadratic,custom
 KXJPMCEONEW,KXJPMCEONEW,Companies,Financials,entity_menu,0,,4,4,4,0,,1,quadratic,custom
@@ -223,12 +223,12 @@ KXNEWROLEFAZE-27JAN,KXNEWROLEFAZE,Companies,Financials,entity_menu,1,MECNET,12,1
 KXKRAKENBANKPUBLIC-27JAN01,KXKRAKENBANKPUBLIC,Companies,Financials,entity_menu,0,,5,5,5,0,,1,quadratic,custom
 KXJUULFLAVOR-27,KXJUULFLAVOR,Companies,Financials,entity_menu,0,,6,6,6,0,,1,quadratic,custom
 KXJOINUBER-27JAN,KXJOINUBER,Companies,Companies,binary,0,,1,1,1,0,,1,quadratic,one_off
-KXIPHONERELEASE-IPHONE18,KXIPHONERELEASE,Companies,Financials,entity_menu,0,,3,2,2,0,,1,quadratic,one_off
+KXIPHONERELEASE-IPHONE18,KXIPHONERELEASE,Companies,Financials,deadline,0,,3,2,2,0,,1,quadratic,one_off
 KXHELLCAT-27,KXHELLCAT,Companies,Financials,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXCRYPTOPAY-27,KXCRYPTOPAY,Companies,Financials,binary,0,,1,1,1,0,,1,quadratic,custom
 KXCOMPANYSTAKERYANAIR-27JAN01,KXCOMPANYSTAKERYANAIR,Companies,Financials,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXCOMPANYLAYOFF-27JAN01,KXCOMPANYLAYOFF,Companies,Companies,entity_menu,0,,9,8,8,0,,1,quadratic,one_off
-KXCOMPANYACTIONLAYOFF-B,KXCOMPANYACTIONLAYOFF,Companies,Financials,entity_menu,0,,2,1,1,0,,1,quadratic,one_off
+KXCOMPANYACTIONLAYOFF-B,KXCOMPANYACTIONLAYOFF,Companies,Financials,deadline,0,,2,1,1,0,,1,quadratic,one_off
 KXBEZELRO-TIT,KXBEZELRO,Companies,Financials,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXBEZELR-GMTM,KXBEZELR,Companies,Financials,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXBEZELP-NAUT,KXBEZELP,Companies,Financials,binary,0,,1,1,1,0,,1,quadratic,one_off
@@ -253,7 +253,7 @@ KXFDVOPENSEA-27JAN01,KXFDVOPENSEA,Crypto,Crypto,threshold,0,,6,6,6,0,,1,quadrati
 KXETHMINY-27JAN01,KXETHMINY,Crypto,Crypto,threshold,0,,5,4,4,0,,1,quadratic,annual
 KXETHMAXY-27JAN01,KXETHMAXY,Crypto,Crypto,threshold,0,,8,8,8,0,,1,quadratic,annual
 KXBTCMINY-27JAN01,KXBTCMINY,Crypto,Crypto,threshold,0,,5,4,4,0,,1,quadratic,annual
-KXBTCMAX100-26,KXBTCMAX100,Crypto,Crypto,entity_menu,0,,7,5,5,0,,1,quadratic,annual
+KXBTCMAX100-26,KXBTCMAX100,Crypto,Crypto,deadline,0,,7,5,5,0,,1,quadratic,annual
 KXBTC2026250-27JAN01,KXBTC2026250,Crypto,Crypto,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXBTC2026200-27JAN01,KXBTC2026200,Crypto,Crypto,binary,1,MECNET,1,1,1,0,,1,quadratic,one_off
 KXZECMINY-ZEC-26DEC31,KXZECMINY,Crypto,Crypto,threshold,0,,8,2,2,0,,1,quadratic,annual
@@ -342,8 +342,8 @@ KXBNBD-26AUG0217,KXBNBD,Crypto,Crypto,threshold,0,DIRECNET,40,40,5,0,,1,quadrati
 KXBNB-26AUG0217,KXBNB,Crypto,Crypto,bucket,1,MECNET,40,40,4,1,implicit,1,quadratic,hourly
 KXBNB15M-26AUG021700,KXBNB15M,Crypto,Crypto,binary,0,,1,1,1,0,,1,quadratic,fifteen_min
 KXDOGEMAX1,KXDOGEMAX1,Crypto,Crypto,deadline,0,,3,2,2,0,,1,quadratic,custom
-KXBTCHALF,KXBTCHALF,Crypto,Crypto,entity_menu,0,,4,4,4,0,,1,quadratic,custom
-KXBTCMAX150-25,KXBTCMAX150,Crypto,Crypto,entity_menu,0,,5,2,2,0,,1,quadratic_with_maker_fees,custom
+KXBTCHALF,KXBTCHALF,Crypto,Crypto,deadline,0,,4,4,4,0,,1,quadratic,custom
+KXBTCMAX150-25,KXBTCMAX150,Crypto,Crypto,deadline,0,,5,2,2,0,,1,quadratic_with_maker_fees,custom
 KXGDPYEAR-36,KXGDPYEAR,Economics,Economics,bucket,1,MECNET,14,14,14,1,implicit,0,quadratic,custom
 KXUSCPIYEAR-37FEB01,KXUSCPIYEAR,Economics,Economics,threshold,0,DIRECNET,13,13,13,0,,1,quadratic,annual
 KXFEDFUNDSYEAR-37JAN01,KXFEDFUNDSYEAR,Economics,Economics,threshold,0,DIRECNET,21,21,21,0,,1,quadratic,annual
@@ -693,7 +693,7 @@ KXAAAGASW-26AUG03,KXAAAGASW,Economics,Economics,threshold,0,DIRECNET,29,29,29,0,
 KXAAAGASD-26AUG03,KXAAAGASD,Economics,Economics,threshold,0,DIRECNET,17,17,17,0,,1,quadratic,daily
 KXMEXCUBOIL-26,KXMEXCUBOIL,Economics,Economics,deadline,0,,4,2,2,0,,1,quadratic,one_off
 KXNBERRECESSQ,KXNBERRECESSQ,Economics,Economics,entity_menu,1,MECNET,6,6,6,0,,1,quadratic,one_off
-FEDHIKE,KXFEDHIKE,Economics,Economics,entity_menu,0,,4,3,3,0,,1,quadratic,custom
+FEDHIKE,KXFEDHIKE,Economics,Economics,deadline,0,,4,3,3,0,,1,quadratic,custom
 KXBRAZILINF-25DEC,KXBRAZILINF,Economics,Economics,threshold,0,DIRECNET,10,10,10,0,,1,quadratic,custom
 COSTCOHOTDOG,KXCOSTCOHOTDOG,Economics,Economics,deadline,0,,4,4,4,0,,1,quadratic,custom
 KXNEXTNATOSECGEN-99,KXNEXTNATOSECGEN,Elections,Elections,entity_menu,1,MECNET,8,8,8,0,,1,quadratic,one_off
@@ -2925,7 +2925,7 @@ GOVPARTYWA-28,GOVPARTYWA,Elections,Elections,entity_menu,1,MECNET,2,2,2,0,,1,qua
 KXPERFORMBONDSONG-35,KXPERFORMBONDSONG,Entertainment,Entertainment,entity_menu,0,,22,22,22,0,,1,quadratic,one_off
 KXJOHNNYDEPP-35,KXJOHNNYDEPP,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXACTORSONNYCROCKETT-35,KXACTORSONNYCROCKETT,Entertainment,Entertainment,entity_menu,0,,10,10,10,0,,1,quadratic,one_off
-KXTVSEASONRELEASETHELASTOFUS,KXTVSEASONRELEASETHELASTOFUS,Entertainment,Entertainment,entity_menu,0,,6,5,5,0,,1,quadratic,one_off
+KXTVSEASONRELEASETHELASTOFUS,KXTVSEASONRELEASETHELASTOFUS,Entertainment,Entertainment,deadline,0,,6,5,5,0,,1,quadratic,one_off
 KXACTORTOMCRUZ-30,KXACTORTOMCRUZ,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXINDIANAPOWELL-30,KXINDIANAPOWELL,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXTIMEDECADE20S-30,KXTIMEDECADE20S,Entertainment,Entertainment,entity_menu,0,,6,6,6,0,,1,quadratic,custom
@@ -2948,7 +2948,7 @@ KXBOND-30,KXBOND,Entertainment,Entertainment,entity_menu,0,,25,25,24,0,,1,quadra
 KXARTISTCOLLABTHUGANDGUNNA-30,KXARTISTCOLLABTHUGANDGUNNA,Entertainment,Entertainment,deadline,0,,4,4,4,0,,1,quadratic,one_off
 KXARTISTCOLLABDRAKEKENDRICK-30,KXARTISTCOLLABDRAKEKENDRICK,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 BEYONCEGENRE-30,KXBEYONCEGENRE,Entertainment,Entertainment,entity_menu,0,,9,9,9,0,,1,quadratic,custom
-KXTVSEASONANNOUNCEEUP-JAN,KXTVSEASONANNOUNCEEUP,Entertainment,Entertainment,entity_menu,0,,3,3,3,0,,1,quadratic,one_off
+KXTVSEASONANNOUNCEEUP-JAN,KXTVSEASONANNOUNCEEUP,Entertainment,Entertainment,deadline,0,,3,3,3,0,,1,quadratic,one_off
 KXMOVIECAST-XMAN29,KXMOVIECAST,Entertainment,Entertainment,entity_menu,0,,27,27,27,0,,1,quadratic,one_off
 KXALBUMRELEASEDATEBEY-NEW,KXALBUMRELEASEDATEBEY,Entertainment,Entertainment,deadline,0,,4,3,3,0,,1,quadratic,one_off
 KXKXMOVIEDELAYBATMANPT2-28FEB18,KXKXMOVIEDELAYBATMANPT2,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
@@ -3127,7 +3127,7 @@ KXMEDIARELEASEDUNE3-DU,KXMEDIARELEASEDUNE3,Entertainment,Entertainment,deadline,
 KXMAYOROFKINGSTOWN-27JAN01,KXMAYOROFKINGSTOWN,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXMARRIAGEBELICHICKHUDSON-26,KXMARRIAGEBELICHICKHUDSON,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXLEAVEGROUPRAMI-27,KXLEAVEGROUPRAMI,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
-KXLEAVEGROUPKATSEYE-27,KXLEAVEGROUPKATSEYE,Entertainment,Entertainment,entity_menu,0,,7,5,5,0,,1,quadratic,one_off
+KXLEAVEGROUPKATSEYE-27,KXLEAVEGROUPKATSEYE,Entertainment,Entertainment,deadline,0,,7,5,5,0,,1,quadratic,one_off
 KXLEAVEGROUP-27,KXLEAVEGROUP,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXKIMKBAREXAM-27,KXKIMKBAREXAM,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXJIMMYKIMMELFIRED-27,KXJIMMYKIMMELFIRED,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
@@ -3183,10 +3183,10 @@ KXART-OG27,KXART,Entertainment,Entertainment,threshold,0,DIRECNET,9,9,9,0,,1,qua
 KXARTISTCOLLABDRAKEPLAYBOICARTI-2027,KXARTISTCOLLABDRAKEPLAYBOICARTI,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXARTISTCOLLABDRAKEMETRO-2027,KXARTISTCOLLABDRAKEMETRO,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXARTISTCOLLABBILLIEYEAT-2027,KXARTISTCOLLABBILLIEYEAT,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,one_off
-KXALBUMRELEASEDATETRIPPIE,KXALBUMRELEASEDATETRIPPIE,Entertainment,Entertainment,entity_menu,0,,6,3,3,0,,1,quadratic,one_off
-KXALBUMRELEASEDATETRAVIS,KXALBUMRELEASEDATETRAVIS,Entertainment,Entertainment,entity_menu,0,,3,2,2,0,,1,quadratic,one_off
-KXALBUMRELEASEDATE-NEWKEN,KXALBUMRELEASEDATE,Entertainment,Entertainment,entity_menu,0,,8,5,5,0,,1,quadratic,one_off
-KXALBUMRELEASEDATEJB-SWAG3,KXALBUMRELEASEDATEJB,Entertainment,Entertainment,entity_menu,0,,3,1,1,0,,1,quadratic,one_off
+KXALBUMRELEASEDATETRIPPIE,KXALBUMRELEASEDATETRIPPIE,Entertainment,Entertainment,deadline,0,,6,3,3,0,,1,quadratic,one_off
+KXALBUMRELEASEDATETRAVIS,KXALBUMRELEASEDATETRAVIS,Entertainment,Entertainment,deadline,0,,3,2,2,0,,1,quadratic,one_off
+KXALBUMRELEASEDATE-NEWKEN,KXALBUMRELEASEDATE,Entertainment,Entertainment,deadline,0,,8,5,5,0,,1,quadratic,one_off
+KXALBUMRELEASEDATEJB-SWAG3,KXALBUMRELEASEDATEJB,Entertainment,Entertainment,deadline,0,,3,1,1,0,,1,quadratic,one_off
 KXAISONG-27,KXAISONG,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,custom
 KXSTRMRSOTY-26,KXSTRMRSOTY,Entertainment,Entertainment,entity_menu,1,MECNET,8,8,8,0,,1,quadratic,one_off
 KXROLEATEVENTLOLLA-26DEC31,KXROLEATEVENTLOLLA,Entertainment,Entertainment,entity_menu,0,,16,15,15,0,,1,quadratic,one_off
@@ -3251,7 +3251,7 @@ KXPERFORMSTYLESMSG-26,KXPERFORMSTYLESMSG,Entertainment,Entertainment,entity_menu
 KXMACBOOKPRICE-26,KXMACBOOKPRICE,Entertainment,Entertainment,threshold,0,DIRECNET,7,7,7,0,,1,quadratic,one_off
 KXLGRAM-26ALBOTY,KXLGRAM,Entertainment,Entertainment,entity_menu,1,MECNET,8,7,6,0,,1,quadratic,one_off
 KXYTUBESUBSBEAST-26-MRBE,KXYTUBESUBSBEAST,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,custom
-KXSONGRELEASEDATEPC-26,KXSONGRELEASEDATEPC,Entertainment,Entertainment,entity_menu,0,,3,2,2,0,,1,quadratic,one_off
+KXSONGRELEASEDATEPC-26,KXSONGRELEASEDATEPC,Entertainment,Entertainment,deadline,0,,3,2,2,0,,1,quadratic,one_off
 KXALBUMDEBUT-26OCT17-FRE,KXALBUMDEBUT,Entertainment,Entertainment,binary,0,,1,1,1,0,,1,quadratic,weekly
 KXPUREALBUMS-FRE26OCT08,KXPUREALBUMS,Entertainment,Entertainment,threshold,0,DIRECNET,10,10,1,0,,1,quadratic,weekly
 KXALBUMEQUIV-FRE26OCT08,KXALBUMEQUIV,Entertainment,Entertainment,threshold,0,DIRECNET,5,5,3,0,,1,quadratic,weekly
@@ -3414,12 +3414,12 @@ KXYTPODW-26AUG02,KXYTPODW,Entertainment,Entertainment,entity_menu,1,MECNET,10,10
 KXRT-SPI,KXRT,Entertainment,Entertainment,threshold,0,DIRECNET,23,23,23,0,,1,quadratic,custom
 KXRT-MUT,KXRT,Entertainment,Entertainment,threshold,0,DIRECNET,10,10,10,0,,1,quadratic,custom
 KXRT-INS,KXRT,Entertainment,Entertainment,threshold,0,DIRECNET,12,12,12,0,,1,quadratic,custom
-KXGTATRAILER-26MAY,KXGTATRAILER,Entertainment,Entertainment,entity_menu,0,,6,2,2,0,,1,quadratic,custom
+KXGTATRAILER-26MAY,KXGTATRAILER,Entertainment,Entertainment,deadline,0,,6,2,2,0,,1,quadratic,custom
 KXOSCARNOMSUPACTR-27,KXOSCARNOMSUPACTR,Entertainment,Entertainment,entity_menu,0,,14,14,14,0,,1,quadratic,annual
 KXOSCARNOMSUPACTO-27,KXOSCARNOMSUPACTO,Entertainment,Entertainment,entity_menu,0,,22,22,22,0,,1,quadratic,annual
 KXALBUMRELEASEDATEDUALIPA,KXALBUMRELEASEDATEDUALIPA,Entertainment,Entertainment,deadline,0,,4,3,2,0,,1,quadratic,one_off
 KXALBUMRELEASEDATEFRANK,KXALBUMRELEASEDATEFRANK,Entertainment,Entertainment,entity_menu,0,,5,5,5,0,,1,quadratic,one_off
-GTA6,KXGTA6,Entertainment,Entertainment,entity_menu,0,,10,7,7,0,,1,quadratic,custom
+GTA6,KXGTA6,Entertainment,Entertainment,deadline,0,,10,7,7,0,,1,quadratic,custom
 KXRAMPBREX-40,KXRAMPBREX,Financials,Financials,entity_menu,0,,2,2,2,0,,1,quadratic,one_off
 KXOAIANTH-40,KXOAIANTH,Financials,Financials,entity_menu,0,,2,2,2,0,,1,quadratic,one_off
 KXDEELRIP-40,KXDEELRIP,Financials,Financials,entity_menu,1,MECNET,2,2,2,0,,1,quadratic,one_off
@@ -3505,7 +3505,7 @@ KXYUMA-27FEBKFCSSS,KXYUMA,Financials,Financials,threshold,0,DIRECNET,8,8,8,0,,1,
 KXSNAPA-27FEBDAU,KXSNAPA,Financials,Financials,threshold,0,DIRECNET,6,6,6,0,,1,quadratic,one_off
 KXGOOGA-27FEBCLICKS,KXGOOGA,Financials,Financials,threshold,0,DIRECNET,7,7,7,0,,1,quadratic,one_off
 KXLUCEDELIVERY-27,KXLUCEDELIVERY,Financials,Financials,deadline,0,,8,8,8,0,,1,quadratic,one_off
-KXIPHONERELEASE-IPHONE18PRO,KXIPHONERELEASE,Financials,Financials,entity_menu,0,,4,4,4,0,,1,quadratic,one_off
+KXIPHONERELEASE-IPHONE18PRO,KXIPHONERELEASE,Financials,Financials,deadline,0,,4,4,4,0,,1,quadratic,one_off
 KXCOMPANYACTIONMERGER-27,KXCOMPANYACTIONMERGER,Financials,Financials,deadline,0,,13,10,10,0,,1,quadratic,one_off
 KXRTX5090MS-27MAY,KXRTX5090MS,Financials,Financials,threshold,0,DIRECNET,8,8,7,0,,1,quadratic,monthly
 KXH200MS-27MAY,KXH200MS,Financials,Financials,threshold,0,DIRECNET,11,11,11,0,,1,quadratic,one_off
@@ -3628,7 +3628,7 @@ KXDOL-26SEPCOMP,KXDOL,Financials,Financials,threshold,0,DIRECNET,6,6,6,0,,1,quad
 KX10Y2YDATE-26DEC31,KX10Y2YDATE,Financials,Financials,entity_menu,0,DIRECNET,11,11,11,0,,1,quadratic,one_off
 KXWTIMIN-26DEC31,KXWTIMIN,Financials,Commodities,threshold,0,,15,12,12,0,,1,quadratic,annual
 KXWTIMAX-26DEC31,KXWTIMAX,Financials,Commodities,threshold,0,,10,10,10,0,,1,quadratic,annual
-KXVERARELEASE-VERARUBIN,KXVERARELEASE,Financials,Commodities,entity_menu,0,,6,5,0,0,,1,quadratic,one_off
+KXVERARELEASE-VERARUBIN,KXVERARELEASE,Financials,Commodities,deadline,0,,6,5,0,0,,1,quadratic,one_off
 KXVENGLUSTAT-27,KXVENGLUSTAT,Financials,Financials,binary,1,MECNET,1,1,1,0,,1,quadratic,one_off
 KXUSFUNDHEAD-27,KXUSFUNDHEAD,Financials,Politics,entity_menu,0,,3,2,2,0,,1,quadratic,custom
 KXUSDBRLMAX-26DEC31,KXUSDBRLMAX,Financials,Financials,threshold,0,DIRECNET,10,8,8,0,,1,quadratic,annual
@@ -3657,7 +3657,7 @@ KXFTSE-26DEC31,KXFTSE,Financials,Financials,entity_menu,0,DIRECNET,8,5,5,0,,1,qu
 KXDTX401-27,KXDTX401,Financials,Financials,binary,1,MECNET,1,1,1,0,,1,quadratic,one_off
 KXDJIAREMOVE-27JAN01,KXDJIAREMOVE,Financials,Financials,entity_menu,0,,28,28,12,0,,1,quadratic,one_off
 KXDJIA-26DEC31,KXDJIA,Financials,Financials,threshold,0,DIRECNET,8,7,7,0,,1,quadratic,one_off
-KXCOMPANYACTIONWAYMO-27,KXCOMPANYACTIONWAYMO,Financials,Financials,entity_menu,0,,3,3,3,0,,1,quadratic,one_off
+KXCOMPANYACTIONWAYMO-27,KXCOMPANYACTIONWAYMO,Financials,Financials,deadline,0,,3,3,3,0,,1,quadratic,one_off
 KXCOMPANYACTIONANTH-27,KXCOMPANYACTIONANTH,Financials,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXBTCVSGOLD-26,KXBTCVSGOLD,Financials,Financials,binary,0,,1,1,1,0,,1,quadratic,custom
 KXBREPOCITINIB-27,KXBREPOCITINIB,Financials,Financials,binary,1,MECNET,1,1,1,0,,1,quadratic,one_off
@@ -3861,8 +3861,8 @@ KXEURUSD-26AUG0310,KXEURUSD,Financials,Financials,bucket,1,MECNET,15,15,15,1,imp
 KXDJI-26AUG0310,KXDJI,Financials,Financials,threshold,0,DIRECNET,60,60,9,0,,1,quadratic,one_off
 KXUBERTRIPS-Q2,KXUBERTRIPS,Financials,Financials,threshold,0,,12,12,12,0,,1,quadratic,one_off
 KXDATABRICKS-DATE,KXDATABRICKS,Financials,Financials,deadline,0,,19,17,17,0,,1,quadratic,one_off
-KXAAPLCEOCHANGE,KXAAPLCEOCHANGE,Financials,Financials,entity_menu,0,,2,1,1,0,,1,quadratic,custom
-JPMCEOCHANGE,KXJPMCEOCHANGE,Financials,Financials,entity_menu,0,,2,1,1,0,,1,quadratic,custom
+KXAAPLCEOCHANGE,KXAAPLCEOCHANGE,Financials,Financials,deadline,0,,2,1,1,0,,1,quadratic,custom
+JPMCEOCHANGE,KXJPMCEOCHANGE,Financials,Financials,deadline,0,,2,1,1,0,,1,quadratic,custom
 KXFDATYPE1DIABETES-33,KXFDATYPE1DIABETES,Health,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXPOLIOELIM-30,KXPOLIOELIM,Health,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXFREEIVF-29,KXFREEIVF,Health,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
@@ -3944,7 +3944,7 @@ KXFULLTERMSKPRES-29,KXFULLTERMSKPRES,Politics,Politics,binary,0,,1,1,1,0,,1,quad
 KXDEBTGROWTH-28DEC31,KXDEBTGROWTH,Politics,Economics,entity_menu,0,,6,6,6,0,,1,quadratic,custom
 KXEOTRUMPTERM-29JAN20,KXEOTRUMPTERM,Politics,Politics,entity_menu,1,MECNET,12,12,12,0,,1,quadratic,one_off
 KXGREENLANDPRICE-29JAN21,KXGREENLANDPRICE,Politics,Politics,entity_menu,1,MECNET,8,8,8,0,,1,quadratic,one_off
-KXUSAEXPANDTERRITORY,KXUSAEXPANDTERRITORY,Politics,Politics,entity_menu,0,,4,3,3,0,,1,quadratic,one_off
+KXUSAEXPANDTERRITORY,KXUSAEXPANDTERRITORY,Politics,Politics,deadline,0,,4,3,3,0,,1,quadratic,one_off
 KXTRUMPRESIGN,KXTRUMPRESIGN,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXTRUMPPARDONS-29JAN21,KXTRUMPPARDONS,Politics,Politics,entity_menu,0,,52,52,52,0,,1,quadratic,one_off
 KXSCOURT-29,KXSCOURT,Politics,Politics,entity_menu,1,MECNET,40,39,39,0,,1,quadratic,custom
@@ -4002,7 +4002,7 @@ ECMOV-28NOV07,ECMOV,Politics,Elections,entity_menu,1,MECNET,14,14,10,0,,1,quadra
 KXRECNCBILL-26JUL,KXRECNCBILL,Politics,Politics,deadline,0,,6,6,1,0,,1,quadratic,custom
 KXOBERGEFELL-29,KXOBERGEFELL,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXFEDGOVNOM-29,KXFEDGOVNOM,Politics,Politics,deadline,0,,6,6,6,0,,1,quadratic,one_off
-KXCABLEAVE-26MAY22,KXCABLEAVE,Politics,Politics,entity_menu,0,,8,5,5,0,,1,quadratic,annual
+KXCABLEAVE-26MAY22,KXCABLEAVE,Politics,Politics,deadline,0,,8,5,5,0,,1,quadratic,annual
 KXBANTRANS-26,KXBANTRANS,Politics,World,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXDEMOCRACYUS-28,KXDEMOCRACYUS,Politics,Politics,threshold,0,,4,4,4,0,,1,quadratic,custom
 KXDNC28HOST-28,KXDNC28HOST,Politics,Entertainment,entity_menu,1,MECNET,5,5,5,0,,1,quadratic,one_off
@@ -4124,7 +4124,7 @@ KXDUTERTEOUT-26MAY,KXDUTERTEOUT,Politics,Politics,deadline,0,,2,2,2,0,,1,quadrat
 KXDOJPOWELL-27,KXDOJPOWELL,Politics,Politics,deadline,0,,4,1,1,0,,1,quadratic,one_off
 KXDEMSCHUMER-27,KXDEMSCHUMER,Politics,Politics,deadline,0,,4,3,3,0,,1,quadratic,one_off
 KXDATACENTERMORATORIUM-27JAN012,KXDATACENTERMORATORIUM,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
-KXCRUDEEXPORTBAN-27,KXCRUDEEXPORTBAN,Politics,Politics,entity_menu,0,,2,1,1,0,,1,quadratic,one_off
+KXCRUDEEXPORTBAN-27,KXCRUDEEXPORTBAN,Politics,Politics,deadline,0,,2,1,1,0,,1,quadratic,one_off
 KXCLAYTONDNI-27JAN01,KXCLAYTONDNI,Politics,Politics,deadline,0,,4,4,4,0,,1,quadratic,one_off
 KXCDCCONF-27JAN01,KXCDCCONF,Politics,Politics,deadline,0,,4,1,1,0,,1,quadratic,one_off
 KXCBPAIRPORT-27,KXCBPAIRPORT,Politics,Politics,deadline,0,,4,2,2,0,,1,quadratic,one_off
@@ -4214,7 +4214,7 @@ KXLEADERSOUT-27JAN01,KXLEADERSOUT,Politics,Politics,entity_menu,0,,37,35,35,0,,1
 KXLABORSECCONF-26,KXLABORSECCONF,Politics,Politics,deadline,0,,5,2,2,0,,1,quadratic,one_off
 KXKANYEISRAEL,KXKANYEISRAEL,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXJAPANFOODTAX-27JAN01,KXJAPANFOODTAX,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
-KXIRANEMBASSY-27,KXIRANEMBASSY,Politics,Politics,entity_menu,0,,2,2,2,0,,1,quadratic,one_off
+KXIRANEMBASSY-27,KXIRANEMBASSY,Politics,Politics,deadline,0,,2,2,2,0,,1,quadratic,one_off
 KXICERENAME-26APR,KXICERENAME,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXICEREFORM,KXICEREFORM,Politics,Politics,entity_menu,0,,6,6,6,0,,1,quadratic,one_off
 KXICENICE-26JUL,KXICENICE,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
@@ -4236,9 +4236,9 @@ KXELECTFRAUD-27,KXELECTFRAUD,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,on
 KXEACNOM-27,KXEACNOM,Politics,Politics,deadline,0,,3,2,2,0,,1,quadratic,one_off
 KXDST-27JAN01,KXDST,Politics,Politics,deadline,0,,3,3,3,0,,1,quadratic,one_off
 KXDODRENAME-26JUN,KXDODRENAME,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
-KXDJTATTACKWARSH-27,KXDJTATTACKWARSH,Politics,Politics,entity_menu,0,,2,1,1,0,,1,quadratic,one_off
+KXDJTATTACKWARSH-27,KXDJTATTACKWARSH,Politics,Politics,deadline,0,,2,1,1,0,,1,quadratic,one_off
 KXDHS100KOPT-26JUL,KXDHS100KOPT,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
-KXDATASET13,KXDATASET13,Politics,Politics,entity_menu,0,,2,2,2,0,,1,quadratic,one_off
+KXDATASET13,KXDATASET13,Politics,Politics,deadline,0,,2,2,2,0,,1,quadratic,one_off
 KXCREDITRATING-26DEC31,KXCREDITRATING,Politics,Economics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXCORPTAXCUT-27JAN01,KXCORPTAXCUT,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXCONGRESSTESTIFY-27JAN,KXCONGRESSTESTIFY,Politics,Politics,entity_menu,0,,13,13,13,0,,1,quadratic,annual
@@ -4391,19 +4391,19 @@ KXFREYOUT,KXFREYOUT,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXSCOTUSN-25DEC31,KXSCOTUSN,Politics,Politics,deadline,0,,5,5,5,0,,1,quadratic,annual
 KXXITAIWAN,KXXITAIWAN,Politics,Politics,deadline,0,,4,4,4,0,,1,quadratic,one_off
 KXFBUSTER-26JAN01,KXFBUSTER,Politics,Politics,deadline,0,,3,3,3,0,,1,quadratic,annual
-KXUSMCA-26,KXUSMCA,Politics,Politics,entity_menu,0,,2,1,1,0,,1,quadratic,custom
+KXUSMCA-26,KXUSMCA,Politics,Politics,deadline,0,,2,1,1,0,,1,quadratic,custom
 KXTREASBLOCKCHAIN-26,KXTREASBLOCKCHAIN,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXTRDBAN-25DEC31,KXTRDBAN,Politics,Politics,deadline,0,,2,2,2,0,,1,quadratic,custom
-KXTAXWAIVE-26,KXTAXWAIVE,Politics,Politics,entity_menu,0,,2,1,1,0,,1,quadratic,custom
-KXTARIFFCHECKS-26,KXTARIFFCHECKS,Politics,Politics,entity_menu,0,,4,1,1,0,,1,quadratic,one_off
+KXTAXWAIVE-26,KXTAXWAIVE,Politics,Politics,deadline,0,,2,1,1,0,,1,quadratic,custom
+KXTARIFFCHECKS-26,KXTARIFFCHECKS,Politics,Politics,deadline,0,,4,1,1,0,,1,quadratic,one_off
 KXSYRIA-26,KXSYRIA,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
-KXSOTHLEAVE-26,KXSOTHLEAVE,Politics,Politics,entity_menu,0,,2,1,1,0,,1,quadratic,custom
+KXSOTHLEAVE-26,KXSOTHLEAVE,Politics,Politics,deadline,0,,2,1,1,0,,1,quadratic,custom
 KXSANCTIONRUSSIA-26JAN01,KXSANCTIONRUSSIA,Politics,Politics,deadline,0,,3,3,3,0,,1,quadratic,one_off
 KXRELEASEMAXWELL-26JAN01,KXRELEASEMAXWELL,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXNORDSTREAM2-26,KXNORDSTREAM2,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXNOBELPEACE-26,KXNOBELPEACE,Politics,Politics,entity_menu,0,,21,21,21,0,,1,quadratic,custom
-KXNATIONALIZESPACEX,KXNATIONALIZESPACEX,Politics,Politics,entity_menu,0,,2,1,1,0,,1,quadratic,custom
-KXLEAVELISACOOK-26JAN,KXLEAVELISACOOK,Politics,Politics,entity_menu,0,,2,2,2,0,,1,quadratic,one_off
+KXNATIONALIZESPACEX,KXNATIONALIZESPACEX,Politics,Politics,deadline,0,,2,1,1,0,,1,quadratic,custom
+KXLEAVELISACOOK-26JAN,KXLEAVELISACOOK,Politics,Politics,deadline,0,,2,2,2,0,,1,quadratic,one_off
 KXKOSA-26,KXKOSA,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXKATZOUT-26JAN01,KXKATZOUT,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXGAMBLINGREPEAL-26JAN,KXGAMBLINGREPEAL,Politics,Politics,deadline,0,,2,2,2,0,,0,quadratic,one_off
@@ -4414,7 +4414,7 @@ KXCALLIMPEACHRCONGRESS-26,KXCALLIMPEACHRCONGRESS,Politics,Politics,deadline,0,,3
 KXBRICS-26,KXBRICS,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXACAEXT-26JAN,KXACAEXT,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXUSMINE-25,KXUSMINE,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
-KXSCHUMEROUT-25,KXSCHUMEROUT,Politics,Politics,entity_menu,0,,2,1,1,0,,1,quadratic,custom
+KXSCHUMEROUT-25,KXSCHUMEROUT,Politics,Politics,deadline,0,,2,1,1,0,,1,quadratic,custom
 KXIMPEACHJUDGE-25,KXIMPEACHJUDGE,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXFLIGHTSRUSSIA-25,KXFLIGHTSRUSSIA,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXDOJPARDONS-25,KXDOJPARDONS,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
@@ -4431,18 +4431,18 @@ KXMOONMAN-31,KXMOONMAN,Science and Technology,Science and Technology,entity_menu
 KXSPACEXMARS-30,KXSPACEXMARS,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXDATACENTER-30,KXDATACENTER,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXBLUESPACEX-30,KXBLUESPACEX,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
-KXSPCELAUNCH-COMM,KXSPCELAUNCH,Science and Technology,Science and Technology,entity_menu,0,,5,5,5,0,,1,quadratic,one_off
-KXBOLAUNCH-SHEP,KXBOLAUNCH,Science and Technology,Science and Technology,entity_menu,0,,2,2,1,0,,1,quadratic,one_off
+KXSPCELAUNCH-COMM,KXSPCELAUNCH,Science and Technology,Science and Technology,deadline,0,,5,5,5,0,,1,quadratic,one_off
+KXBOLAUNCH-SHEP,KXBOLAUNCH,Science and Technology,Science and Technology,deadline,0,,2,2,1,0,,1,quadratic,one_off
 NYTOAI-27DEC31,KXNYTOAI,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXSTARSHIPDOCK-28,KXSTARSHIPDOCK,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXOAIDAMAGE-28,KXOAIDAMAGE,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
-KXFDAAPPROVALDATENTLA-LONV,KXFDAAPPROVALDATENTLA,Science and Technology,Science and Technology,entity_menu,0,,3,3,3,0,,1,quadratic,one_off
+KXFDAAPPROVALDATENTLA-LONV,KXFDAAPPROVALDATENTLA,Science and Technology,Science and Technology,deadline,0,,3,3,3,0,,1,quadratic,one_off
 KXFDAAPPROVALDATECMPS-360,KXFDAAPPROVALDATECMPS,Science and Technology,Science and Technology,deadline,0,,5,5,5,0,,1,quadratic,one_off
 KXCOLLEGERANK-TOP20,KXCOLLEGERANK,Science and Technology,Science and Technology,entity_menu,0,,8,8,8,0,,1,quadratic,one_off
 KXLASTEXAM-27DEC31,KXLASTEXAM,Science and Technology,Science and Technology,threshold,0,DIRECNET,8,8,8,0,,1,quadratic,one_off
-KXNEWDRUGAPPNTLA-LONV,KXNEWDRUGAPPNTLA,Science and Technology,Science and Technology,entity_menu,0,,6,6,6,0,,1,quadratic,one_off
-KXNEWDRUGAPPLICATIONCMPS-360,KXNEWDRUGAPPLICATIONCMPS,Science and Technology,Science and Technology,entity_menu,0,,6,6,6,0,,1,quadratic,one_off
-KXNEWDRUGAPPBEAM-RIST,KXNEWDRUGAPPBEAM,Science and Technology,Science and Technology,entity_menu,0,,6,6,5,0,,1,quadratic,one_off
+KXNEWDRUGAPPNTLA-LONV,KXNEWDRUGAPPNTLA,Science and Technology,Science and Technology,deadline,0,,6,6,6,0,,1,quadratic,one_off
+KXNEWDRUGAPPLICATIONCMPS-360,KXNEWDRUGAPPLICATIONCMPS,Science and Technology,Science and Technology,deadline,0,,6,6,6,0,,1,quadratic,one_off
+KXNEWDRUGAPPBEAM-RIST,KXNEWDRUGAPPBEAM,Science and Technology,Science and Technology,deadline,0,,6,6,5,0,,1,quadratic,one_off
 KXROBOTAXIAREA-26DEC,KXROBOTAXIAREA,Science and Technology,Science and Technology,entity_menu,0,,5,4,4,0,,1,quadratic,one_off
 KXWAYMOCITY-26DEC,KXWAYMOCITY,Science and Technology,Science and Technology,entity_menu,0,,10,10,10,0,,1,quadratic,custom
 KXTBCOUNT-27JAN01,KXTBCOUNT,Science and Technology,Science and Technology,threshold,0,DIRECNET,5,5,5,0,,1,quadratic,one_off
@@ -4468,19 +4468,19 @@ KXMODELHIGH-27-1550,KXMODELHIGH,Science and Technology,Science and Technology,en
 KXMACCELL-27,KXMACCELL,Science and Technology,Companies,binary,0,,1,1,1,0,,1,quadratic,custom
 KXLLAMA5-27,KXLLAMA5,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXHLS-27,KXHLS,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
-KXGROK-GROK5,KXGROK,Science and Technology,Science and Technology,entity_menu,0,,4,3,3,0,,1,quadratic,one_off
+KXGROK-GROK5,KXGROK,Science and Technology,Science and Technology,deadline,0,,4,3,3,0,,1,quadratic,one_off
 KXGPTCOST-27,KXGPTCOST,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXGEMINI-GEMI35P,KXGEMINI,Science and Technology,Science and Technology,deadline,0,,10,4,4,0,,1,quadratic,one_off
 KXFDARETATRUTIDE-RET,KXFDARETATRUTIDE,Science and Technology,Science and Technology,deadline,0,,5,5,5,0,,1,quadratic,one_off
 KXFDAAPPROVE-CAG,KXFDAAPPROVE,Science and Technology,Science and Technology,deadline,0,,5,4,4,0,,1,quadratic,one_off
 KXFDAAPPROVALPSYCHEDELIC-27,KXFDAAPPROVALPSYCHEDELIC,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
-KXFDAANNOUNCE-BPC,KXFDAANNOUNCE,Science and Technology,Science and Technology,entity_menu,0,,4,3,3,0,,1,quadratic,one_off
+KXFDAANNOUNCE-BPC,KXFDAANNOUNCE,Science and Technology,Science and Technology,deadline,0,,4,3,3,0,,1,quadratic,one_off
 KXEBOLACOUNTRY-27,KXEBOLACOUNTRY,Science and Technology,Science and Technology,entity_menu,0,,16,16,16,0,,1,quadratic,one_off
 KXCOLLEGEDROP-27,KXCOLLEGEDROP,Science and Technology,Science and Technology,entity_menu,0,,11,11,11,0,,1,quadratic,annual
 KXCLAUDE-MYTH,KXCLAUDE,Science and Technology,Science and Technology,deadline,0,,8,5,5,0,,1,quadratic,one_off
 KXBESTLLMCHINA-27,KXBESTLLMCHINA,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXARENASCORE-GEMI35P,KXARENASCORE,Science and Technology,Science and Technology,threshold,0,DIRECNET,7,7,7,0,,1,quadratic,one_off
-KXALIENS-27,KXALIENS,Science and Technology,Science and Technology,entity_menu,0,,9,7,7,0,,1,quadratic,annual
+KXALIENS-27,KXALIENS,Science and Technology,Science and Technology,deadline,0,,9,7,7,0,,1,quadratic,annual
 KXAIPAUSE-27,KXAIPAUSE,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXAINEURALESE-27,KXAINEURALESE,Science and Technology,Science and Technology,binary,0,,1,1,1,0,,1,quadratic,custom
 KXAAPLPRICEFOLD-27,KXAAPLPRICEFOLD,Science and Technology,Companies,threshold,0,DIRECNET,3,3,3,0,,1,quadratic,custom
@@ -4505,7 +4505,7 @@ KXSPACEXSTARSHIP-14,KXSPACEXSTARSHIP,Science and Technology,Science and Technolo
 KXGPT-OPEN,KXGPT,Science and Technology,Science and Technology,deadline,0,,7,4,4,0,,1,quadratic,one_off
 KXNOBELECON-26,KXNOBELECON,Science and Technology,Science and Technology,entity_menu,0,,9,9,3,0,,1,quadratic,annual
 KXNOBELLIT-26,KXNOBELLIT,Science and Technology,Science and Technology,entity_menu,0,,10,10,10,0,,1,quadratic,annual
-KXNEWGLENN-262,KXNEWGLENN,Science and Technology,Science and Technology,entity_menu,0,,8,5,5,0,,1,quadratic,custom
+KXNEWGLENN-262,KXNEWGLENN,Science and Technology,Science and Technology,deadline,0,,8,5,5,0,,1,quadratic,custom
 KXEBOLACOUNTRY-OCT26,KXEBOLACOUNTRY,Science and Technology,Science and Technology,entity_menu,0,,16,16,15,0,,1,quadratic,one_off
 KXARENASCORE-GROK46,KXARENASCORE,Science and Technology,Science and Technology,threshold,0,DIRECNET,9,9,9,0,,1,quadratic,one_off
 KXSPACEXCOUNT-26AUG,KXSPACEXCOUNT,Science and Technology,Science and Technology,threshold,0,DIRECNET,9,9,9,0,,1,quadratic,custom
@@ -4530,7 +4530,7 @@ KXTECHRANKLISTAICODE-26AUG03,KXTECHRANKLISTAICODE,Science and Technology,Science
 KXLLM1-26AUG03,KXLLM1,Science and Technology,Science and Technology,entity_menu,1,MECNET,8,8,8,0,,1,quadratic_with_maker_fees,custom
 KXCHINAAI-26AUG03,KXCHINAAI,Science and Technology,Science and Technology,entity_menu,1,MECNET,9,9,9,0,,1,quadratic,one_off
 KXGROK-GROK46,KXGROK,Science and Technology,Science and Technology,deadline,0,,5,5,5,0,,1,quadratic,one_off
-KXRKLBLAUNCH-NEUT,KXRKLBLAUNCH,Science and Technology,Science and Technology,entity_menu,0,,7,7,7,0,,1,quadratic,one_off
+KXRKLBLAUNCH-NEUT,KXRKLBLAUNCH,Science and Technology,Science and Technology,deadline,0,,7,7,7,0,,1,quadratic,one_off
 KXCLAUDE-NXTMYTH,KXCLAUDE,Science and Technology,Science and Technology,deadline,0,,5,4,4,0,,1,quadratic,one_off
 KXRIEMANN-35,KXRIEMANN,Science and Technology,Science and Technology,deadline,0,,4,4,4,0,,1,quadratic,one_off
 KXNOBELPHYSICS-26,KXNOBELPHYSICS,Science and Technology,Science and Technology,entity_menu,0,,24,24,24,0,,1,quadratic,annual

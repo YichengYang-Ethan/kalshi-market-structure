@@ -6,9 +6,11 @@ completed tickers are skipped unless `--refresh` is passed.
 
 Endpoint behaviour established by probing on 2026-08-02:
 
-- `/markets/{ticker}/orderbook` returns an **empty book** without authentication, so
-  depth beyond top-of-book is not available to this collector. Top-of-book size is
-  carried in the market snapshot (`yes_bid_size_fp` / `yes_ask_size_fp`).
+- `/markets/{ticker}/orderbook?depth=N` returns **full book depth without
+  authentication**, but the levels sit under the `orderbook_fp` key as `no_dollars` and
+  `yes_dollars` arrays of `[price, size]`. The `orderbook` key is always empty, and
+  reading it is why this project spent weeks believing depth was unavailable. A liquid
+  market returns 60-90 levels per side.
 - Daily candles reach back to **2024-11-07** on long-lived series — nearly two years.
 - `period_interval=1` (minute) works only over short windows; `60` and `1440` accept
   long spans. Minute data therefore has to be windowed and is left to a separate pass.

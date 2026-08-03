@@ -124,8 +124,10 @@ Structure index for the 2026-08-02 census: identifiers and derived classificatio
 
 | File | Rows | Contents |
 | --- | ---: | --- |
-| `events_index.csv.gz` | {ne:,} | one row per open event |
+| `events_index.csv` | {ne:,} | one row per open event, plain CSV |
+| `events_index.csv.gz` | {ne:,} | the same rows, gzip |
 | `markets_index.csv.gz` | {nm:,} | one row per market |
+| `series_rollup.csv` | {ns:,} | per-series counts aggregated from the market index |
 
 **No market data is here.** No prices, no sizes, no volumes, no open interest, no
 contract text — those belong to the exchange and its terms bar redistribution. What is
@@ -138,6 +140,6 @@ be wrong, which is why they are the part published in full. `ever_traded` and
 `traded_24h` are booleans derived from volume; the volumes themselves are not published.
 
 To reconstruct anything else, run `src/kalshi_structure/fetch.py` against the public API.
-""".format(ne=len(rows), nm=len(mrows))
+""".format(ne=len(rows), nm=len(mrows), ns=len(roll))
 open(os.path.join(OUT_DIR, "README.md"), "w").write(readme)
 print(f"template mix: {dict(Counter(r['template'] for r in rows))}")

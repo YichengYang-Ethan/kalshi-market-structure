@@ -34,6 +34,11 @@ for _i, _m in enumerate(
 
 _RE_DEADLINE_FULL = re.compile(r"^(?:before|by)\s+([a-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})$")
 _RE_DEADLINE_YEAR = re.compile(r"^(?:before|by)\s+(\d{4})$")
+# "Before July 2026" (no day) and "Before June" (no year) both occur; a ladder mixes
+# these freely with full dates, so a parser that only reads full dates fails the
+# majority vote and the whole event is misclassified.
+_RE_DEADLINE_MONTH_YEAR = re.compile(r"^(?:before|by)\s+([a-z]+)\.?,?\s+(\d{4})$")
+_RE_DEADLINE_MONTH = re.compile(r"^(?:before|by)\s+([a-z]+)\.?$")
 # A threshold leg is a subject (optional) plus a comparator and a level. The grammar
 # varies widely across categories -- "Republicans, 26+ pts", "6+ wins",
 # "Arizona over 1.5 runs scored", "Above $150,000", "<9", "150,000 or above" -- so each
@@ -81,6 +86,14 @@ def parse_deadline(subtitle: str | None):
     m = _RE_DEADLINE_YEAR.match(t)
     if m:
         return (int(m.group(1)), 1, 1)
+    m = _RE_DEADLINE_MONTH_YEAR.match(t)
+    if m and m.group(1) in _MONTHS:
+        return (int(m.group(2)), _MONTHS[m.group(1)], 1)
+    m = _RE_DEADLINE_MONTH.match(t)
+    if m and m.group(1) in _MONTHS:
+        # No year stated; the ladder's ordering is what matters, so anchor the sentinel
+        # year and let callers compare within one event only.
+        return (0, _MONTHS[m.group(1)], 1)
     return None
 
 
@@ -101,6 +114,10 @@ def parse_threshold(subtitle: str | None):
     if not subtitle:
         return None
     t = subtitle.strip().lower().replace("%", "")
+    # Unit glyphs and per-unit suffixes ride along with the level ("79° or below",
+    # "$4/MTok or below"); strip them so the comparator grammar can match.
+    t = t.replace("\u00b0", "").replace("\u2109", "").replace("\u2103", "")
+    t = re.sub(r"/[a-z]+", "", t)
     m = _RE_COMPACT.match(t)
     if m:
         direction = ">=" if m.group("op").startswith(">") else "<="
@@ -130,6 +147,18 @@ def parse_bucket(subtitle: str | None):
     return (_num(m.group("lo"), m.group("lm")), _num(m.group("hi"), m.group("hm")))
 
 
+_RE_TOMBSTONE = re.compile(r"^\s*(deactivated|void|cancell?ed|n/?a|tbd|-{2,})\s*$", re.I)
+
+
+def _is_tombstone(subtitle: str | None) -> bool:
+    """Placeholder legs left behind by the exchange, e.g. 'DEACTIVATED'.
+
+    They carry no strike and cannot be parsed, so counting them in the denominator of
+    the template vote drags real ladders below the threshold.
+    """
+    return bool(_RE_TOMBSTONE.match(subtitle or ""))
+
+
 def classify_event(event: dict, *, active_only: bool = False) -> str:
     """Infer the contract template that generated an event.
 
@@ -146,6 +175,7 @@ def classify_event(event: dict, *, active_only: bool = False) -> str:
     if active_only:
         legs = [m for m in legs if m.get("status") == "active"]
     legs = legs or [m for m in event.get("markets", []) if m.get("status") == "active"]
+    legs = [m for m in legs if not _is_tombstone(m.get("yes_sub_title"))] or legs
     subs = [m.get("yes_sub_title") or "" for m in legs]
     if not legs:
         return TEMPLATE_UNKNOWN

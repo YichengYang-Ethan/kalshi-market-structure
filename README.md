@@ -28,12 +28,15 @@ structure itself makes possible. Concretely:
 
 ## What the first full pass found
 
-A census of the whole exchange on 2026-08-02 — 8,478 open events, 73,964 open markets,
-12,370 series — followed by roughly 120,000 executable constraint checks:
+A census of the exchange's **open surface** on 2026-08-02 — 8,478 open events, 73,964
+open markets, 12,370 series — followed by roughly 120,000 executable constraint checks.
+Settled events are not included and vastly outnumber open ones, so nothing below is a
+statement about the exchange's history:
 
-- **The exchange is structurally consistent to the tick almost everywhere.** Crypto and
+- **The constraints scanned held almost everywhere on that surface.** Crypto and
   Financials produced zero violations across ~90,600 checks. Sports produced two, both
-  tick-floor artefacts, together worth under $0.42.
+  tick-floor artefacts, together worth under $0.42. The price inputs are not committed,
+  so these totals are not reproducible from this repository alone.
 - **Violations concentrate in Elections and Politics** (~12 surviving fees, ~$46 total).
   Not because the venue is loose, but because that is the one corner where long-dated,
   low-attention derivative ladders sit beside actively-quoted base markets with nobody

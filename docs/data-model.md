@@ -80,7 +80,7 @@ question text.
 | Newly listed markets | `/markets?min_created_ts=<unix>` | Catches new legs added to **existing** events, which event-set diffing misses |
 | Retired markets | `/events?status=open` diff, confirm via `/markets?event_ticker=` | Settled events stay queryable but nested markets come back empty |
 | Fee change history | `/series/fee_changes?show_historical=true` | Authoritative over the published PDF |
-| Order book depth | `/markets/{ticker}/orderbook` | Only YES and NO bid ladders are returned; asks are the mirror |
+| Order book depth | `/markets/{ticker}/orderbook?depth=N` | Levels are under **`orderbook_fp`**, not `orderbook`; the latter is always empty. Returns `no_dollars` / `yes_dollars` as `[price, size]`, up to 50+ levels, no auth required |
 
 ## Lifecycle facts a scanner must encode
 
