@@ -66,6 +66,7 @@ docs/
   boards.md                Every API category compared on the same measurements
   verification.md          Every asserted count with the public API call that reproduces it
   scan-results.md          What a full constraint scan of the open surface returns
+  relation-catalog.md      Every arbitrage-capable structure, price-free (the watchlist)
   audit-response.md        External audit findings, verification, and what changed
   universe-inventory.md    Elections + Politics universe and its traded surface
   classification.md        The research taxonomy and its coverage
