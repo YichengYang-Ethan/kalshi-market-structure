@@ -43,6 +43,63 @@ traded — most of this universe is exactly that.
 Depth beyond the touch is **not** available: `/markets/{ticker}/orderbook` returns an
 empty book without authentication, so `bid_size`/`ask_size` are top-of-book only.
 
+## Elections and Politics are two different exchanges
+
+They share a research universe but almost nothing else, and reporting them together
+hides the single most important fact about each. Split by `event_category`:
+
+| | Elections | Politics |
+| --- | --- | --- |
+| Events | 2,226 | 493 |
+| Series | 636 | 443 |
+| **Events per series** | **3.50** | **1.11** |
+| Active markets | 11,356 | 1,995 |
+| **Ever traded** | **56.6%** | **95.9%** |
+| Traded in 24h | 1,114 | 753 |
+| Median volume of a traded market | 1,204 | 3,805 |
+| Volume | 597.7M | 145.0M |
+
+The events-per-series ratio is the tell. Elections runs at 3.5 — its series are
+**generators**: one `KXHOUSERACE` template stamped out across 350 districts, one
+`KXMIDTERMMOV` across 522 contests. Politics runs at 1.11 — nearly every series is a
+**single bespoke question** ("Will the SAVE Act pass?", "Who is the next Attorney
+General?") that is written once and never repeated.
+
+That difference propagates into everything:
+
+| Template share | Elections | Politics |
+| --- | --- | --- |
+| `entity_menu` | 49% | 18% |
+| `threshold` | 46% | 12% |
+| `binary` | 4% | **47%** |
+| `deadline` | 1% | **21%** |
+
+Elections is menus and ladders over races. Politics is "will this happen" and "by when",
+which is why 96% of its markets trade while only 57% of Elections' do — a bespoke
+question is listed because someone wanted to trade it, whereas a generated ladder leg is
+listed because the template produced it.
+
+The subject matter diverges just as sharply. By volume:
+
+| Elections | | Politics | |
+| --- | --- | --- | --- |
+| `us_primary` | 45.4% | `geopolitics` | 42.5% |
+| `us_local_election` | 14.7% | `personnel` | 16.7% |
+| `us_federal_legislative_election` | 11.6% | `legislation` | 15.0% |
+| `us_federal_executive_election` | 9.6% | `executive_action` | 7.4% |
+| `us_state_election` | 9.5% | `scandal_legal` | 5.9% |
+
+Elections' largest single markets are the 2028 nomination contests
+(`KXPRESNOMD` alone is 167M contracts) and big-city mayoral races. Politics' largest are
+the Strait of Hormuz and a US–Iran agreement — `KXHORMUZNORM` and `KXUSAIRANAGREEMENT`
+together are 45M contracts, nearly a third of the board.
+
+**Practical consequence:** any statistic computed over the combined universe is a
+weighted average of two unlike populations, and the weights are set by Elections'
+template machinery rather than by anything meaningful. Report the two boards separately.
+`events.csv` and `markets.csv` carry `event_category` and `series_category` on every row
+so this split is always available, and `summary.json` now reports `by_board`.
+
 ## The traded surface
 
 Of 13,401 active markets, **8,388 (62.6%) have ever traded** and **1,876 (14.0%) traded

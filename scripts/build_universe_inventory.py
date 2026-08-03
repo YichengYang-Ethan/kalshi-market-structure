@@ -144,6 +144,39 @@ def main() -> None:
                 }) + "\n")
     print(f"wrote {rules_path}")
 
+    # Elections and Politics are structurally different boards and must be reported
+    # separately: one is template-generated race machinery, the other is one-off
+    # binary questions. Aggregating them hides that.
+    by_board = defaultdict(lambda: {"events": 0, "series": set(), "active": 0,
+                                    "traded": 0, "traded_24h": 0, "volume": 0.0,
+                                    "templates": Counter()})
+    ev_cat = {r["event_ticker"]: (r["event_category"] or "other") for r in ev_rows}
+    for r in ev_rows:
+        b = by_board[r["event_category"] or "other"]
+        b["events"] += 1
+        b["series"].add(r["series_ticker"])
+        b["templates"][r["template"]] += 1
+    for r in mk_rows:
+        if r["status"] != "active":
+            continue
+        b = by_board[ev_cat.get(r["event_ticker"], "other")]
+        b["active"] += 1
+        b["traded"] += 1 if r["ever_traded"] else 0
+        b["traded_24h"] += 1 if r["traded_last_24h"] else 0
+        b["volume"] += r["volume"]
+    board_summary = {}
+    for name, b in by_board.items():
+        board_summary[name] = {
+            "events": b["events"], "series": len(b["series"]),
+            "events_per_series": round(b["events"] / max(len(b["series"]), 1), 2),
+            "active_markets": b["active"],
+            "traded": b["traded"],
+            "traded_pct": round(b["traded"] / max(b["active"], 1) * 100, 1),
+            "traded_24h": b["traded_24h"],
+            "volume": round(b["volume"]),
+            "template_mix": dict(b["templates"]),
+        }
+
     active_mk = [r for r in mk_rows if r["status"] == "active"]
     traded = [r for r in active_mk if r["ever_traded"]]
     recent = [r for r in active_mk if r["traded_last_24h"]]
@@ -161,6 +194,7 @@ def main() -> None:
         "template_mix": dict(tpl_counts),
         "total_volume_contracts": round(sum(r["volume"] for r in mk_rows)),
         "total_open_interest": round(sum(r["open_interest"] for r in mk_rows)),
+        "by_board": board_summary,
     }
     with open(os.path.join(OUT_DIR, "summary.json"), "w") as f:
         json.dump(summary, f, indent=1)
