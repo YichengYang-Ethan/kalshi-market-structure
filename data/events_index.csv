@@ -3971,7 +3971,7 @@ KX48ETAXCREDIT-26MAY,KX48ETAXCREDIT,Politics,Politics,binary,0,,1,1,1,0,,1,quadr
 KXFULLTERMSKPRES-29,KXFULLTERMSKPRES,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,custom
 KXDEBTGROWTH-28DEC31,KXDEBTGROWTH,Politics,Economics,entity_menu,0,,6,6,6,0,,1,quadratic,custom
 KXEOTRUMPTERM-29JAN20,KXEOTRUMPTERM,Politics,Politics,entity_menu,1,MECNET,12,12,12,0,,1,quadratic,one_off
-KXGREENLANDPRICE-29JAN21,KXGREENLANDPRICE,Politics,Politics,entity_menu,1,MECNET,8,8,8,0,,1,quadratic,one_off
+KXGREENLANDPRICE-29JAN21,KXGREENLANDPRICE,Politics,Politics,bucket,1,MECNET,8,8,8,0,,1,quadratic,one_off
 KXUSAEXPANDTERRITORY,KXUSAEXPANDTERRITORY,Politics,Politics,deadline,0,,4,3,3,0,,1,quadratic,one_off
 KXTRUMPRESIGN,KXTRUMPRESIGN,Politics,Politics,binary,0,,1,1,1,0,,1,quadratic,one_off
 KXTRUMPPARDONS-29JAN21,KXTRUMPPARDONS,Politics,Politics,entity_menu,0,,52,52,52,0,,1,quadratic,one_off

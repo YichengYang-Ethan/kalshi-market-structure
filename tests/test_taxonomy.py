@@ -274,3 +274,16 @@ def test_tombstone_legs_do_not_sink_the_vote():
         {"status": "active", "yes_sub_title": "Before Oct 1, 2026"},
         {"status": "active", "yes_sub_title": "Before Nov 1, 2026"}]}
     assert classify_event(ladder) == "deadline"
+
+
+def test_spelled_out_magnitudes_are_multipliers():
+    """Ladders spell out 'billion'/'trillion'; dropping the word inverted comparisons.
+
+    'Above $500 billion' was parsing to 500 and 'Above $2.5 trillion' to 2.5, so the
+    scanner ordered the ladder backwards and reported phantom cross-threshold locks.
+    """
+    assert parse_threshold("Above $500 billion") == ("", 5e11, ">=")
+    assert parse_threshold("Above $2.5 trillion") == ("", 2.5e12, ">=")
+    assert parse_bucket("$1 billion to $9 billion") == (1e9, 9e9)
+    lo, hi = parse_threshold("Above $500 billion")[1], parse_threshold("Above $2.5 trillion")[1]
+    assert lo < hi  # 500B is a lower threshold than 2.5T

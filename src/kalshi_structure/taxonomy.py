@@ -49,26 +49,27 @@ _RE_THRESHOLD_PLUS = re.compile(
 )
 _RE_THRESHOLD_ABOVE = re.compile(
     rf"^(?P<subject>.*?)(?:^|\b)(?:above|at least|over|greater than|more than)\s*\$?"
-    rf"(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?{_UNIT}$", re.I
+    rf"(?P<level>[\d.,]+)\s*(?P<mult>[kmbt]|thousand|million|billion|trillion)?{_UNIT}$", re.I
 )
 _RE_THRESHOLD_OR = re.compile(
-    rf"^(?P<subject>.*?)\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?\s*or\s+"
+    rf"^(?P<subject>.*?)\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt]|thousand|million|billion|trillion)?\s*or\s+"
     rf"(?:above|higher|more|greater){_UNIT}$", re.I
 )
 _RE_BELOW_WORD = re.compile(
     rf"^(?P<subject>.*?)(?:^|\b)(?:below|under|less than|fewer than)\s*\$?"
-    rf"(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?{_UNIT}$", re.I
+    rf"(?P<level>[\d.,]+)\s*(?P<mult>[kmbt]|thousand|million|billion|trillion)?{_UNIT}$", re.I
 )
 _RE_BELOW_OR = re.compile(
-    rf"^(?P<subject>.*?)\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?\s*or\s+"
+    rf"^(?P<subject>.*?)\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt]|thousand|million|billion|trillion)?\s*or\s+"
     rf"(?:below|less|fewer){_UNIT}$", re.I
 )
 # Compact comparators used by the *TWEETS / post-count series: "<9", ">20", ">=15".
-_RE_COMPACT = re.compile(r"^(?P<op>[<>]=?)\s*\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt])?$")
+_RE_COMPACT = re.compile(r"^(?P<op>[<>]=?)\s*\$?(?P<level>[\d.,]+)\s*(?P<mult>[kmbt]|thousand|million|billion|trillion)?$")
 _RE_BUCKET = re.compile(
-    r"^\$?(?P<lo>-?[\d.,]+)\s*(?P<lm>[kmbt])?\s*(?:to|-|–)\s*\$?(?P<hi>-?[\d.,]+)\s*(?P<hm>[kmbt])?", re.I
+    r"^\$?(?P<lo>-?[\d.,]+)\s*(?P<lm>[kmbt]|thousand|million|billion|trillion)?\s*(?:to|-|–)\s*\$?(?P<hi>-?[\d.,]+)\s*(?P<hm>[kmbt]|thousand|million|billion|trillion)?", re.I
 )
-_MULT = {"k": 1e3, "m": 1e6, "b": 1e9, "t": 1e12}
+_MULT = {"k": 1e3, "m": 1e6, "b": 1e9, "t": 1e12,
+         "thousand": 1e3, "million": 1e6, "billion": 1e9, "trillion": 1e12}
 
 
 def _num(text: str, mult: str | None) -> float:
