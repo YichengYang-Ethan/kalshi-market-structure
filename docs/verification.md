@@ -30,13 +30,13 @@ Three properties of this that a reviewer should check rather than take on trust:
 
 | Quantity | Value | Reproduce |
 | --- | ---: | --- |
-| Open events | 8,478 | count rows after full pagination |
-| Open markets | 73,964 | sum `len(event.markets)` |
-| Active markets | 72,401 | filter `market.status == 'active'` |
-| Series in catalog | 12,370 | `len(GET /series)` |
-| Series with open markets | 3,083 | distinct `event.series_ticker` |
+| Open events | 9,410 | count rows after full pagination |
+| Open markets | 72,482 | sum `len(event.markets)` |
+| Active markets | 71,359 | filter `market.status == 'active'` |
+| Series in catalog | 12,407 | `len(GET /series)` |
+| Series with open markets | 3,128 | distinct `event.series_ticker` |
 | Distinct `event.category` values | 17 | `set(event.category)` |
-| Events where series.category != event.category | 142 | join events to series on ticker |
+| Events where series.category != event.category | 144 | join events to series on ticker |
 
 ## Per-board counts
 
@@ -44,18 +44,18 @@ Attributed by `event.category`, one board per event.
 
 | Board | Events | Markets | Active | Ever traded | Series |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Sports | 3,920 | 35,344 | 34,756 | 16,435 | 799 |
-| Elections | 2,226 | 11,476 | 11,356 | 6,425 | 636 |
-| Entertainment | 498 | 6,789 | 6,405 | 5,136 | 292 |
-| Politics | 493 | 2,170 | 1,995 | 1,914 | 443 |
-| Financials | 443 | 8,152 | 8,093 | 3,623 | 259 |
-| Economics | 352 | 3,337 | 3,265 | 2,917 | 228 |
-| Climate and Weather | 137 | 883 | 879 | 839 | 83 |
-| Science and Technology | 119 | 802 | 702 | 634 | 103 |
-| Crypto | 108 | 2,646 | 2,629 | 750 | 78 |
-| Companies | 71 | 507 | 495 | 483 | 60 |
-| Mentions | 58 | 983 | 957 | 913 | 57 |
-| Commodities | 29 | 807 | 801 | 506 | 26 |
+| Sports | 4,817 | 34,718 | 34,563 | 14,899 | 809 |
+| Elections | 2,230 | 11,532 | 11,412 | 6,441 | 636 |
+| Entertainment | 503 | 6,660 | 6,273 | 5,055 | 295 |
+| Politics | 498 | 2,187 | 2,010 | 1,925 | 444 |
+| Financials | 447 | 5,389 | 5,329 | 3,744 | 280 |
+| Economics | 353 | 3,345 | 3,273 | 2,951 | 229 |
+| Climate and Weather | 137 | 883 | 879 | 852 | 83 |
+| Science and Technology | 121 | 817 | 717 | 664 | 103 |
+| Crypto | 106 | 4,032 | 4,013 | 781 | 78 |
+| Companies | 71 | 507 | 495 | 484 | 60 |
+| Mentions | 59 | 1,012 | 1,001 | 959 | 58 |
+| Commodities | 44 | 1,332 | 1,326 | 663 | 34 |
 | Social | 9 | 30 | 30 | 30 | 9 |
 | World | 7 | 23 | 23 | 19 | 5 |
 | Health | 6 | 12 | 12 | 12 | 6 |
@@ -71,18 +71,18 @@ about.
 
 | Template | Events |
 | --- | ---: |
-| `entity_menu` | 4,030 |
-| `threshold` | 2,972 |
-| `binary` | 1,098 |
-| `deadline` | 291 |
-| `bucket` | 69 |
+| `entity_menu` | 4,612 |
+| `threshold` | 3,150 |
+| `binary` | 1,272 |
+| `deadline` | 290 |
+| `bucket` | 68 |
 | `combination` | 18 |
 
 ## Partition diagnostics
 
-- mutually exclusive events: **3,438**
-- of those, numeric partitions passing the structural tiling check: **63**
-- graded `explicit` / `implicit` / `none`: **14 / 44 / 5**
+- mutually exclusive events: **4,003**
+- of those, numeric partitions passing the structural tiling check: **62**
+- graded `explicit` / `implicit` / `none`: **14 / 43 / 5**
 
 The explicit set is the only one where a buy-all-YES basket is supported by contract
 text rather than inference. Tickers, so this is checkable one by one:
@@ -109,7 +109,7 @@ API at least twice.
 
 - zero-fee series in catalog: **14** — `KXBTCY`, `KXCITRINI`, `KXDOED`, `KXELECTIRAN`, `KXETHY`, `KXEXPAND`, `KXGAMBLINGREPEAL`, `KXGDPYEAR`, `KXGREENLAND`, `KXIRANDEMOCRACY`, `KXLAYOFFSYINFO`, `KXNEXTIRANLEADER`, `KXPAHLAVIHEAD`, `KXTRUMPOUT`
 - of those, currently listing open markets: **11**
-- maker-fee series in catalog: **130**, live: **78**
+- maker-fee series in catalog: **130**, live: **79**
 
 ## What would falsify the collection
 
