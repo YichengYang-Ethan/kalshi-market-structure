@@ -58,14 +58,19 @@ docs/
   taxonomy.md              Site navigation vs API categories; the series as unit of analysis
   data-model.md            Series / event / market object model and field semantics
   fee-model.md             Verified fee formulas, per-series overrides, collateral netting
-  settlement-patterns.md   Contract-template grammar and rule-text archetypes
-  categories/*.md          Per-category structural profile (one file per API category)
+  settlement-patterns.md   Contract-template grammar and the constraint grammar it implies
+  universe-inventory.md    Elections + Politics universe and its traded surface
+  classification.md        The research taxonomy and its coverage
+  categories/*.md          Per-category structural profile
 src/kalshi_structure/
   fetch.py                 Full-exchange census fetcher (category-sharded output)
-  taxonomy.py              Series/event classification and template detection
-  relations.py             Cross-market logical relation extraction
-  scan.py                  Constraint-violation scanner with fee-aware economics
-scripts/                   One-off analysis entry points
+  universe.py              Union definition of the Elections + Politics universe
+  taxonomy.py              Contract-template detection and partition diagnostics
+  classify.py              Deterministic research taxonomy (domain, subject, authority)
+  relations.py             Settlement-logic constraints and their fee-aware economics
+  history.py               Candlestick / trade-tape collection with checkpointing
+scripts/                   Analysis entry points (profile, inventory, classification)
+tests/                     Regression tests for every parser grammar that once failed
 ```
 
 ## Method
