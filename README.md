@@ -60,6 +60,7 @@ docs/
   fee-model.md             Verified fee formulas, per-series overrides, collateral netting
   settlement-patterns.md   Contract-template grammar and the constraint grammar it implies
   boards.md                Every API category compared on the same measurements
+  verification.md          Every asserted count with the public API call that reproduces it
   universe-inventory.md    Elections + Politics universe and its traded surface
   classification.md        The research taxonomy and its coverage
   categories/*.md          Per-category structural profile
@@ -97,6 +98,11 @@ Kalshi's terms prohibit redistribution of exchange data. **No market data is com
 to this repository** — `.gitignore` excludes all data formats, and snapshots live outside
 the working tree. What is committed: code, schemas, documented structure, and analysis
 conclusions expressed in aggregate.
+
+This is also why [verification.md](docs/verification.md) publishes assertions and the
+calls that regenerate them rather than the corpus itself. Handing a reviewer the data
+lets them check it is internally consistent; it cannot reveal that an entire slice was
+never fetched. Independent reproduction can.
 
 ## Reproducing
 
