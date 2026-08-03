@@ -130,14 +130,32 @@ def parse_bucket(subtitle: str | None):
     return (_num(m.group("lo"), m.group("lm")), _num(m.group("hi"), m.group("hm")))
 
 
-def classify_event(event: dict) -> str:
-    """Infer the contract template of an event from its legs."""
-    legs = [m for m in event.get("markets", []) if m.get("status") == "active"]
+def classify_event(event: dict, *, active_only: bool = False) -> str:
+    """Infer the contract template that generated an event.
+
+    By default this reads **all** legs, including settled ones. A generator's identity
+    does not change when its early rungs resolve: a six-rung deadline ladder with five
+    legs finalised is still a deadline ladder, and labelling it ``binary`` because one
+    leg is left describes the order book rather than the contract. 44 events in the
+    2026-08-02 census were mislabelled that way.
+
+    Pass ``active_only=True`` when the question is what can be traded right now — sizing
+    a basket, counting executable legs — rather than what kind of contract this is.
+    """
+    legs = event.get("markets", [])
+    if active_only:
+        legs = [m for m in legs if m.get("status") == "active"]
+    legs = legs or [m for m in event.get("markets", []) if m.get("status") == "active"]
     subs = [m.get("yes_sub_title") or "" for m in legs]
     if not legs:
         return TEMPLATE_UNKNOWN
     if len(legs) == 1:
         return TEMPLATE_BINARY
+
+    # Combination is decided first: its legs routinely satisfy the threshold grammar
+    # too ("Core CPI above X and headline above Y"), so a later branch never sees them.
+    if _is_combination(legs):
+        return TEMPLATE_COMBINATION
 
     n_dead = sum(1 for s in subs if parse_deadline(s))
     n_bucket = sum(1 for s in subs if parse_bucket(s))
@@ -150,8 +168,6 @@ def classify_event(event: dict) -> str:
         return TEMPLATE_BUCKET_PARTITION
     if n_thresh >= max(2, n * 0.6):
         return TEMPLATE_THRESHOLD_LADDER
-    if _is_combination(legs):
-        return TEMPLATE_COMBINATION
     return TEMPLATE_ENTITY_MENU
 
 

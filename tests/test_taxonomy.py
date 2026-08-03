@@ -108,3 +108,55 @@ def test_combination_detected_from_rule_text_not_conjunctions():
         ],
     }
     assert classify_event(combo) == "combination"
+
+
+def test_quote_strings_are_not_tested_for_truthiness():
+    """Quote fields are decimal strings; bool("0.0000") is True.
+
+    Using bool() as a proxy for 'this side is quoted' marked every market on the
+    exchange as two-sided in a published index.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "bsi", os.path.join(os.path.dirname(__file__), "..", "scripts", "build_structure_index.py"))
+    # Import the helper without running the module's collection pass.
+    src = open(spec.origin).read()
+    ns = {}
+    start = src.index("def quoted(")
+    end = src.index("series = load_series()")
+    exec(compile(src[start:end], spec.origin, "exec"), ns)
+    quoted = ns["quoted"]
+    assert quoted("0.4500") is True
+    assert quoted("0.0000") is False      # the bug
+    assert quoted("1.0000") is False      # not a live quote
+    assert quoted("") is False
+    assert quoted(None) is False
+
+
+def test_combination_wins_over_threshold():
+    """Combination legs also satisfy the threshold grammar, so order decides."""
+    combo = {"markets": [
+        {"status": "active", "yes_sub_title": "Core above 0.3% and headline above 0.2%",
+         "rules_primary": "If ALL of the following occur: core CPI above 0.3%, headline CPI above 0.2%, then the market resolves to Yes."},
+        {"status": "active", "yes_sub_title": "Core above 0.4% and headline above 0.3%",
+         "rules_primary": "If ALL of the following occur: core CPI above 0.4%, headline CPI above 0.3%, then the market resolves to Yes."}]}
+    assert classify_event(combo) == "combination"
+
+
+def test_generator_label_survives_its_legs_settling():
+    """A ladder with one rung left is still a ladder; only its tradeable shape is binary."""
+    ladder = {"markets": [
+        {"status": "finalized", "yes_sub_title": "Before Jun 1, 2026"},
+        {"status": "finalized", "yes_sub_title": "Before Jul 1, 2026"},
+        {"status": "finalized", "yes_sub_title": "Before Aug 1, 2026"},
+        {"status": "active", "yes_sub_title": "Before Jan 1, 2027"}]}
+    assert classify_event(ladder) == "deadline"
+    assert classify_event(ladder, active_only=True) == "binary"
+
+
+def test_buy_all_requires_explicit_exhaustiveness():
+    from kalshi_structure.relations import Partition, Quote
+    q = [Quote("A", 0.30, 0.31, 100, 100), Quote("B", 0.60, 0.62, 100, 100)]
+    for grade, expect_edge in (("explicit", True), ("implicit", False), ("none", False)):
+        p = Partition(legs=("A", "B"), tiled=True, basis="test", exhaustiveness=grade)
+        assert (p.evaluate_buy_all(q) is not None) is expect_edge

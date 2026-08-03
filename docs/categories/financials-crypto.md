@@ -413,7 +413,7 @@ Sell side: two partitions carry a raw `Σ bid > 1`, and both die on fees.
 | `KXBTCY-27JAN0100` | **0** | 28 | 28 | 0.9960 | 0.0000 | **−0.0040** | 2.4 |
 | `KXETHY-27JAN0100` | **0** | 18 | 18 | 0.9480 | 0.0000 | −0.0520 | 0.2 |
 
-**`KXBTCY` is the tightest structural constraint on the exchange.** It is zero-fee, quotes on a
+**`KXBTCY` is the tightest structural constraint found in this snapshot.** It is zero-fee, quotes on a
 tenth-cent tick, has an offer and a bid on all 28 legs, per-leg spreads of $0.001–$0.008
 (median $0.003), and its sum-of-bids sits **0.4 cents** below the no-arbitrage bound with no fee
 cushion whatsoever. Its sum-of-asks is 1.0880, so the whole 28-leg partition trades inside a

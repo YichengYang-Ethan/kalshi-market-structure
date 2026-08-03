@@ -53,13 +53,13 @@ Three further zero-fee series (`KXEXPAND`, `KXNEXTIRANLEADER`, `KXTRUMPOUT`) cur
 have no open markets.
 
 On these series **both** sides are free, so any positive gross edge is a positive net
-edge. That makes them the cheapest place on the exchange to test a structural
+edge. That makes them the cheapest place to test a structural
 constraint — the constraint either holds or it does not, with no fee wall to argue about.
 
 ### Maker-fee series (live): the liquidity tax
 
 The 78 live maker-fee series are not a random sample. They are, almost exactly, the
-highest-flow products on the exchange:
+highest-flow products listed:
 
 | Group | Count | Examples |
 | --- | --- | --- |

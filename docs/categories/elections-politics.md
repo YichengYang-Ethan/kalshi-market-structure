@@ -20,7 +20,7 @@ after both legs' taker fees.
 
 - Active markets **13,351** (97.8%). Non-active: 274 `finalized`, 20 `inactive`, 1 `closed`.
   **134 open events carry at least one dead leg** (295 dead legs total).
-- **1,078 distinct series** — the most series-fragmented slice on the exchange — but extremely concentrated:
+- **1,078 distinct series** — the most series-fragmented slice in this snapshot — but extremely concentrated:
   the top 5 series hold **56.6%** of the markets, the top 20 hold 61.9%. **1,014 of 1,078 series (94%) have
   exactly one event**; 770 have ≤5 markets.
 - Every market is `market_type = binary`, `notional_value_dollars = 1.0000`.

@@ -30,6 +30,19 @@ def fnum(x):
     try: return float(x or 0)
     except (TypeError, ValueError): return 0.0
 
+def quoted(x):
+    """True when a side carries a real price.
+
+    Quote fields are decimal STRINGS, so bool() is not a test of whether a side is
+    quoted: bool("0.0000") is True. An earlier version of this file used bool() and
+    marked all 73,964 markets two-sided.
+    """
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return False
+    return 0.0 < v < 1.0
+
 series = load_series()
 rows, mrows = [], []
 for e in iter_all_events():
@@ -65,7 +78,7 @@ for e in iter_all_events():
             "template": tpl,
             "ever_traded": int(fnum(m.get("volume_fp")) > 0),
             "traded_24h": int(fnum(m.get("volume_24h_fp")) > 0),
-            "two_sided": int(bool(m.get("yes_bid_dollars")) and bool(m.get("yes_ask_dollars"))),
+            "two_sided": int(quoted(m.get("yes_bid_dollars")) and quoted(m.get("yes_ask_dollars"))),
             "can_close_early": int(bool(m.get("can_close_early"))),
         })
 

@@ -71,12 +71,12 @@ about.
 
 | Template | Events |
 | --- | ---: |
-| `entity_menu` | 4,073 |
-| `threshold` | 2,959 |
-| `binary` | 1,142 |
-| `deadline` | 219 |
+| `entity_menu` | 4,087 |
+| `threshold` | 2,961 |
+| `binary` | 1,098 |
+| `deadline` | 245 |
 | `bucket` | 69 |
-| `combination` | 16 |
+| `combination` | 18 |
 
 ## Partition diagnostics
 

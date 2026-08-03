@@ -17,9 +17,4 @@ them, so that the inferences every count rests on can be checked row by row.
 be wrong, which is why they are the part published in full. `ever_traded` and
 `traded_24h` are booleans derived from volume; the volumes themselves are not published.
 
-`events_index.csv` is the same content uncompressed, for readers and tools that cannot
-open gzip. `series_rollup.csv` aggregates the market index to series level — the same
-counts at the granularity most queries actually use — because the uncompressed market
-index is 7.3 MB and unreliable to read in one piece.
-
 To reconstruct anything else, run `src/kalshi_structure/fetch.py` against the public API.

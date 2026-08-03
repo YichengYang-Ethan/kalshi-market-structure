@@ -61,6 +61,7 @@ docs/
   settlement-patterns.md   Contract-template grammar and the constraint grammar it implies
   boards.md                Every API category compared on the same measurements
   verification.md          Every asserted count with the public API call that reproduces it
+  audit-response.md        External audit findings, verification, and what changed
   universe-inventory.md    Elections + Politics universe and its traded surface
   classification.md        The research taxonomy and its coverage
   categories/*.md          Per-category structural profile

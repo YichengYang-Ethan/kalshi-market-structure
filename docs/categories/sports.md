@@ -15,7 +15,7 @@ sizes are the `*_size_fp` decimal-contract fields.
 | series with live events | 799 | — | — |
 | series carrying `category == "Sports"` in `series.json` | 3,065 | 12,370 | 24.8% |
 
-Sports is the largest category on the exchange by both events and markets — nearly half of
+Sports is the largest category by both events and markets on the open surface — nearly half of
 every live contract. It is also the most *dormant-heavy*: only 799 of the 3,065 sports series
 have any live event in this snapshot (26%), because the bulk of the series catalogue is
 per-league game templates that instantiate only on match days.

@@ -103,20 +103,37 @@ class Implication:
 
 @dataclass(frozen=True)
 class Partition:
-    """Mutually exclusive, collectively exhaustive legs: prices must sum to 1.
+    """Mutually exclusive legs. Prices sum to 1 only when they are also exhaustive.
 
-    ``tiled`` must be established structurally (see taxonomy.partition_is_tiled) before
-    the exhaustiveness half of this constraint may be used. A partition with a hole
-    supports only the sum <= 1 direction.
+    Two separate facts are needed and they are not the same fact:
+
+    ``tiled``           the legs leave no gap a value could fall into. Necessary.
+    ``exhaustiveness``  'explicit' when the contract text states the underlying's
+                        reporting precision or that bounds are inclusive; 'implicit'
+                        when only the way the bounds are written implies it; 'none'
+                        otherwise. Only 'explicit' is sufficient.
+
+    Buying every leg's YES is a synthetic $1 solely in the explicit case. Requiring only
+    ``tiled`` puts 'implicit' and 'none' partitions on a payoff path that can pay zero,
+    which is what this class previously did.
     """
     legs: tuple[str, ...]
     tiled: bool
     basis: str
+    exhaustiveness: str = "none"
     failure_modes: tuple[str, ...] = ()
 
+    @property
+    def supports_sum_to_one(self) -> bool:
+        return self.tiled and self.exhaustiveness == "explicit"
+
     def evaluate_buy_all(self, quotes: Sequence[Quote]) -> Edge | None:
-        """Buy every leg's YES: pays exactly $1 if the partition is exhaustive."""
-        if not self.tiled or any(q.yes_ask is None for q in quotes):
+        """Buy every leg's YES: a synthetic $1 only under an explicit guarantee.
+
+        Returns None rather than an edge when exhaustiveness is not established, because
+        the payoff of the package is undefined in that case, not merely uncertain.
+        """
+        if not self.supports_sum_to_one or any(q.yes_ask is None for q in quotes):
             return None
         cost = sum(q.yes_ask for q in quotes)
         fees = sum(taker_fee(q.yes_ask, q.fee_multiplier) for q in quotes)

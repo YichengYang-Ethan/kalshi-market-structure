@@ -144,7 +144,7 @@ that is the useful result:
 | `KXMIDTERMMOV-OH07R-P1` | 7,193 | 1,567 | **yes** |
 | `KXGREENTERRITORY-29` | 2,806,120 | 397,975 | **yes** |
 
-The single largest violation on the exchange rests on a leg that has **never traded** —
+The single largest violation found rests on a leg that has **never traded** —
 a quote nobody has ever hit is not a stale price, it is a price that was never
 discovered, and the "edge" exists only to the extent that quote is real and will fill.
 But the Ohio pair traded 7,193 contracts and was active within the day, and the Greenland

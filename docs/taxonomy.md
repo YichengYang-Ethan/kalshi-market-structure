@@ -76,17 +76,22 @@ live exchange four-fold.
 ## Contract templates
 
 Every event resolves into one of a small number of generated shapes. Classification is
-inferred from leg-subtitle grammar, `strike_type`, `custom_strike` and the
-`mutually_exclusive` flag (see `src/kalshi_structure/taxonomy.py`).
+inferred from leg-subtitle grammar and, for combinations, from rule text
+(`classify_event()` in `src/kalshi_structure/taxonomy.py`). It does **not** currently
+read `strike_type`, `custom_strike` or `mutually_exclusive`, though all three are
+available and `strike_type` in particular would be a stronger signal than the subtitle
+grammar for numeric ladders. Counts below are the generator label, taken over all legs
+including settled ones; pass `active_only=True` for the currently tradeable shape, which
+differs for 44 events whose ladders have all but one rung finalised.
 
 | Template | Events | Leg grammar | Structural constraint it supports |
 | --- | --- | --- | --- |
-| `entity_menu` | 4,591 | one leg per candidate/person/team/option | sum-to-one when mutex **and** exhaustive |
-| `threshold` | 2,361 | "N+ pts", "Above $X", "X or above" | nesting: higher level implies lower |
+| `entity_menu` | 4,073 | one leg per candidate/person/team/option | sum-to-one when mutex **and** exhaustive |
+| `threshold` | 2,959 | "N+ pts", "Above $X", "X or above" | nesting: higher level implies lower |
 | `binary` | 1,142 | single yes/no proposition | none internally; cross-event only |
 | `deadline` | 219 | "Before \<date\>" | nesting: earlier deadline implies later |
 | `bucket` | 69 | "A to B" ranges tiling a line | sum-to-one when tiled |
-| `combination` | 51 | conjunction of two base outcomes | marginal identities against the bases |
+| `combination` | 16 | conjunction of two base outcomes | marginal identities against the bases |
 
 Template mix differs sharply by category — Mentions is 100% `entity_menu`, Crypto is
 dominated by `bucket`/`threshold`, Politics is unusually `binary`-heavy (233 of 493) —
@@ -108,7 +113,7 @@ collectively exhaustive. Checking that structurally is subtler than it looks.
 | Commodities | 1 | 1 | 0 | 0 |
 | Politics | 1 | 0 | 0 | 1 |
 
-Only 14 partitions on the whole exchange carry an explicit guarantee; see
+Only 14 partitions in this snapshot carry an explicit guarantee; see
 [boards.md](boards.md#exhaustiveness-graded).
 
 Kalshi writes **closed** ranges against a **quantised** underlying. `KXGDPYEAR` lists

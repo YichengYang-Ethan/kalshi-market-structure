@@ -1,5 +1,11 @@
 # Every board, compared
 
+> **Scope.** Every figure here describes the events that were *open* at the
+> 2026-08-02 snapshot. Roughly 100,000+ settled events exist and none are included,
+> so nothing below is a statement about the exchange's history. Crypto alone has
+> settled over 43,000 events against 108 open ones — a board can look small here and
+> be among the most active by turnover.
+
 Each API category has been inventoried with the same pipeline used for Elections +
 Politics: union universe, contract-template classification, activity flags, fee surface,
 partition diagnostics. Outputs live in per-board directories under the data root.
@@ -25,6 +31,8 @@ events, 1.7%, carry a `series.category` that disagrees with their `event.categor
 | Mentions | 58 | 957 | 95.4% | 2.5M | **0** | **0** | 0 | 0 | 0 |
 | Commodities | 29 | 801 | 63.2% | 1.5M | 21 | 1 | 1 | 0 | 0 |
 | Health / World / Social | 22 | 65 | ~96% | 1.4M | 3 | 5 | 0 | 0 | 0 |
+| Transportation | 1 | 1 | 100% | <0.1M | 0 | 0 | 0 | 0 | 0 |
+| *(null category)* | 1 | 2 | 100% | <0.1M | 0 | 0 | 0 | 0 | 0 |
 
 *Ladder events* = events with two or more nested legs, i.e. the surface on which
 implication constraints can exist. *Tiled* = mutually exclusive numeric partitions whose
@@ -34,20 +42,27 @@ gaps pass the structural check.
 
 **Generation ratio.** Sports (4.91 events per series) and Elections (3.50) are template
 factories: one series stamped across every game or district. Everything else runs near
-1.0 — a series is a single bespoke question. The ratio predicts almost everything else.
+1.0 — a series is a single bespoke question.
 
-**Traded share tracks scale, not subject.** The four boards below 60% traded are the four
-largest by listing count (Crypto 28.5%, Financials 44.8%, Sports 47.3%, Elections 56.6%).
-The boards at 95%+ are the small ones. Batch generation produces a long tail nobody
-looks at; bespoke listing does not, because a question gets listed when someone wants to
-trade it.
+**That ratio is associated with leg-level activity, but does not explain it.**
+Across the 17 boards the correlation is real (Pearson −0.56, Spearman −0.80) yet weaker
+than two simpler measures: active markets per event explains 44% of the variance and
+log total active markets 39%, against 31% for generation ratio. The earlier claim here
+that the four boards below 60% traded are the four largest by listing count is **false** —
+Crypto is sixth by active listings, behind Entertainment (80.2% traded) and Economics
+(89.3%). Financials and Entertainment are the cleanest counterexample: generation ratios
+of 1.710 and 1.705, traded-leg shares of 44.8% and 80.2%. Batch generation produces
+untouched ladder rungs; whether anyone is watching the underlying question is a different
+measurement.
 
-**Crypto is the extreme case and the most interesting.** 2,629 active markets, only 28.5%
-ever traded — the lowest on the exchange — yet 31 cleanly tiled partitions, the most
-anywhere. It is dense with structure and thin on attention, which is exactly the
-combination that produced findings in Elections. Its ladders are also the tightest priced
-on the venue (`KXBTCY` sum-of-bids 0.9960 with zero fees), so the structure is already
-enforced where anyone looks.
+**Crypto is the extreme case, but not for the reason stated here originally.** 2,629
+active markets and only 28.5% of *legs* ever traded — the lowest of any board here — yet
+**87% of its events (94 of 108) have at least one traded leg**. The untouched tail is
+inside wide ladders, not across whole questions, and the same holds for Financials (44.8%
+of legs, 95.3% of events). Leg-level share measures ladder width as much as attention.
+Crypto also carries 31 cleanly tiled partitions, the most anywhere, and its ladders are
+the tightest priced in this snapshot (`KXBTCY` sum-of-bids 0.9960 with zero fees) — the
+structure is already enforced where anyone looks.
 
 **Mentions has no internal structure at all.** Zero ladder events, zero mutually exclusive
 events, 100% `entity_menu`. Every event is a menu of things someone might say, and no leg
@@ -77,14 +92,20 @@ what the contract text actually supports:
 - `explicit` — the contract states the reporting precision or that bounds are inclusive
   (`"rounded to one decimal place"`, `"All stated bounds are inclusive"`). Safe.
 - `implicit` — no such sentence, but every gap equals the precision to which the bounds
-  are written and the buckets are equal width. Crypto's entire set grades this way:
-  bounds to four decimals, 1e-4 gaps, uniform width, matching the CF Benchmarks index
-  they settle against. Almost certainly exhaustive; not stated.
+  are written and the buckets are equal width. Crypto's entire set grades this way, at a
+  range of scales rather than the single one previously stated here: written gaps are
+  0.01 on 12 events, 1e-4 on 14, 1e-7 on 3 and 1e-9 on 2, each matching how that
+  instrument's bounds are written. **Do not read `implicit` as "almost certainly
+  exhaustive"** — these settle on a 60-second average of a CF Benchmarks index, and no
+  rule states how that average is rounded, so an averaged value can in principle fall
+  between two written ranges.
 - `none` — neither. Only `sum(P) ≤ 1` is available.
 
-**Only 14 partitions on the whole exchange have an explicit exhaustiveness guarantee**,
-and 13 of them are the annual GDP ladders. Any buy-all-YES basket outside that set is
-resting on an inference.
+**Only 14 partitions in this snapshot carry an explicit exhaustiveness
+guarantee**, of which 6 are annual GDP ladders; the rest are post-count series
+(`KXFEDTWEETS`, `KXIMFTWEETS`, `KXWEFTWEETS`), `KXLFPRATE`, `KXM2GROWTH`, `KXPSAVERT`,
+`KXSCFI` and `KXWTIW`. Any buy-all-YES basket outside that set rests on an inference, and
+`Partition.evaluate_buy_all()` now refuses to price one.
 
 ## A correction worth recording
 

@@ -1,5 +1,11 @@
 # Settlement patterns and the constraint grammar
 
+> **Scope.** Every figure here describes the events that were *open* at the
+> 2026-08-02 snapshot. Roughly 100,000+ settled events exist and none are included,
+> so nothing below is a statement about the exchange's history. Crypto alone has
+> settled over 43,000 events against 108 open ones — a board can look small here and
+> be among the most active by turnover.
+
 Kalshi generates contracts from a small number of templates. Once the templates are
 enumerated, most settlement behaviour is predictable from metadata, and the logical
 constraints between markets become machine-extractable. This document is the
@@ -137,7 +143,9 @@ weeks. The hedge is not symmetric in time even when it is exact in logic.
 ## What the exchange-wide scan found
 
 Roughly 120,000 executable constraint checks were run across all categories against the
-2026-08-02 snapshot, using per-series fees and executable sides.
+2026-08-02 snapshot, using per-series fees and executable sides. The price inputs are not
+committed — Kalshi bars redistributing them — so these totals are not reproducible from
+this repository alone, only from a fresh scan.
 
 | Category | Checks | Gross violations | Survive fees | Realisable |
 | --- | --- | --- | --- | --- |
@@ -147,7 +155,7 @@ Roughly 120,000 executable constraint checks were run across all categories agai
 | Entertainment + Mentions | ~2,000 | 1 | 0 | — |
 | **Elections + Politics** | ~4,000 | **~17** | **~12** | **~$46** |
 
-**The exchange is structurally consistent to the tick almost everywhere.** Crypto and
+**On the open surface at this snapshot, the constraints scanned held almost everywhere.** Crypto and
 Financials — 90,000 checks across perfectly nested ladders and 39 tiling partitions —
 produced not one violation. `KXBTCY-27JAN0100` is the tightest structure on the venue:
 zero fee, tenth-cent ticks, two-sided on all 28 legs, sum-of-bids 0.9960, i.e. 0.4 cents
@@ -161,4 +169,4 @@ This reframes the earlier politics findings. They are not evidence that the exch
 loosely priced; they are evidence that Elections and Politics are the one corner where
 long-dated, low-attention derivative ladders sit beside actively-quoted base markets and
 nobody is enforcing consistency between them. Sizes remain small — the largest single
-package on the whole exchange is worth about $25.
+package found by these scans is worth about $25.
