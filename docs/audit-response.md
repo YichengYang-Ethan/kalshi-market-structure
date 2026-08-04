@@ -113,3 +113,54 @@ depth has been available on every market this whole time; the conclusion that on
 top-of-book was visible came from reading `orderbook` instead of `orderbook_fp` on a
 response that returns HTTP 200 either way. Every analysis here that reasoned about
 executable size did so with less information than was actually available.
+
+## Round three, 2026-08-04 (commit `b835c78`): the relation families
+
+The 41 discovered families were re-audited externally against the live API under a strict
+evidence rubric: a stored example that is not a real market ticker makes the row
+FABRICATED even where a narrower repaired relation exists, and a relation qualifies only
+if **every settlement branch** preserves it, not just the ordinary event predicates.
+
+Result: **7 CONFIRMED, 4 ONE-DIRECTIONAL, 2 NEEDS-RULE-CHECK, 13 BROKEN, 15 FABRICATED.**
+Of the 22 this repository had labelled CONFIRMED, 14 fell.
+
+### What the verdicts actually mean, verified locally
+
+**The FABRICATED count is mostly a data-quality indictment, not a fabrication one.**
+Local verification found the example tickers this repository's audit prompt highlighted
+(`KXLEAGUESCUPSPREAD-26AUG04CINPAC-CIN2`, `KXPRESNOMD-28-AOC`, `KXU3-26SEP-T4.4`) all
+return HTTP 200 — but **9 of 41 stored rows carry garbage in their example field**:
+literal ellipsis placeholders (`KXUCLWSPREAD-...`), event-level identifiers where market
+tickers belong, and one free-text description. The discovery agents emitted them and the
+verification pass fetched rules by searching the snapshot rather than strictly resolving
+each stored ticker, so the garbage survived into the published CSV. Under a rubric where
+the stored row is the unit of audit, those rows are correctly failed. The relation logic
+behind several of them remains salvageable and the audit says so explicitly.
+
+**The BROKEN verdicts are the substantive finding, and they expose a systematic blind
+spot: this repository verified event predicates, not payout branches.** Confirmed
+locally: the first-half total's `rules_secondary` reads *"If the game is cancelled or
+rescheduled to over 48 hours away, the market will resolve to a fair price"* — and the
+full-time leg of the same game carries **no such clause**. A cancelled match can hand the
+1H leg a positive discretionary fair-market price while the full-time predicate never
+occurs. The nesting of the predicates is intact; the nesting of the **payouts** is not.
+The same mechanism — independent FMP/cancellation/retirement/scratch branches per leg —
+breaks the MLB player-stat lattice, tennis exact-score refinement, and others. Every
+future relation must be verified on the full settlement branch tree, including the
+discretionary branches.
+
+**One genuinely new family was found and is adopted**:
+`all-of-threshold-vector-dominance` — two ALL-of conjunction contracts over the same
+component subjects, where the stricter threshold vector implies the looser one
+(`KXBLUETSUNAMICOMBO-27FEB` ⟹ `KXBLUEWAVECOMBO-27FEB`: H≥235∧S≥51 ⟹ H≥218∧S≥49). Both
+tickers verified 200; the rule text was confirmed against this repository's own snapshot.
+
+### Disposition
+
+- `data/discovered_families.csv` now carries `reaudit_verdict` and `reaudit_detector`
+  columns for all 41 rows plus the new family.
+- Only the 7+1 CONFIRMED, detector-OK families are candidates for mechanisation; the
+  BROKEN rows stay in the file as documented negative results.
+- Two process rules adopted: every stored example ticker must resolve with a live
+  `GET /markets/{ticker}` before a row may be published, and relation verification must
+  enumerate the full settlement branch tree, not the ordinary predicates alone.
