@@ -13,7 +13,8 @@ public trade API; every claim mechanically verified.
 
 - ### [Layer 2 — Correlation](docs/layer2-correlation-guide.md)
   Seven shared-driver classes where markets co-move without binding — lead-lag, relative
-  value, cross-hedging. Measured 3–8 day lead-lag on the slow end. Machine-readable pair
+  value, cross-hedging. Re-measured 2026-08-04: a 4-day ladder lag and a 47-day (ongoing)
+  crossing on the slow end. Machine-readable pair
   universes ship in [`data/layer2/`](data/layer2/). **This is the open strategy space.**
 
 Supporting references: [correlation-taxonomy.md](docs/correlation-taxonomy.md) (the layer

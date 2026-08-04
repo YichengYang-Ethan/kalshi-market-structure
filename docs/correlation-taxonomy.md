@@ -61,10 +61,10 @@ This is the layer where lead-lag and relative value are real strategies:
 
 - **Same-race correlation, measured**: implied Gov×Sen correlation extracted from the
   nine state combo markets — typically ρ ≈ 0.4–0.6, with NH at −0.13 (split-ticket
-  tradition) and ME at 0.20 (Collins personal vote). This is the project's one completed
+  tradition) and ME at +0.24 (Collins personal vote). This is the project's one completed
   piece of Layer-3 measurement.
 - **The wave factor**: every Democratic leg loads on the national swing; CONTROLH-D
-  (~83¢) acts as the systematic factor of the elections board.
+  (83¢ bid, re-checked 2026-08-04) acts as the systematic factor of the elections board.
 - **Narrative clusters**: Iran (leader/democracy/election/recognition), Greenland
   (buy/territory/statehood/price), Trump-legal. Both external auditors confirmed these
   are NOT settlement-linked — they co-move on news only.
@@ -72,7 +72,8 @@ This is the layer where lead-lag and relative value are real strategies:
   through the spot path but each anchors its own observation window (the
   monthly-max ⊄ annual-max trap: each anchors at its own issuance).
 - **Lead-lag, measured**: the liquid base leg reprices first; the illiquid derivative
-  follows in minutes to days (OH-07: 3 days; VA-06: 8 days crossed). At the fast end a
+  follows in minutes to days (re-measured 2026-08-04 — OH-07: 4 days; VA-06: crossed 47
+  days at mid, 15 tradable, ongoing). At the fast end a
   harvester operates at 22.97 ms. This is Layer 1/2 pairs exhibiting Layer-3 dynamics in
   the interim — the convergence-trade thesis.
 
@@ -107,10 +108,10 @@ lead-lag, relative value and cross-hedging live. Counted on the 2026-08-04 snaps
 
 | Driver class | The shared state | Size | The trade |
 | --- | --- | --- | --- |
-| Same game | (scoreline, clock) — a goal moves 1X2, totals, spreads, BTTS, props at once | **1,555 game-keys**; 7 games carry 18 market types, 60 carry 11+ | intra-game lead-lag (seconds), the World Cup pattern |
-| Same race | polling/news state — a scandal moves winner, margin, turnout together | **505 races with ≥2 families; 320 with winner+margin+turnout** | news lead-lag (measured: base leads derivative by 3–8 days) |
+| Same game | (scoreline, clock) — a goal moves 1X2, totals, spreads, BTTS, props at once | **1,555 game-keys**; 7 games carry 18 market types, 74 carry 11+ | intra-game lead-lag (seconds), the World Cup pattern |
+| Same race | polling/news state — a scandal moves winner, margin, turnout together | **505 races with ≥2 families; 320 with winner+margin+turnout** | news lead-lag (measured: base leads derivative by days; see layer2 guide) |
 | Same price path | one spot process behind many windows | INX 11 window-series, WTI 8, BTC 8 (hourly/daily/annual/max/min/vs-gold) | curve RV, window-spread trades |
 | Same macro release | one print reprices the whole family | CPI 10 series, FED 9, GDP 5 | release-day chains (CPI → Fed odds → rate-cut count) |
 | Same person/narrative | one news flow | Iran, Greenland, Trump-legal clusters (audited: NOT bound) | narrative RV, no floor — model risk only |
-| Party/wave factor | national swing | every D leg; implied ρ from combos 0.4–0.6, NH −0.13, ME 0.20 | factor hedging, cross-race RV |
+| Party/wave factor | national swing | every D leg; implied ρ from combos 0.4–0.6, NH −0.13, ME +0.24 | factor hedging, cross-race RV |
 | Cross-venue | same question, different oracle | Kalshi vs Polymarket — unexplored here | classic cross-listing lead-lag |

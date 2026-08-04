@@ -17,9 +17,10 @@ Snapshot: 2026-08-04T06:02Z. Regenerate anytime with
 | `n_market_types` | how many series trade on this one game |
 | `series` | the series list, `\|`-separated |
 
-**How to read a row.** `26AUG042040TBCOL, 18, KXMLBGAME|KXMLBSPREAD|KXMLBTOTAL|...`
-means one baseball game carries 18 market types — moneyline, spread, total, team totals,
-player hits/HR/strikeouts, first-5-innings variants — all functions of (score, clock).
+**How to read a row.** `26AUG042040TBCOL, 18, KXMLBEXTRAS|KXMLBF3|KXMLBF5|...` means
+one baseball game carries 18 market types — the full list includes KXMLBGAME (moneyline),
+KXMLBSPREAD, KXMLBTOTAL, team totals, player hits/HR/strikeouts, first-5-innings
+variants — all functions of (score, clock).
 A run scored repricing all 18 at once is the shared driver; which book moves first is
 the intra-game lead-lag question. Reconstruct any market ticker as
 `<series>-<game_key>[-<leg>]`.
@@ -40,8 +41,10 @@ four verification axes in [layer1-arbitrage-guide](../../docs/layer1-arbitrage-g
 **How to read a row.** `VA06, 4, margin:KXMIDTERMMOV-VA06D|margin:KXMIDTERMMOV-VA06R|
 turnout:KXMIDTERMVOTETURN-VA06|winner:KXHOUSERACE-VA06-26` — one House race, four
 market families, all repricing on the same polling/news state. **This exact row is where
-the measured 8-day crossing lived**, and the OH-07 row is where the base repriced on
-news while the margin ladder lagged 3 days. The 320 rows with all three families are the
+the measured crossing lives** (re-checked 2026-08-04: crossed 47 consecutive days at
+mid, 15 days tradably, still open), and the OH-07 row is where the base repriced +25.5¢
+while the same-party margin ladder took 4 days to respond. The 320 rows with all three
+families are the
 richest lead-lag candidates.
 
 ## underlying_windows.csv — 20 rows, one per price underlying
