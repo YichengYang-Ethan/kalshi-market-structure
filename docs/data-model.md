@@ -24,7 +24,7 @@ represented as an event holding one binary market per outcome, with
 | --- | --- |
 | `mutually_exclusive` | **The only valid gate for sum-to-one logic.** Event shape is not evidence: `KXTRUMPPARDONS-29JAN21` has 52 candidate legs and is `false`, because many people can be pardoned. |
 | `collateral_return_type` | `MECNET` on netting-eligible mutex events, `DIRECNET` or empty otherwise |
-| `category` | Display only — contradicts `series.category` on 100+ live events (see [taxonomy.md](../archive/docs/taxonomy.md)) |
+| `category` | Display only — contradicts `series.category` on 100+ live events |
 | `settlement_sources` | Named resolving authority; present at event and series level |
 | `markets` | Only populated when `with_nested_markets=true` — **and ignored for settled events**, where the array comes back empty and you must fetch via `/markets?event_ticker=` |
 
