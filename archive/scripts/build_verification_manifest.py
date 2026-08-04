@@ -12,7 +12,7 @@ Contains only aggregate counts and series identifiers, no market data.
 import gzip, json, os, sys
 from collections import Counter, defaultdict
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from kalshi_structure.taxonomy import classify_event, partition_is_tiled, exhaustiveness_evidence
 from kalshi_structure.universe import DEFAULT_DATA, iter_all_events, load_series
 

@@ -3,7 +3,7 @@
 import csv, json, os, re, sys
 from collections import defaultdict
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from kalshi_structure.audit import RelationFamily, RelationSample, render_pack, pack_size_report
 from kalshi_structure.universe import DEFAULT_DATA
 

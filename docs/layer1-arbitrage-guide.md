@@ -54,4 +54,4 @@ Standing riskless ≈ **$0** (22,110 identity instances, zero violated — ident
 priced correctly *because someone harvests them*; the tape shows a 22.97 ms two-leg
 execution). Transient exact arb exists (~$0.64 best observed, in a one-directional
 family the first capacity pass wrongly excluded). Monitoring yield: hundreds to low
-thousands $/yr. Full reasoning: [capacity-analysis.md](capacity-analysis.md).
+thousands $/yr. Full reasoning: [capacity-analysis.md](../archive/docs/capacity-analysis.md).

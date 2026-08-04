@@ -4,7 +4,7 @@ onto the event and market inventories."""
 import csv, json, os, sys
 from collections import Counter, defaultdict
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from kalshi_structure.classify import as_dict, classify_series, coverage
 from kalshi_structure.universe import DEFAULT_DATA
 

@@ -8,7 +8,7 @@ drift from what is committed. Only what the repo cannot contain -- contract text
 prices, which Kalshi's terms bar from redistribution -- is inlined.
 """
 import os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from kalshi_structure.audit import pack_size_report
 from kalshi_structure.universe import DEFAULT_DATA
 import json

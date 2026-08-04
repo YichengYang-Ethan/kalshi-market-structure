@@ -27,64 +27,35 @@ structure itself makes possible. Concretely:
 - The fee surface is not uniform: a per-series `fee_multiplier` (including zero-fee
   series) and a maker/taker asymmetry change which structures are economically live.
 
-## What the first full pass found
+## What it found, in three sentences
 
-A census of the exchange's **open surface** on 2026-08-02 — 8,478 open events, 73,964
-open markets, 12,370 series — followed by roughly 120,000 executable constraint checks.
-Settled events are excluded: a full crawl found **516,232** of them, so this census
-covers **1.6%** of everything the exchange has listed and nothing below is a statement
-about its history:
+1. **Binding (Layer 1):** ~28,000 independent rule-forced constraints; the market holds
+   them tight — standing riskless capacity ≈ $0, transient exact arb ~$0.64 best
+   observed, a millisecond-scale harvester already works the fast end.
+2. **Shared drivers (Layer 2):** 539 multi-market game clusters, 505 race clusters,
+   20 underlying window families; measured lead-lag of 3–8 days on the slow end — this
+   is the open strategy space, with pair universes in `data/layer2/`.
+3. **Spurious (Layer 3):** 10+ documented look-alike relations with refuting states —
+   the do-not-trade list and the QC gate for any new relation.
 
-- **The constraints scanned held almost everywhere on that surface.** Crypto and
-  Financials produced zero violations across ~90,600 checks. Sports produced two, both
-  tick-floor artefacts, together worth under $0.42. The price inputs are not committed,
-  so these totals are not reproducible from this repository alone.
-- **Violations concentrate in Elections and Politics** (~12 surviving fees, ~$46 total).
-  Not because the venue is loose, but because that is the one corner where long-dated,
-  low-attention derivative ladders sit beside actively-quoted base markets with nobody
-  enforcing consistency between them.
-- **Category is not a usable grouping key.** `series.category` and `event.category`
-  disagree on 100+ live events, and "who will lead Iran" is filed under `Financials`.
-- **Exhaustiveness cannot be decided arithmetically.** A quantised ladder and a ladder
-  with a genuine settlement hole are indistinguishable by numbers alone; only the
-  contract text separates them. An early tolerance bug here manufactured a false
-  finding, documented in [taxonomy.md](docs/taxonomy.md).
-- **Displayed text is not the contract.** A market showing a candidate's name settles on
-  party; a leg showing "6.1% or Above" settles at "above 6.0%"; a series called
-  `SENATELA-26` is titled "Kentucky Senate winner?" and settles on Kentucky.
-
-Start with [settlement-patterns.md](docs/settlement-patterns.md) for the synthesis, then
-the per-category profiles.
+Full findings, per-board profiles and the complete audit trail: [`archive/`](archive/).
 
 ## Repository layout
 
 ```
 docs/
-  taxonomy.md              Site navigation vs API categories; the series as unit of analysis
-  data-model.md            Series / event / market object model and field semantics
-  fee-model.md             Verified fee formulas, per-series overrides, collateral netting
-  settlement-patterns.md   Contract-template grammar and the constraint grammar it implies
-  boards.md                Every API category compared on the same measurements
-  verification.md          Every asserted count with the public API call that reproduces it
-  scan-results.md          What a full constraint scan of the open surface returns
-  relation-catalog.md      Every arbitrage-capable structure, price-free (the watchlist)
-  discovered-families.md   41 new relation families found by parallel discovery + verify
-  correlation-taxonomy.md  The four layers of relatedness between Kalshi markets
-  capacity-analysis.md     Pricing the confirmed families: zero tradeable capacity, and why
-  audit-response.md        External audit findings, verification, and what changed
-  universe-inventory.md    Elections + Politics universe and its traded surface
-  classification.md        The research taxonomy and its coverage
-  categories/*.md          Per-category structural profile
-src/kalshi_structure/
-  fetch.py                 Full-exchange census fetcher (category-sharded output)
-  universe.py              Union definition of the Elections + Politics universe
-  taxonomy.py              Contract-template detection and partition diagnostics
-  classify.py              Deterministic research taxonomy (domain, subject, authority)
-  relations.py             Settlement-logic constraints and their fee-aware economics
-  history.py               Candlestick / trade-tape collection with checkpointing
-scripts/                   Analysis entry points (profile, inventory, classification)
-tests/                     Regression tests for every parser grammar that once failed
-data/                      Structure index: identifiers + derived classifications only
+  START-HERE.md            Entry point — routes by intent
+  layer1-arbitrage-guide.md   The binding surface: families, verification axes, capacity
+  layer2-correlation-guide.md The shared-driver surface: seven classes, measured dynamics
+  correlation-taxonomy.md  The three layers of relatedness, with the trap list
+  data-model.md            API object model, field semantics, and their traps
+  fee-model.md             Verified fee formulas, per-series overrides, collateral rules
+  audit-response.md        Four external audit rounds: findings, verification, changes
+src/kalshi_structure/      Census, parsers, constraints, scanner, history collector
+scripts/                   fetch → build_structure_index → run_scan / run_catalog / build_layer2_pairs
+data/                      Identifiers + classifications only; layer2/ pair universes
+tests/                     Regression tests for every failure this project hit
+archive/                   The full research log (unmaintained, kept for audit)
 ```
 
 ## Method
@@ -116,7 +87,7 @@ template, partition and activity classifications this repository derives, and wi
 price, size, volume and contract text stripped. Those classifications are inferences and
 are the most likely thing here to be wrong, which is why they are published in full.
 
-This is also why [verification.md](docs/verification.md) publishes assertions and the
+This is also why [verification.md](archive/docs/verification.md) publishes assertions and the
 calls that regenerate them rather than the corpus itself. Handing a reviewer the data
 lets them check it is internally consistent; it cannot reveal that an entire slice was
 never fetched. Independent reproduction can.
