@@ -68,6 +68,7 @@ docs/
   scan-results.md          What a full constraint scan of the open surface returns
   relation-catalog.md      Every arbitrage-capable structure, price-free (the watchlist)
   discovered-families.md   41 new relation families found by parallel discovery + verify
+  capacity-analysis.md     Pricing the confirmed families: zero tradeable capacity, and why
   audit-response.md        External audit findings, verification, and what changed
   universe-inventory.md    Elections + Politics universe and its traded surface
   classification.md        The research taxonomy and its coverage
