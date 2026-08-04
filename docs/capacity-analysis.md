@@ -1,5 +1,19 @@
 # Capacity analysis: the confirmed families price to zero
 
+> **Corrected 2026-08-04 (round-four audit).** The zero below is real but its scope was
+> overstated, and the error was in the family selection: only the 8 CONFIRMED families
+> were priced, excluding every ONE-DIRECTIONAL family — **but one-directional is what an
+> implication is, and a deterministic inequality is exactly as arbitrage-capable as an
+> identity.** An external audit priced the excluded `matchup-outcome-split` family and
+> found a live, settlement-exact, fee-positive three-leg basket:
+> `KXPRESMATCHUP-28NOV07-JOSSMRUB` YES + both `KXPRESOUTCOME` NO legs floors at $2,
+> cost $1.989 — **net +$0.64 at 257 contracts**, verified live here twice (06:50Z and
+> 07:13Z, matching to the third decimal). The public tape also shows a 10-contract
+> identity arb actually executed on 2026-08-02 (two legs 22.97 ms apart, ~5¢ net):
+> identities are not "priced correctly by construction" — they are priced correctly
+> because someone harvests them. See docs/audit-response.md round four for the full
+> corrected verdict.
+
 The eight relation families that survived three audits were priced against the live
 order book (full depth via `orderbook_fp`) and each was adversarially debated by a
 separate agent instructed to attack the capacity number. Snapshot 2026-08-04T06:02Z.
@@ -66,9 +80,12 @@ be mispriced. This is not a failure of the search; it is what the search converg
   cents, low depth, on news days when one leg reprices before the other — but they are
   not riskless, because the relation has a real settlement tail (a certified winner can
   switch party before the oath).
-- **Net: there is no riskless-arbitrage strategy with meaningful capacity on this
-  exchange.** The tightly-priced identities offer no edge; the only edges that appear
-  carry a tail and micro capacity.
+- **Net (corrected): there is no evidence of large, continuously standing taker/taker
+  riskless capacity — and there is direct evidence of small transient exact arbitrage**,
+  including a live $0.64 three-leg basket in an excluded family and an executed identity
+  arb on the public tape. Continuous event-driven monitoring is defensible as an option
+  on rare microstructure failures, order of magnitude hundreds to low thousands of
+  dollars a year; allocating meaningful capital is not.
 
 This reproduces, at maximum rigor and across the whole exchange, the conclusion the
 earlier World Cup work reached on one corner: riskless but breakeven, do not scale. The

@@ -164,3 +164,55 @@ tickers verified 200; the rule text was confirmed against this repository's own 
 - Two process rules adopted: every stored example ticker must resolve with a live
   `GET /markets/{ticker}` before a row may be published, and relation verification must
   enumerate the full settlement branch tree, not the ordinary predicates alone.
+
+## Round four, 2026-08-04 (commit `f8d1898`): the negative result
+
+The zero-capacity conclusion was audited externally with instructions to break it. It
+broke, in the most instructive way available.
+
+### The counterexample, verified live here
+
+The capacity run priced only the 8 CONFIRMED families and excluded every ONE-DIRECTIONAL
+one. That exclusion was a category error: an implication **is** one-directional, and a
+deterministic inequality is exactly as arbitrage-capable as an identity. The excluded
+`matchup-outcome-split` family contains, live: with M = "Ossoff and Rubio are the
+nominees", D = "Ossoff defeats Rubio", R = "Rubio defeats Ossoff", the rules give D ⊆ M,
+R ⊆ M, D ∩ R = ∅, so the basket M-YES + D-NO + R-NO floors at $2. Books at 07:13Z: cost
+$1.989 per contract, common depth 257, **net +$0.6355 after fees** — reproducing the
+auditor's 06:50Z figure to the third decimal. A second triple (AOC/Vance) was
+fee-positive at 8 contracts. Across 16 live matchup triples, seven were gross-positive
+and three fee-positive.
+
+### Identities do get mispriced — the tape says so
+
+The public trade tape shows, on 2026-08-02 at 19:12:08, a 10-contract YES at $0.96 on
+`KXBBCHARTPOSITIONALBUM-26AUG08IMT-1` and 22.97 ms later a 10-contract NO at $0.03 on
+`KXTOPALBUM-26AUG08-IMT` — the same album, chart and week: a $0.99 package on a $1
+identity, ~5¢ net after fees. Verified here from the trades endpoint. The previous
+document's claim that "identities are priced correctly by construction" was wrong twice
+over: they are priced correctly because someone harvests them, and 22.97 ms is what the
+harvesting looks like.
+
+### Other verified findings
+
+- The ESPN-vs-FIFA settlement-source split is real but League-Cup-specific; other league
+  pairs share overlapping sources. The general claim is downgraded to: source sets are
+  frequently unequal, so source basis risk must be checked per pair.
+- The severity-family instance count is disputed (7 reported, 8 structural overlaps per
+  the family's own definition) and the 22,110-instance run has no committed manifest, so
+  its exact composition is not reproducible. Reproducibility discipline that applies to
+  the census must apply to capacity runs too.
+- A Fréchet lower bound inside the confirmed BTTS family (P(BTTS) ≥ P(H)+P(A)−1) was
+  never priced; the auditor screened all 59 live triples and found no violation, which
+  simultaneously confirms the current zero there and proves the run was incomplete.
+
+### The corrected verdict, adopted verbatim in spirit
+
+The investigation establishes: **no large, continuously standing, taker/taker riskless
+capacity in the examined families at the examined times.** It does not establish that
+identities cannot be mispriced (the tape disproves it), nor anything about cross-venue
+arbitrage, maker-side returns, listing/news windows, general multi-leg baskets, or the
+settled lifecycle. Small transient exact arbitrage exists and is occasionally live in
+omitted corners; monitoring for it is an option on rare microstructure failures with a
+defensible yield of hundreds to low thousands of dollars a year. That is the honest
+floor and ceiling of this strategy class on this exchange.
