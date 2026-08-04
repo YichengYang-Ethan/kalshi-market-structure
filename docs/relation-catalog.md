@@ -25,9 +25,13 @@ On the 2026-08-03 snapshot (9,410 open events):
 | `S-semantic` | one resolution condition contained in another | 1 |
 | **Total** | | **8,422** |
 
-A ladder of n legs is n(n−1)/2 individual price constraints, so the 3,935 ladder events
-alone are **351,909 monitorable pairs**. Every one is a place where a divergence would be
-an arb.
+A ladder of n legs is n(n−1)/2 pairwise constraints, and the ladder events' full closure
+ran to **351,909 pairs** on this snapshot (854,085 a day later, when 400-leg hourly index
+ladders were open — the closure swings with the hour). Three honesty notes on that number:
+the **independent** constraint count is Σ(n−1) ≈ **28,000** (chains imply the rest by
+transitivity); **85% of the closure sits in the top 50 events** (hourly Nasdaq and crypto
+ladders, the tightest-priced products on the venue); and pairs where both legs have ever
+traded number ≈ **68,000**. Quote the 28k figure, not the closure.
 
 By board, the surface follows the generators: Sports (4,246) and Elections (2,536) carry
 80% of it, because their templates stamp out ladders and mutex menus at scale.
