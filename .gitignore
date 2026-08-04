@@ -8,6 +8,8 @@ snapshots/
 *.csv
 !data/*.csv.gz
 !data/*.csv
+!data/**/*.csv
+!data/**/README.md
 !docs/**/*.csv
 
 # Secrets

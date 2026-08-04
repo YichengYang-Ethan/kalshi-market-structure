@@ -175,8 +175,21 @@ def test_published_index_formats_agree():
     # Skipping silently when the index is absent means this test passes on a checkout
     # where the artifacts were never built, which is exactly when it is needed.
     for name in ("events_index.csv", "events_index.csv.gz",
-                 "markets_index.csv.gz", "series_rollup.csv"):
+                 "markets_index.csv.gz", "series_rollup.csv",
+                 os.path.join("layer2", "game_clusters.csv"),
+                 os.path.join("layer2", "race_clusters.csv"),
+                 os.path.join("layer2", "underlying_windows.csv"),
+                 os.path.join("layer2", "release_families.csv")):
         assert os.path.exists(os.path.join(root, name)), f"missing published artifact: {name}"
+    # Existence is not enough: data/layer2 was once fully written on disk yet silently
+    # excluded from the repository by a gitignore pattern, while the commit message
+    # claimed it shipped. Assert the files are actually tracked.
+    import subprocess
+    tracked = subprocess.run(["git", "ls-files", "data/layer2/"], capture_output=True,
+                             text=True, cwd=os.path.join(os.path.dirname(__file__), "..")).stdout
+    for name in ("game_clusters.csv", "race_clusters.csv",
+                 "underlying_windows.csv", "release_families.csv"):
+        assert name in tracked, f"data/layer2/{name} exists on disk but is not tracked by git"
     with open(os.path.join(root, "events_index.csv")) as f:
         plain = [dict(r) for r in csv.DictReader(f)]
     with gzip.open(os.path.join(root, "events_index.csv.gz"), "rt") as f:
