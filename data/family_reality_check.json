@@ -1,0 +1,288 @@
+{
+ "usable": [
+  {
+   "family": "award-nom-win",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 113,
+   "branch": "ALIGNED. Neither leg's rules_primary/rules_secondary contains any fair-market-pr",
+   "source": "IDENTICAL. GET /series: KXOSCARACTO, KXOSCARNOMACTO, KXOSCARPIC, KXOSCARNOMPIC a",
+   "condition": "Not CONDITIONAL, but two per-instance hygiene checks before trading any pair: (1) confirm same perso"
+  },
+  {
+   "family": "teamtotal-implies-total",
+   "verdict": "CONDITIONAL",
+   "n": 520,
+   "branch": "Parallel, not identical \u2014 no one-leg-only FMP trap, but both legs have FMP branc",
+   "source": "MISMATCHED in every league pair checked (live /series, 2026-08-04): KXMLBTEAMTOT",
+   "condition": "Per instance: (a) confirm both legs' series settlement_sources overlap or that the game's final scor"
+  },
+  {
+   "family": "btts-implies-teamtotal",
+   "verdict": "CONDITIONAL",
+   "n": 59,
+   "branch": "ALIGNED in wording, but both sides carry FMP branches. Both product certificatio",
+   "source": "MISMATCHED at the series level (live GET /series): KXLEAGUESCUPBTTS settlement_s",
+   "condition": "The logical binding itself is exact (in fact biconditional: BTTS Yes = home Over 0.5 Yes AND away Ov"
+  },
+  {
+   "family": "correct-score-refines-outcome",
+   "verdict": "CONDITIONAL",
+   "n": 59,
+   "branch": "Cancellation branches are PARALLEL, not the 1H-FMP trap: all four contract famil",
+   "source": "NOT aligned. Series API settlement_sources: KX*SCORE = ESPN only (all 5 leagues)",
+   "condition": "Per instance, three things must be checked: (1) the game must reach natural completion (or be declar"
+  },
+  {
+   "family": "severity-nested-count",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 17,
+   "branch": "Aligned within every pair. All legs are plain binary Yes/No with no fair-market-",
+   "source": "Identical. GET /series for all five series (KXHURCTOTMAJ, KXHURCTOT, KXTROPSTORM",
+   "condition": ""
+  },
+  {
+   "family": "chart-rank-equality",
+   "verdict": "REAL-EXACT",
+   "n": 14,
+   "branch": "ALIGNED. The two series' product-certification PDFs (RANKLISTBILLBOARDCHARTS.pdf",
+   "source": "IDENTICAL. GET /series/KXTOPALBUM and GET /series/KXBBCHARTPOSITIONALBUM both re",
+   "condition": ""
+  },
+  {
+   "family": "yt-window-nest (KXYTVIEWSW weekly vs KXYTVIEWS monthly YouTube daily-views threshold)",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 12,
+   "branch": "ALIGNED. Both series' contract terms resolve to the identical PERIODMEDIACONSUMP",
+   "source": "ALIGNED. GET /series/KXYTVIEWS: settlement_sources = [{\"name\": \"YouTube Charts\",",
+   "condition": ""
+  },
+  {
+   "family": "all-of-threshold-vector-dominance",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 4,
+   "branch": "ALIGNED for the flagship pair: both legs carry the identical binary clause \"If A",
+   "source": "Event-level settlement_sources MATCH within each pair: Tsunami and Wave both lis",
+   "condition": "For the flagship Tsunami=>Wave pair no per-instance condition is needed \u2014 it is exact-one-directiona"
+  },
+  {
+   "family": "matchup-outcome-split (KXPRESMATCHUP vs KXPRESOUTCOME)",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 16,
+   "branch": "ALIGNED. All three legs are binary with identical clause text: early_close_condi",
+   "source": "Series-level (GET /series): KXPRESMATCHUP and KXPRESOUTCOME return byte-identica",
+   "condition": ""
+  },
+  {
+   "family": "exact-outcome-implies-party",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 4,
+   "branch": "No fair-market-price or void clause appears in either leg's rules_primary/rules_",
+   "source": "MISMATCH in series metadata, overridden by rules text: GET /series/KXTXSENOUTCOM",
+   "condition": ""
+  },
+  {
+   "family": "combo-marginal-vs-standalone",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 33,
+   "branch": "No fair-market-price or void clause on either side \u2014 all legs are binary Yes/No.",
+   "source": "Rules-level: aligned by construction \u2014 the delegation clause resolves each combo",
+   "condition": "Not required for the verdict, but execution is per-instance mechanical: the standalone hedge must be"
+  },
+  {
+   "family": "first-of-set-membership",
+   "verdict": "REAL-ONE-DIRECTIONAL",
+   "n": 21,
+   "branch": "Aligned. Both legs are pure binary (market_type binary), both can_close_early=tr",
+   "source": "Identical. GET /series: both KXFIRSTHURRICANE and KXHURRICANENAMES list settleme",
+   "condition": ""
+  },
+  {
+   "family": "song-chart-depth (KX1SONG / KX10SONG / KX20SONG, same artist + chart year)",
+   "verdict": "CONDITIONAL",
+   "n": 90,
+   "branch": "ALIGNED as far as the rules text goes: all three legs are market_type=binary wit",
+   "source": "Same publisher, trivially different URLs: GET /series shows KX1SONG and KX20SONG",
+   "condition": "The #1\u21d2top-10 link is word-exact and qualifies as REAL-ONE-DIRECTIONAL on its own. The \u21d2top-20 link "
+  },
+  {
+   "family": "no-goals-equality",
+   "verdict": "CONDITIONAL",
+   "n": 57,
+   "branch": "MISMATCH. The legs settle under different certified rulebooks (SCORE series -> S",
+   "source": "MISMATCH. GET /series (live, 2026-08-04): KXLEAGUESCUPSCORE / KXBRASILEIROSCORE ",
+   "condition": "The equality P(0-0) = 1 - P(Over 0.5) is textually exact ONLY conditional on the game being played t"
+  }
+ ],
+ "broken_check": [
+  {
+   "family": "firsthalf-subset-fulltime",
+   "demotion_correct": true,
+   "finding": "Instances (31 common matchups): KXLEAGUESCUP1HTOTAL vs KXLEAGUESCUPTOTAL for 26AUG04CINPAC, 26AUG04CLBATL, 26AUG04CLTPUM. 1H leg (KXLEAGUESCUP1HTOTAL-26AUG04CINPAC-1): 'If the game is cancelled or rescheduled to over 48 hours away, the market will resolve to a fair price in accordance with the rules.' Full-time leg (KXLEAGUESCUPTOTAL-26AUG04CINPAC-1) secondary contains NO cancellation clause at all \u2014 only the trademark disclaimer \u2014 and its primary ('If over 0.5 goals are scored in the ... game after 90 minutes') settles binary No if the game never happens. Verified identically on 26AUG04CLBATL (strikes -3). So on cancellation the 1H leg pays FMP while the FT leg pays 0: not a riskless lock. Additionally settlement sources mismatch: live /series KXLEAGUESCUP1HTOTAL = ['Fox Sports','ESPN'] vs KXLEAGUESCUPTOTAL = ['FIFA'] (the exact ESPN-vs-FIFA trap). Note: the WINNER pair (KXLEAGUESCUP1H / KXLEAGUESCUPGAME) has symmetric FMP clauses, but that pair carries no subset logic.",
+   "salvage": "CONDITIONAL: for a game actually played, 1H-total-over-k \u21d2 FT-total-over-k (and 1H-BTTS \u21d2 BTTS) is a true one-way bound; it fails only in the cancellation branch (1H FMP vs FT binary) and carries Fox/ESPN-vs-FIFA source basis risk."
+  },
+  {
+   "family": "mlb-player-stat-dominance",
+   "demotion_correct": true,
+   "finding": "Instances (12 KXMLBKS events): KXMLBKS-26AUG042140SDAZ-AZERODRIGUEZ57-{2..8}, KXMLBKS-26AUG042040TBCOL-COLGHUGHES43-*, KXMLBKS-26AUG042010TORHOU-HOUHWESNESKI39-*; plus KXMLBHR-26AUG042140SDAZ-SDFTATIS23-1. Both legs quoted (Rodriguez 3+ and 5+ identical secondary): 'If Eduardo Rodriguez is scratched or is not a starting pitcher, the market will resolve to the fair market price. ... If Eduardo Rodriguez is a starting pitcher and records at least one pitch the market will settle based on strikeouts recorded.' Batter variant (Tatis 1+ HR): 'If Fernando Tatis Jr. is scratched or not included in the starting lineup, the market will resolve to the fair market price.' The scratch-FMP branch is real and reachable: on a scratch BOTH threshold legs settle at Exchange-discretion fair market prices, and nothing in the text guarantees FMP(5+) \u2264 FMP(3+), so the long-3+/short-5+ position is not a riskless lock.",
+   "salvage": "CONDITIONAL: 'If [player] is a starting pitcher and records at least one pitch the market will settle based on strikeouts recorded' \u2014 dominance (N+1)+ \u21d2 N+ is exact whenever the player starts; only the scratch branch (both legs FMP) breaks the lock."
+  },
+  {
+   "family": "tennis-exactscore-refines-match",
+   "demotion_correct": true,
+   "finding": "Instances (27 common events): KXATPEXACTMATCH vs KXATPMATCH for 26AUG01ATMDRA, 26AUG01BAEBEL, 26AUG01CARROY. Exact-score leg (KXATPEXACTMATCH-26AUG01ATMDRA-ATM20, same text on BAEBEL): 'If a retirement occurs, all markets that can be unconditionally settled based on play already completed will resolve accordingly. Any markets that cannot be unconditionally settled will resolve to Fair Market Price, as determined at the sole discretion of the Exchange.' Match leg (KXATPMATCH-26AUG01ATMDRA-ATM) has NO retirement clause \u2014 'If Terence Atmane wins the ... match after a ball has been played, then the market resolves to Yes' \u2014 so a retirement at e.g. 1-0 settles the match leg binary (winner by retirement) while all four exact-score legs go to discretionary FMP. Break reachable and asymmetric; demotion stands. Pre-match walkover is symmetric (both series: 'If the match does not occur ... the market will resolve to a fair price'). Sources identical (['ATP'] both) but fee types differ: KXATPMATCH quadratic_with_maker_fees vs KXATPEXACTMATCH quadratic.",
+   "salvage": "CONDITIONAL: for completed matches the exact-score partition exactly refines the match winner (sum of ATM20+ATM21 = ATM wins); the retirement FMP branch on the exact legs only is the sole break."
+  },
+  {
+   "family": "control-marginal-sum",
+   "demotion_correct": true,
+   "finding": "Only one cube exists (fewer than 3 events; 4 marginal-sum identities inside it): KXBALANCEPOWERCOMBO-27FEB-{DD,RR,DR,RD} vs CONTROLH-2026-{D,R} and CONTROLS-2026-{D,R}. Combo leg: 'If ALL of the following occur on Feb 1, 2027: House Control: Democratic, Senate Control: Democratic ... If ANY single component resolves to No or becomes impossible, the entire contract immediately resolves to No. Each component is resolved according to its corresponding Kalshi ruleset: House Control uses CONTROL, Senate Control uses CONTROL.' Marginal: 'If the Democratic Party has won control of the House in 2026 ... victory will be determined by the party identification of the Speaker of the House on February 1, 2027' (Senate: 'party identification of the President pro tempore'). The cube spans only {D,R}x{D,R} with no 'other' leg, and nothing in the CONTROL text forces the Speaker/pro-tempore party ID to be D or R (an independent is a reachable state in which all four combos resolve No while the marginals' disposition is undefined) \u2014 so sum-of-combos = marginal is NOT guaranteed: 'cube not exhaustive' is textually right. Source metadata also mismatches: live /series KXBALANCEPOWERCOMBO = ['Bureau of Labor Statistics','Bureau of Labor Statistics','Federal Reserve Board of Governors'] (junk template) vs CONTROLH/CONTROLS = ['Library of Congress'].",
+   "salvage": "REAL-ONE-DIRECTIONAL: because combo components resolve 'according to its corresponding Kalshi ruleset CONTROL', DD Yes \u21d2 CONTROLH-2026-D Yes, so DD+DR \u2264 CONTROLH-D (and the three analogues) hold as upper bounds; only the equality is broken."
+  },
+  {
+   "family": "fed-decision-vs-nextmeeting-level",
+   "demotion_correct": true,
+   "finding": "Instances: (KXFEDDECISION-26SEP, KXFED-26SEP), (KXFEDDECISION-26OCT, KXFED-26OCT), (KXFEDDECISION-26DEC, KXFED-26DEC). Decision leg: 'If the Federal Reserve does a Cut of 25bps on October 28, 2026, then the market resolves to Yes' plus 'if a scheduled FOMC meeting is canceled and does not occur on its scheduled date, then the strike for \"Fed maintains rate\" will resolve to Yes and all others will resolve to No.' Level leg: 'If the upper bound of the target federal funds rate published on the Federal Reserve's official website is greater than 2.75% following the Federal Reserve's Sep 16, 2026 meeting...'. The decision leg counts only action taken ON the scheduled meeting date, while the level leg reads the standing target rate, which incorporates any intermeeting (emergency) change \u2014 and the cancellation clause even forces 'maintains'=Yes when an intermeeting move replaces a canceled meeting. Kalshi itself lists KXFEDMEET ('Will the Fed have an emergency meeting in 2026?'), so the break state is treated as reachable. Sources also differ as strings: KXFEDDECISION=['Federal Reserve'] vs KXFED=['Federal Reserve Board of Governors'].",
+   "salvage": "CONDITIONAL: conditional on no intermeeting rate change between the two meetings, level_after(M) = level_after(M-1) + decision(M) holds exactly."
+  },
+  {
+   "family": "removal-implies-impeachment",
+   "demotion_correct": false,
+   "finding": "Only ONE instance exists (fewer than 3; stated): KXTRUMPREMOVE vs KXIMPEACH-29-JAN20. Live API 2026-08-04 confirms snapshot verbatim. Removal leg: 'If the President of the United States has been impeached and convicted by the U.S. Senate before Jan 20, 2029, then the market resolves to Yes.' \u2014 the market REQUIRES impeachment plus Senate conviction; a 25th-amendment removal does NOT satisfy this text, so the claimed break path does not exist in the live rules. Impeachment leg: 'If the President of the United States has been impeached before Jan 20, 2029, then the market resolves to Yes.' Same deadline, and Senate conviction is impossible without a prior House impeachment, so Removal=Yes \u21d2 Impeach=Yes in every reachable state. Neither leg has FMP/cancellation branches. Caveat: settlement sources differ (KXTRUMPREMOVE=['U.S. Senate'] vs KXIMPEACH=['Library of Congress']), a mild basis-risk flag on an otherwise textual implication.",
+   "salvage": "REAL-ONE-DIRECTIONAL: KXTRUMPREMOVE Yes \u21d2 KXIMPEACH-29-JAN20 Yes (buy impeach / sell removal is a true bound). The demotion's '25th amendment path' claim contradicts the quoted primary, which is explicitly 'impeached and convicted by the U.S. Senate'."
+  },
+  {
+   "family": "rank-position-exclusion",
+   "demotion_correct": false,
+   "finding": "Instances (14 events on the same chart week): KXBBCHARTPOSITIONALBUM-26AUG15ICE-1 vs -26AUG15IMT-1 vs -26AUG15YOU-1 (and any same-rank pair, e.g. THR-1 vs NUM-1), all 'Billboard 200 chart dated Aug 15, 2026'. Live-verified both quoted legs: 'If ICEMAN by Drake is ranked #1 on the Billboard 200 chart for the Week of Aug 15, 2026, then the market resolves to Yes.' / 'If I'm The Problem by Morgan Wallen is ranked #1 on the Billboard 200 chart for the Week of Aug 15, 2026, then the market resolves to Yes.' A single chart position for a single dated chart can be held by at most one album, so two same-rank legs can never both resolve Yes. Secondaries contain only the Billboard disclaimer \u2014 no FMP, cancellation, or early-close branches on either leg \u2014 and both series settle on the same single source ['Billboard'] (live /series). No break state is constructible from the text; the demotion loses a real relation. Residual caveats only: it is an exclusion (all legs can be No, sum \u2264 1, not = 1), and the text is silent on a hypothetical unpublished chart (which would settle both No, preserving the exclusion).",
+   "salvage": "REAL-ONE-DIRECTIONAL (exclusion bound): for the same chart and week, sum over events of the rank-k legs \u2264 1; shorting two same-rank legs priced above a combined $1 is arbitrage-capable."
+  },
+  {
+   "family": "xhorizon-deadline",
+   "demotion_correct": true,
+   "finding": "Instances: KXBTCMAX100-26 ladder, KXBTCMAX150-25 ladder, KXIMPEACH ladder. The BTC ladder is genuinely broken by NON-NESTED measurement windows: KXBTCMAX100-26-SEP ('Before October 2026'): 'above $100000.00 starting 02/17/2026 04:00 PM and before Oct 1, 2026'; KXBTCMAX100-26-OCT ('Before November 2026'): 'starting Jul 21, 2026 and before Nov 1, 2026' (AUG and NOV legs also start Jul 21, 2026 per their primaries). A crossing between Feb 17 and Jul 21 makes the earlier-deadline SEP leg Yes while the later-deadline OCT/NOV legs stay No \u2014 'before Oct \u21d2 before Nov' fails under the live text because each leg measures only from its own issuance. KXBTCMAX150 legs are worse: primary is an unfilled template ('If the price of Bitcoin is above || Count || by || Date || at || Time ||'). By contrast the KXIMPEACH deadline ladder ('impeached before Sep 1, 2026' / 'before Jan 1, 2027' / 'before Jan 1, 2028', no start clause) nests cleanly.",
+   "salvage": "CONDITIONAL: the deadline implication is real only where the earlier leg's measurement window is a subset of the later leg's \u2014 true for cumulative-event ladders like KXIMPEACH, false for price-crossing ladders whose legs start at issuance (KXBTCMAX100). Per-instance window check required."
+  },
+  {
+   "family": "hierarchical-winner",
+   "demotion_correct": false,
+   "finding": "Instances: (KXMLB-26-NYY, KXMLBAL-26-NYY), (KXMLB-26-LAD, KXMLBNL-26-LAD), (KXSB-27-BUF, KXNFLAFCCHAMP-27-BUF). Live-verified MLB pair: 'If New York Y wins the 2026 Pro Baseball Championship, then the market resolves to Yes.' / 'If New York Y win the 2026 Pro Baseball American League Championship, then the market resolves to Yes.' NFL pair quoted from snapshot: 'If Buffalo wins the 2027 Pro Football Championship' / 'If Buffalo wins the Pro Football AFC Championship'. Secondaries are bare trademark disclaimers \u2014 no FMP, cancellation, or void branches anywhere, so no claimed break clause exists in the text. Champion \u21d2 league/conference champion holds in every reachable state under the leagues' format (a World Series/Super Bowl winner is by definition its league's pennant/conference champion); the implication rests on tournament structure, not on a rule sentence, and nothing in the rules creates a divergent settlement branch. Sources: MLB pair aligned (live /series KXMLB and KXMLBAL both ['ESPN','Fox Sports','AP']); NFL pair mismatched (KXSB=['ESPN','Fox Sports','AP'] vs KXNFLAFCCHAMP=['the Governing League']).",
+   "salvage": "REAL-ONE-DIRECTIONAL: champion Yes \u21d2 league/conference-champion Yes (buy pennant / sell title is a true bound), conditional only on the league keeping its current playoff format; treat the NFL pair as CONDITIONAL for the source mismatch, the MLB pairs as clean."
+  },
+  {
+   "family": "spot-implies-cumulative",
+   "demotion_correct": true,
+   "finding": "Instances: (KXBTCY-27JAN0100, KXBTCMAXY-26DEC31), (KXBTCD-26AUG0717, KXBTCMAXMON-BTC-26AUG31), (KXETHD/KXETHY vs KXETHMAXMON/KXETHMAXY). Spot leg: 'If the simple average of the sixty seconds of CF Benchmarks' BRTI before 12 AM EST is between 20000.00-24999.99 at 12 AM EST on Jan 1, 2027...'. Cumulative-max leg (KXBTCMAXMON): 'For each of these individual minute-by-minute checks, the top 20% and bottom 20% of the cumulative dataset are removed before calculating the average of the remaining values. If the trimmed mean associated with any single minute during the period is above the threshold, the market resolves to Yes.' Two textual breaks: (1) methodology \u2014 the 'how high' legs test a cumulative trimmed mean (a late spike above X can be entirely trimmed away while the spot leg's simple 60-second average clears X); the monthly variant has no raw-crossing fallback clause at all; (2) window boundary \u2014 KXBTCMAXY runs 'starting 01/02/2026 06:00 PM and before Dec 31, 2026 at 11:59 PM ET' while KXBTCY measures the 60 seconds before 12 AM Jan 1, 2027, a minute OUTSIDE the max leg's window. So spot-in-high-bucket does not force the cumulative leg Yes. Same source (['CF Benchmarks'] everywhere), so the break is methodological, not source-based.",
+   "salvage": "CONDITIONAL at best: the implication only holds if the cumulative leg's trimmed-mean test and window provably cover the spot leg's fixing (KXBTCMAXY does carry an extra 'If the BRTI crosses the threshold at any point ... immediately resolves' clause, internally inconsistent with its own trimmed-mean paragraph); do not treat as a lock."
+  },
+  {
+   "family": "senate-seatcount-control",
+   "demotion_correct": true,
+   "finding": "Instances: (RSENATESEATS-27 vs CONTROLS-2026-R), (KXDSENATESEATSH-27 vs CONTROLS-2026-D), (KXDHOUSESEATS-27 \u2265218 legs vs CONTROLH-2026-D), (KXRHOUSESEATS-27 vs CONTROLH-2026-R). Seat leg: 'If the Republican party has exactly 51 Senate seats on Feb 1, 2027, then the market resolves to Yes.' (secondary empty). Control leg: 'If the Republican Party has won control of the U.S. Senate in 2026 ... This market may be determined early based on a consensus of media calls projecting control of the U.S. Senate. ... Otherwise, victory will be determined by the party identification of the President pro tempore of the Senate on February 1, 2027.' The binding seats\u226551 \u21d2 control is not textual: control settles either on a Nov-2026 media-call consensus (which can diverge from the Feb 1 seat snapshot via later vacancies/switches) or on the pro-tempore's party ID, a convention-based proxy that also absorbs independents caucusing with a party. Settlement sources differ: RSENATESEATS/KXDSENATESEATSH=['United States Congress'] vs CONTROLS/CONTROLH=['Library of Congress'].",
+   "salvage": "CONDITIONAL: majority-seat-count \u21d2 control is near-certain by convention but is enforced nowhere in the text (media-call early settlement, pro-tempore/Speaker party-ID proxy, source mismatch); per-instance and per-timing check needed, not a lock."
+  },
+  {
+   "family": "count-mean-vs-component-indicators",
+   "demotion_correct": false,
+   "finding": "Exactly ONE instance family exists (fewer than 3; stated): KXMEASLES-26 (component year) vs KXAVGMEASLESDJT-29 (term mean), both settling on ['CDC'] per live /series. Live-verified both legs: 'If the number of measles in 2026 is above 8000, then the market resolves to Yes.' / 'If the average number of measles cases annually from 2025 to 2028 is at least 2000, then the market resolves to Yes.' Arithmetic from the quoted text: counts are non-negative, so 2026 > 8000 \u21d2 4-year sum > 8000 \u21d2 average > 2000 \u2265 2000 \u2014 the one-way implication follows from the words (likewise KXMEASLES-26-10000 \u21d2 the 2500 leg). Secondaries are empty: no FMP/cancellation branches on either leg. No break clause exists in the live rules; the demotion loses a real relation. Residual caveats: legs settle years apart, so a CDC data revision between the 2026 leg's settlement (early 2027) and the mean leg's (2029) could break equality-of-inputs, and neither primary names the geography explicitly (both are CDC-sourced US series).",
+   "salvage": "REAL-ONE-DIRECTIONAL: component-year count > 4x m \u21d2 term-average \u2265 m (buy KXAVGMEASLESDJT-29-2000 / sell KXMEASLES-26-8000 is a true bound), subject only to the CDC data-vintage caveat."
+  },
+  {
+   "family": "subperiod-count-nesting",
+   "demotion_correct": false,
+   "finding": "Instances (15 common games): KXMLBF5TOTAL vs KXMLBTOTAL for 26AUG041835LAABAL, 26AUG041840ATHCIN, 26AUG041840NYMCLE (plus KXMLBF3/KXMLBF7 variants). Quoted both legs on two games: 'If Los Angeles A and Baltimore collectively score more than 0.5 runs in the first 5 innings of the ... game originally scheduled for Aug 4, 2026 ... If this game is postponed or delayed, the market will remain open and close after the rescheduled game has finished (within two days).' vs 'If Los Angeles A and Baltimore collectively score more 2.5 runs in the ... game originally scheduled for Aug 4, 2026...' (full-game secondary has NO extra clause). Runs in the first 5 innings are a subset of game runs, so F5-over-k \u21d2 FT-over-k in every played state; on cancellation NEITHER leg has an FMP clause (unlike the soccer 1H family), so both settle No and the one-way lock survives; the F5-only two-day reschedule window can only produce F5=No/FT=Yes, which does not violate the implication. So for the MLB inning-nesting instances the demotion is wrong. Caveats: settlement-source labels differ (KXMLBF5TOTAL=['the Governing League'] vs KXMLBTOTAL=['MLB'] \u2014 same entity, different strings), and soccer half-time variants of this structure DO carry the 1H-only FMP-cancellation asymmetry (see firsthalf-subset-fulltime), so the family is not uniformly clean.",
+   "salvage": "REAL-ONE-DIRECTIONAL for baseball inning nesting (F3/F5/F7 total over-k \u21d2 full-game total over-k; both legs settle No on cancellation); drop to CONDITIONAL for soccer half variants where the subperiod leg alone has an FMP-cancellation clause. Per-instance cancellation-clause check is the gate."
+  }
+ ],
+ "fabricated_check": [
+  {
+   "family": "spread-implies-moneyline",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL (one-directional). Fresh instances: KXEFLCUPSPREAD-26AUG10PAEXC-PA2 vs KXEFLCUPGAME-26AUG10PAEXC-PA; KXEFLCUPSPREAD-26AUG08ROTWBA-ROT2 vs KXEFLCUPGAME-26AUG08ROTWBA-ROT; KXBRASILEIROSPREAD-26AUG08BOTFLU-BOT2 vs KXBRASILEIROGAME-26AUG08BOTFLU-BOT. Live rules quoted: spread RP = 'If Plymouth wins by more than 1.5 goals in the Plymouth vs Exeter professional EFL Cup soccer game originally scheduled for Aug 10, 2026 after 90 minutes plus stoppage time (does not include extra time or penalties), then the market resolves to Yes'; moneyline RP = 'If Plymouth wins the Plymouth vs Exeter professional EFL Cup soccer game ... after 90 minutes plus stoppage time (does not include extra time or penalties)'. Identical game + identical regulation-time clause, so win-by->1.5 entails win. Settlement sources aligned (live /series: KXEFLCUPSPREAD ['Fox Sports','ESPN'], KXEFLCUPGAME ['ESPN','Fox Sports']). Payout-branch asymmetry: moneyline RS carries 'If the game is cancelled or rescheduled to over 48 hours away, the market will resolve to a fair price', the spread leg's RS has NO such clause \u2014 so it is not a riskless lock through the cancellation branch.",
+   "salvage": "For the same league/game event pair (SPREAD vs GAME series, same event suffix), YES on 'Team wins by more than N goals (regulation)' implies YES on 'Team wins (regulation)'. One-directional; exact only conditional on the game being played (moneyline has an FMP cancellation branch the spread lacks)."
+  },
+  {
+   "family": "econstat-pointmass-vs-ladder",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL. Fresh instances: KXECONSTATCPI-26NOV vs KXCPI-26NOV; KXECONSTATCPI-26OCT vs KXCPI-26OCT; KXECONSTATCPI-26SEP vs KXCPI-26SEP. Live quotes: pointmass RP = 'If the CPI month-over-month is exactly 0.0% in Nov 2026, then the market resolves to Yes' (KXECONSTATCPI-26NOV-T0.0, mutually_exclusive=True MECNET); ladder RP = 'If the Consumer Price Index (CPI) increases by more than 0.0% (single-decimal) in November 2026...' with RS 'the Expiration Value is the single-decimal value published at the Source Agency'. Because both key off the single-decimal BLS print, Exactly 0.0% <=> (above -0.1%) AND NOT (above 0.0%). Sources both BLS CPI (live /series: KXCPI bls.gov/cpi/, KXECONSTATCPI bls.gov/news.release/cpi.nr0.htm). Branch caveat: KXCPI RS has an explicit government-shutdown extension clause ('Expiration Date will be extended to the sooner of the release of the Underlying or six months after the end of the government shutdown'); KXECONSTATCPI rules_secondary is empty \u2014 delay-branch behavior of the pointmass leg is unspecified. Fee types also differ (quadratic_with_maker_fees vs quadratic).",
+   "salvage": "KXECONSTAT<stat> 'Exactly X' pointmass event = adjacent-threshold difference in the legacy KX<stat> ladder for the same month, exact through the single-decimal published value; per-instance check of the delay/shutdown branch required."
+  },
+  {
+   "family": "pres-vp-nominee-mutex",
+   "demotion_correct": true,
+   "finding": "TRULY-NOT-REAL as a rules-derived binding. Fresh candidate legs: KXPRESNOMD-28-GN ('If Gavin Newsom wins and accepts the nomination for the Presidency for the Democratic party in 2028, then the market resolves to Yes', rules_secondary empty) vs KXVPRESNOMD-28-GN ('If Gavin Newsom accepts the nomination for the Vice Presidency for the Democratic party in 2028, then the market resolves to Yes', rules_secondary empty); same pattern for KXPRESNOMR-28-JDV vs KXVPRESNOMR-28-JDV and KXPRESNOMR-28-DJT vs KXVPRESNOMR-28-DJT. Both fetched live 2026-08-04. NO clause in either leg's rules_primary or rules_secondary references the other market, the other office, or forbids the same person holding both nominations \u2014 on the words alone both could resolve Yes. The mutex is real-world plausibility (parties nominate different people for P and VP), not rule text, so it is not a rules-exact lock. The earlier demotion reached the right end-state even if for the wrong reason (bad rows).",
+   "salvage": "Only as an empirical near-certainty ('same person P+VP nominee of one party has never happened'), not as a rule-bound arbitrage; no corrected rule-exact definition exists on current rule text."
+  },
+  {
+   "family": "matchup-implies-both-nominees",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL (one-directional, explicitly rule-text-bound). Fresh instances: KXPRESMATCHUP-28NOV07-GNEWJVAN => KXPRESNOMD-28-GN + KXPRESNOMR-28-JDV; KXPRESMATCHUP-28NOV07-GNEWMRUB => KXPRESNOMD-28-GN + KXPRESNOMR-28 (Marco Rubio leg); KXPRESMATCHUP-28NOV07-AOCJVAN => KXPRESNOMD-28 (AOC leg) + KXPRESNOMR-28-JDV. Live RP: 'If Gavin Newsom (D) and JD Vance (R) are the nominees for the 2028 presidential election, then the market resolves to Yes'; live RS: 'This is a combination market requiring ALL specified outcomes to occur... Each component is resolved according to its corresponding Kalshi ruleset: Democratic Nominee (PRESNOM), Republican Nominee (PRESNOM).' The component-linkage clause makes matchup-YES entail both nominee legs YES under the same ruleset. Caveat found: live /series/KXPRESMATCHUP settlement_sources are corrupted metadata (Bureau of Labor Statistics + Federal Reserve) while the event-level sources are ['Republican Party','Democratic Party'] \u2014 a data-quality bug in series metadata, but the RS component clause governs resolution.",
+   "salvage": "Matchup combo YES => each named party-nominee leg YES (never the converse); verify per instance that both named persons actually have listed legs in KXPRESNOMD/KXPRESNOMR."
+  },
+  {
+   "family": "albumunits-domination",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL (one-directional within-event ladder). 12 current KXALBUMEQUIV events (e.g., KXALBUMEQUIV-FRE26OCT08, KXALBUMEQUIV-PRI26SEP10, KXALBUMEQUIV-WILD26AUG20). Live quotes for two legs of one event: 'If Frequency Of Love by Victoria Mon\u00e9t has above 15K Album Equivalent Units during the October 02, 2026 - October 08, 2026, tracking week, then the market resolves to Yes' (\u2026-15K) and identical sentence with 'above 10K' (\u2026-10K); snapshot shows the -5K leg identical with 'above 5K'. Same album, same tracking week, same RS ('This market pertains to the U.S. and will resolve on the Sunday immediately following the ... tracking week'), same source Luminate (live /series). Above-15K YES strictly entails Above-10K YES entails Above-5K YES on the words. No FMP/cancel asymmetry (all legs share the same RS).",
+   "salvage": "Within one KXALBUMEQUIV event, higher-strike YES dominates (implies) every lower-strike YES; if the original family meant cross-album or cross-week domination, that variant has no rule-text support."
+  },
+  {
+   "family": "nominee-slate-cardinality",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL as at-most-one; NOT real as exactly-one. Fresh instances: KXPRESNOMD-28 (46 legs, mutually_exclusive=True, collateral_return_type=MECNET), KXPRESNOMR-28 (38 legs, MECNET), KXVPRESNOMD-28 (45 legs, MECNET). Each leg reads 'If <person> wins and accepts the nomination for the Presidency for the <party> party in 2028, then the market resolves to Yes' \u2014 the definite article on THE nomination plus the event's mutually_exclusive/MECNET structure supports at most one YES per slate. However NO 'Other/none of these' bucket exists in any of the three events, so if the nominee is an unlisted person all legs resolve No \u2014 cardinality can be 0, so sum-of-YES=1 is NOT guaranteed and a buy-the-whole-No-side (or sell-all-Yes) 'cardinality lock' at exactly 1 is unsound.",
+   "salvage": "Corrected definition: in a mutually_exclusive (MECNET) nominee event, #YES <= 1 (mutex among listed legs); exactly-one only holds if the slate is exhaustive, which these slates are not (no Other bucket)."
+  },
+  {
+   "family": "mention-subphrase",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL (one-directional), but only 2 current instances exist in the whole snapshot (fewer than the 3 requested \u2014 all enumerated): (1) KXEARNINGSMENTIONCELH-26AUG06-VIBE ('If Vibe is said by any Celsius Holdings, Inc. representative (including the operator of the call) during the next ... earnings call (including the Q+A)') vs -ELEC ('If Electric Vibe is said...'); (2) KXMRBEASTMENTION-26AUG08-BEAS ('If MrBeast says Beast as part of Next MrBeast Youtube Video') vs -BEASG ('If MrBeast says Beast Games...'). Both fetched live. Shared RS: 'The exact phrase/word, or a plural or possessive form of the phrase/word, must be used', and MrBeast RS adds 'Plural nouns occurring within proper nouns and noun phrases (e.g. names, titles, etc) are included' \u2014 uttering 'Electric Vibe'/'Beast Games' necessarily utters the token 'Vibe'/'Beast', so longer-phrase YES implies subphrase YES. Same event => same resolution mechanism (Kalshi-employee consensus on video/transcript), no branch asymmetry. Critical trap confirmed: containment must be at word-token boundaries \u2014 'NFL' is a substring of 'iNFLuencer' in the same CELH event but saying Influencer does NOT say NFL; substring-level detection is what likely produced the malformed rows.",
+   "salvage": "Within one Mentions event, YES on phrase P implies YES on phrase Q when Q is a whole-token subsequence of P (word-boundary containment, not string containment)."
+  },
+  {
+   "family": "crypto-range-ladder-identity",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL (identity up to a sub-cent boundary gap). Fresh instances (same timestamp pairs): KXBTC-26AUG0717 vs KXBTCD-26AUG0717; KXBTC-26AUG0417 vs KXBTCD-26AUG0417; KXBTC-26AUG0403 vs KXBTCD-26AUG0403 (also KXETH/KXETHD, KXSOLE/KXSOLD). Live quotes: range leg KXBTC-26AUG0717-B51750 'If the simple average of the sixty seconds of CF Benchmarks' Bitcoin Real-Time Index (BRTI) before 5 PM EDT is between 51500-51999.99 at 5 PM EDT on Aug 7, 2026'; ladder legs KXBTCD-26AUG0717-T51499.99 / -T51999.99 'If the simple average of the sixty seconds of ... BRTI before 5 PM EDT is above 51499.99 [51999.99] at 5 PM EDT on Aug 7, 2026'. Identical underlying sentence => Range[51500,51999.99] = Above(51499.99) AND NOT Above(51999.99), except values in the open sub-cent gap (51499.99, 51500.00) \u2014 reachable because the 60-second average can be fractional \u2014 where the ladder says YES but the range bucket says NO. Same source (CF Benchmarks) both legs, same RS, no FMP branch on either. Not perfectly REAL-EXACT; near-exact with a quantified epsilon seam.",
+   "salvage": "KXBTC (MECNET range) event = first difference of the KXBTCD (DIRECNET threshold) ladder at the same timestamp; treat the 1-cent seam between 'above X-0.01' and range-floor X as residual risk."
+  },
+  {
+   "family": "xe-threshold-nest",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL (one-directional nest). Fresh instances: KXUSDJPYAW-26AUG07 (50 'greater' legs), KXEURUSDAW-26AUG07 (20 legs), plus KXGBPUSDAW-26AUG07 / KXAUDUSDAW-26AUG07 in snapshot. Live quotes: 'If the value of the USDJPY opening candlestick is Above 156.505 at 5pm ET on Aug 7, 2026, then the market resolves to Yes' and identical sentence 'Above 156.503'; RS both: 'The market resolves based on the open value of the USDJPY exchange rate as published by Pyth at 5pm ET on Aug 7, 2026... Revisions to the underlying made after expiration will not be accounted for'. Same single observation, wording differs only in strike => Above(K_hi) YES implies Above(K_lo) YES for K_lo<K_hi. Same event, single settlement source ('Pyth - USDJPY'), identical branches. Note: nesting the Pyth AW ladder against the separate ICE range events (KXUSDJPY/KXEURUSD, source 'ICE', different timestamps) would be basis-risky \u2014 that cross-series variant is NOT covered.",
+   "salvage": "Within one Pyth FX threshold event, higher strikes nest inside lower strikes exactly; do not extend across the ICE-sourced range series."
+  },
+  {
+   "family": "extremum-envelops-point",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL but CONDITIONAL on same underlying functional. Working fresh instances: (1) KXU3-26NOV-T3.9 'If the seasonally adjusted unemployment rate (U-3) reported by the Bureau of Labor Statistics in the Employment Situation Report is above 3.9% in November 2026' => KXU3MAX-27 leg 'If any U.S. seasonally adjusted U-3 unemployment rate for a month in 2026 is above 4.5% [5%]...' \u2014 same statistic/source (BLS, both live), Nov 2026 is a month in 2026, so point-above-X implies envelope-above-X for aligned strikes; (2) KXAAAGASW-26AUG10-3.860 / KXAAAGASED-26NOV03-2.50 ('average regular gas prices ... strictly greater than $X on <date> according to AAA') => KXAAAGASMAX-26DEC31-4.60 ('If AAA reports that the maximum price of national average regular gas for the US is greater than $4.60 at any time from Issuance through Dec 31, 2026, inclusive') \u2014 same AAA national average. Counterexample that likely poisoned the stored rows: in crypto the point market (KXBTCD: 'simple average of the sixty seconds of ... BRTI before 5 PM EDT') and the extremum market (KXBTCMAXMON RS: settlement value per minute computed from 'the cumulative dataset' with 'top 20% and bottom 20% ... removed before calculating the average') are DIFFERENT functionals of BRTI \u2014 a spike lifting the 60-sec average can be trimmed out of the running trimmed mean, so point-YES does NOT imply month-max-YES there. Also note current strike grids barely overlap (gas point strikes ~2.50-3.86 vs MAX strikes >=4.60), so tradeable pairs are scarce.",
+   "salvage": "Point-in-window above X implies window-extremum above X only when both legs use the same source AND the same transformation of the underlying (BLS U-3, AAA average: yes; CF-Benchmarks trimmed-mean extremum vs 60-sec-average point: no). Per-instance functional check mandatory."
+  },
+  {
+   "family": "quarter-in-fiscalyear-flow",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL (one-directional) for flow metrics. Fresh instances: KXDASH-26NOVORDERS vs KXDASHA-27FEBORDERS; KXUBER-26NOVTRIPS vs KXUBERA-27FEBTRIPS; KXABNB-26NOVNEB vs KXABNBA-27FEBNEB. Live quotes: quarter leg 'If DoorDash Inc. reports Above 970000000 total orders in Q3 2026, then the market resolves to Yes'; annual leg 'If DoorDash Inc. reports Above 3750000000.0 total orders in fiscal 2026...' with RS 'This market refers to the annual figure reported in DoorDash Inc.'s full fiscal year or Q4 earnings release.' Same settlement source both legs (Fiscal.ai, live /series). Since total orders/trips/nights are non-negative additive flows and the annual figure is the company-reported FY total, Q-above-X implies FY-above-X for any FY strike <= the quarterly strike. Caveats: holds only for flow KPIs (headcount/total-restaurants/load-factor 'A' series do NOT bind); current strike grids do not overlap (Q strikes ~0.97B vs FY strikes ~3.75B) so no live tradeable cross-strike pair today; residual basis = restatement between the quarterly release and the FY/Q4 release figure.",
+   "salvage": "For additive, non-negative KPI pairs (KX<t> quarterly vs KX<t>A fiscal-year, same Fiscal.ai metric), quarterly-above-X implies fiscal-year-above-X'; restrict to flow metrics and check strike overlap per instance."
+  },
+  {
+   "family": "stage-precedence",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL but CONDITIONAL (format-derived, not clause-derived). Fresh instances: KXNBA-27-BOS 'If Boston wins the 2027 Pro Basketball Finals, then the market resolves to Yes' => KXNBAEAST-27-BOS 'If Boston wins the Pro Basketball Eastern Conference Finals in the 2026-27 season' (both live; a Finals winner must have won its Conference Finals under league format); KXNBA-27-BOS => KXNBACONF-27-EAST 'If any team from the Eastern Conference wins the Pro Basketball Finals in the 2026-27 season'; KXCOPADOBRASIL champion => KXCOPADOBRASILADVANCE round legs. No sentence in either leg states the tournament structure or references the other market \u2014 the implication rests on external bracket facts (conference membership, playoff format), which are stable but not rule text. Sources aligned for the NBA pair (both 'the Governing League' live; KXNBACONF adds ESPN at event level). Branches symmetric (same boilerplate RS).",
+   "salvage": "Winning stage N implies winning/qualifying at stage N-1 for the same team, conditional on the bracket structure of that season's competition (external fact, verify per competition); one-directional only."
+  },
+  {
+   "family": "class-membership-subset",
+   "demotion_correct": false,
+   "finding": "MIXED \u2014 real where the class relation is written into the rules, not real where it relies on external membership. RULE-TEXT-REAL instances (combination markets whose condition set is a superset): KXPRESOUTCOME-28NOV07-GNEWMRUBD 'If Gavin Newsom defeats Marco Rubio in the 2028 presidential election' with RS 'Each component is resolved according to its corresponding Kalshi ruleset: Democratic Nominee (PRESNOM), Republican Nominee (PRESNOM), Presidential Winner (PRESPERSON)' => member of class KXPRESMATCHUP-28NOV07-GNEWMRUB (components: the two PRESNOM legs only) and => KXPRESPERSON-28-GNEWS; likewise KXDTICKET-28NOV07-GNEWGWHI ('the Democratic presidential nominee is Gavin Newsom AND the ... vice presidential nominee is Gretchen Whitmer', components PRESNOM+VPRESNOM) => KXPRESNOMD-28-GN. All fetched live. NOT rule-real variant: person => party-class, e.g., KXPRESPERSON-28-GNEWS ('If Gavin Newsom is the next person inaugurated as President for the term beginning in 2029') does NOT textually imply POWER-28 legs ('the Democratic party wins the Presidency in the 2028 election') \u2014 no clause ties Newsom to the Democratic party; same for KXNBA-27-BOS => KXNBACONF-27-EAST (conference membership unstated). Note KXPRESOUTCOME live series settlement_sources are corrupted (BLS/Fed) like KXPRESMATCHUP \u2014 metadata bug only.",
+   "salvage": "Restrict the family to combination markets whose RS enumerates component rulesets: a combo with condition set S implies any market (combo or single) whose condition set is a subset of S under the same rulesets. Person-implies-party/class instances are plausibility-only and must be excluded or held as CONDITIONAL on external membership."
+  },
+  {
+   "family": "extremum-window-envelope",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL but CONDITIONAL on identical window start. Clean fresh instances: (1) KXDOGEMAX1 legs -26-JUN01 / -27-JAN01 / -27-JUN01 (all strike 0.99999999): RS 'The Contract is settled by taking an average of CF Benchmarks' Dogecoin Real-Time Index (DOGEUSD_RTI) in any sixty second period starting November 21, 2024, and ending <deadline>' \u2014 same start, nested deadlines, so Before-Jun-1-2026 YES implies Before-Jan-1-2027 YES (live; the JUN01-26 leg is already finalized). (2) KXU3MAX-27-5 'If any U.S. seasonally adjusted U-3 unemployment rate for a month in 2026 is above 5%' => KXU3MAX-30-5 'If the U-3 unemployment rate from June 2025 to January 2030 is above 5%' \u2014 2026 nests in Jun2025-Jan2030, same BLS source (live), though the -30 leg omits 'seasonally adjusted' (wording gap to flag). LIVE COUNTEREXAMPLE proving the condition is load-bearing: within KXBTCMAX100-26, legs -MAY and -JUNE start '01/05/2026 03:00 PM' but the re-issued -AUG leg starts 'Jul 21, 2026' \u2014 a cross before June does NOT imply the Before-Sep-2026 leg because that leg only counts crossings after Jul 21. Envelope nesting breaks whenever legs are re-issued with later window starts.",
+   "salvage": "Extremum-over-window above X implies extremum-over-superset-window above X only when both legs share the same window START and the same underlying transformation; verify start dates per leg (KXBTCMAX100-style re-issued legs violate it)."
+  },
+  {
+   "family": "regulation-win-implies-advance",
+   "demotion_correct": false,
+   "finding": "LOGIC-REAL only for single-match ties \u2014 CONDITIONAL, with a live two-leg counterexample. Single-leg instance (holds): KXEFLCUPGAME-26AUG10PAEXC-PA 'If Plymouth wins the ... EFL Cup soccer game ... after 90 minutes plus stoppage time (does not include extra time or penalties)' => KXEFLCUPADVANCE-26AUG10PAEXC-PA 'If Plymouth advance past Exeter in the Plymouth vs Exeter soccer tie in the Round 1 of the EFL Cup' (both live; EFL Cup R1 is a one-match tie, but that format fact appears NOWHERE in the rule text). Counterexample family member (fails): KXCOPADOBRASILGAME-26AUG06VITCAP-VIT ('If Vitoria wins the ... game originally scheduled for Aug 6, 2026 after 90 minutes...') vs KXCOPADOBRASILADVANCE-26AUG06VITCAP-VIT ('If Vitoria advance past Paranaense in the ... soccer tie in the Round Of 16 of the Copa do Brasil') \u2014 Copa do Brasil R16 is two-legged, so a regulation win in the Aug 6 game does not imply advancing. Additional asymmetries: GAME RS has the FMP branch ('If the game is cancelled or rescheduled to over 48 hours away, the market will resolve to a fair price'), ADVANCE has none; live /series sources differ for the Copa pair (KXCOPADOBRASILADVANCE ['ESPN','FIFA'] vs game/spread ['ESPN','Fox Sports']) \u2014 the ESPN-vs-FIFA trap is literally present. So the demotion punished bad rows, but the family may only be used per-instance after confirming a one-match tie.",
+   "salvage": "Regulation-time moneyline YES implies advance YES only when the tie is decided by that single match (external format fact \u2014 EFL Cup rounds yes, Copa do Brasil two-legged rounds no); also carries GAME-side FMP cancellation branch and, for some cups, settlement-source mismatch."
+  }
+ ]
+}
