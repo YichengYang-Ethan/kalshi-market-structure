@@ -96,3 +96,21 @@ The rejected families, kept as the trap catalogue:
 | 2 | tail-priced relative value | families graded; tails named per family |
 | 3 | lead-lag, RV, factor hedging | pair universe mapped; dynamics measured on a handful; **the open research space** |
 | 4 | do-not-trade list | 7+ documented traps |
+
+## The shared-driver enumeration (Layer 3 made concrete)
+
+A trader's restatement: drop the tail distinctions and split the world in two — pure
+arbitrage (binding, with or without bp-tails) versus **co-movement without binding**:
+markets that are different functions of one underlying state variable, so a move in the
+state reprices all of them together, with no arbitrage tying them. This is where
+lead-lag, relative value and cross-hedging live. Counted on the 2026-08-04 snapshot:
+
+| Driver class | The shared state | Size | The trade |
+| --- | --- | --- | --- |
+| Same game | (scoreline, clock) — a goal moves 1X2, totals, spreads, BTTS, props at once | **1,555 game-keys**; 7 games carry 18 market types, 60 carry 11+ | intra-game lead-lag (seconds), the World Cup pattern |
+| Same race | polling/news state — a scandal moves winner, margin, turnout together | **505 races with ≥2 families; 320 with winner+margin+turnout** | news lead-lag (measured: base leads derivative by 3–8 days) |
+| Same price path | one spot process behind many windows | INX 11 window-series, WTI 8, BTC 8 (hourly/daily/annual/max/min/vs-gold) | curve RV, window-spread trades |
+| Same macro release | one print reprices the whole family | CPI 10 series, FED 9, GDP 5 | release-day chains (CPI → Fed odds → rate-cut count) |
+| Same person/narrative | one news flow | Iran, Greenland, Trump-legal clusters (audited: NOT bound) | narrative RV, no floor — model risk only |
+| Party/wave factor | national swing | every D leg; implied ρ from combos 0.4–0.6, NH −0.13, ME 0.20 | factor hedging, cross-race RV |
+| Cross-venue | same question, different oracle | Kalshi vs Polymarket — unexplored here | classic cross-listing lead-lag |
