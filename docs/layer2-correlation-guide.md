@@ -28,57 +28,25 @@ horizon is election day, 2026-11-03 — 91 days from snapshot); and `liquidity_d
 is unpopulated ("0.0000") across the entire snapshot, so book depth must come from
 `yes_bid_size`/`yes_ask_size`, not that field.
 
-## Why the ranking comes out the way it does
+## The ranking
 
-A correlation trade needs six things. Score each class against them and the ranking is
-not a matter of taste:
-
-1. **Proof that mispricing persists** — the whole premise. Class 2 has it measured
-   (below: a 4-day ladder lag and a 47-day crossing, ongoing). Classes 1 and 3 have the
-   opposite evidence: turnover of 1.06 and 0.091 means fast money is already resident.
-2. **An execution surface** — you must be able to get filled. Class 2 is 98.9%
-   two-sided (a market maker blankets every race), the highest of the four classes
-   measured;
-   class 3 is 29% (far-OTM ladder rungs are unquoted).
-3. **Fee regime** — correlation trades are maker-style (post, wait for convergence).
-   All 67 race series are maker-free; the flagship game series (KXMLBGAME, KXNFLGAME/
-   SPREAD/TOTAL, KXATPMATCH, KXUCLGAME, KXWNBAGAME) and the 7 headline release series
-   (KXCPI, KXCPIYOY, KXFED, KXFEDDECISION, KXGDP, KXRATECUTCOUNT, KXU3) charge makers.
-   At a 30¢ price the taker fee is 1.47¢/contract/leg — a 2.94¢ round-trip that a
-   maker-free class simply does not pay.
-4. **Competition** — class 2's 24h-volume/OI of 0.012 is 91× slower than the game
-   clusters, and a tradable violation sat open 15 consecutive days without being
-   lifted. That is consistent with an empty slow lane — but at ~0–2¢ net on ≤100
-   contracts it is also a violation no resident would bother lifting, so absence of
-   enforcement at this size does not prove absence of competition at economic size.
-5. **Instrumentation** — a machine-readable pair universe plus an observable catalyst.
-   Class 2 ships 505 clusters (320 with winner+margin+turnout all listed) and its
-   catalysts are public (polls, filings, news). Class 5 (narratives) fails exactly here.
-6. **Runway** — class 2 carries 13.2M contracts of open interest that must activate
-   into the Nov-2026 midterms; volume in these markets is seasonal and the season is
-   ahead, not behind.
-
-**Class 2 (races) is the primary target — here is the honest tally, not a clean
-sweep.** It wins outright on persistence (the only class with a *measured* multi-day
-mispricing) and on competition (turnover 91× slower than the games). On fees it ties
-class 3's maker-free hourly series — and the single cheapest legs on the exchange are
-actually class 3's zero-fee annual crypto series. On execution it trades depth for
-breadth: quoted everywhere, but thinner at top of book (200) than the games (392). The
-runway axis is a judgment, not a measurement: 13.2M OI parked ahead of one scheduled
-national event. So the primary-target call rests on axes 1 and 4 plus that seasonal
-judgment, stated as such. The ordering below it is likewise a weighing, not arithmetic:
-class 4 second because its known-catalyst structure is the closest substitute — noting
-that persistence there is **unmeasured**, not confirmed (running the OH-07-style lag
-study on a CPI family is an open task). Class 1 third: most 24h volume and deepest
-books, but the fast lane is occupied and the flagships charge makers. Class 3 last as a
-trading venue (79% expires within a day — structurally the speed game) while remaining
-the best *laboratory* for window/term-structure models.
+**Races first** — the only class with *measured* multi-day mispricing (below), the
+least resident competition (24h volume / open interest = 0.012, 91× slower than the
+games), maker-free on all 67 series, a machine-readable universe of 505 clusters, and
+13.2M contracts of open interest that must activate into the Nov-2026 midterms.
+**Releases second**: catalysts scheduled to the minute and the only class where the
+median market actually trades — but the seven headline series charge maker fees, and
+nobody has measured a lag there yet. **Games third**: the most daily volume and the
+deepest books, but the class turns its entire open interest over daily (fast money is
+already home) and the flagship series charge makers. **Windows last** as a trading
+venue — 79% expire within a day, structurally the speed game — while remaining the
+best laboratory for fitting window/term-structure models.
 
 ## Class-by-class detail
 
 ### Class 1 — same game: (scoreline, clock) drives up to 18 books at once
 
-539 games carry 2+ market types simultaneously (moneyline, spread, total, team totals,
+539 games ([`game_clusters.csv`](../data/layer2/game_clusters.csv)) carry 2+ market types simultaneously (moneyline, spread, total, team totals,
 player props, first-half variants); the densest carry 18. One run scored reprices all of
 them — which book moves first is the intra-game lead-lag question. Verified profile:
 11.7% of exchange 24h volume lives here (top clusters on 2026-08-04: an Argentine
@@ -98,10 +66,13 @@ lead-lag; the wrong venue for slow capital.
 The flagship. 505 races for Nov 2026 carry ≥2 independent market families; 320 carry
 all three (winner, margin-of-victory ladder per party, turnout). All repricing on one
 latent variable — the race's polling/news state. What is actually measured (fresh
-candles, 2026-04-01 → 2026-08-04):
+candles, 2026-04-01 → 2026-08-04; both exemplar races are rows in
+[`race_clusters.csv`](../data/layer2/race_clusters.csv)):
 
-- **The base leads the derivative, by days.** OH-07: the winner market moved +25.5¢
-  (mid 0.365 → 0.620, Jul 26 → 29, volume-confirmed). The same-party margin leg
+- **The base leads the derivative, by days.** OH-07: the
+  [winner market](https://kalshi.com/markets/kxhouserace/house-race-winner/kxhouserace-oh07-26)
+  moved +25.5¢ (mid 0.365 → 0.620, Jul 26 → 29, volume-confirmed). The same-party
+  [margin leg](https://kalshi.com/markets/kxmidtermmov/midterm-margin-of-victory/kxmidtermmov-oh07d)
   (OH07D-P2) captured 18% of that move on day one, then sat frozen through Aug 1 —
   it first reached even 25% of the base move on Aug 2, **4 days after the move
   completed**. And the window was liftable, not just visible at mid: P2's ask sat
@@ -109,12 +80,16 @@ candles, 2026-04-01 → 2026-08-04):
   600 contracts on Aug 2 and bid 47¢ on Aug 3 — a standing +13¢ repricing available
   for four days. (Quoted size is not recorded in daily candles, so the depth of that
   window is the one thing this measurement cannot pin.)
-- **Mispricings stay open for weeks.** VA-06: the D-by-3+ margin leg has priced *above*
-  the D-winner leg (which it logically implies) for **47 consecutive days at mid, 15
+- **Mispricings stay open for weeks.** VA-06: the
+  [D-by-3+ margin leg](https://kalshi.com/markets/kxmidtermmov/midterm-margin-of-victory/kxmidtermmov-va06d)
+  has priced *above* the
+  [D-winner leg](https://kalshi.com/markets/kxhouserace/house-race-winner/kxhouserace-va06-26)
+  (which it logically implies) for **47 consecutive days at mid, 15
   consecutive days tradably (margin bid > winner ask), and was still crossed in the
   snapshot**. (Quote-based: whether a real lift fades or partial-fills is untested —
   one micro-lift would convert this from quote evidence to execution evidence.) Net of fees the recent edge is ~0–2¢ on 15–100 contracts — not an income
-  stream, but a standing proof that nobody is enforcing coherence here.
+  stream, but a standing sign that nobody is enforcing coherence here — or that the
+  prize is too small for any resident to bother, which at this size is indistinguishable.
 - **The lag is conditional, not universal.** VA-06's own +40¢ repricing in May was
   tracked by every margin leg with 0-day lag; OH-07's opposite-party ladder was also
   fast (0–1 days). The slow legs are the thin, same-party, off-focus ones. Modelling
@@ -137,7 +112,8 @@ so occupancy must be re-measured as volume arrives.
 
 ### Class 3 — same underlying, many windows: one price path, 104 series
 
-20 underlyings (BTC, ETH, S&P, Nasdaq, WTI, gold, silver, …) each feed 2–11 window
+20 underlyings ([`underlying_windows.csv`](../data/layer2/underlying_windows.csv) —
+[BTC](https://kalshi.com/markets/kxbtc), ETH, S&P, Nasdaq, WTI, gold, silver, …) each feed 2–11 window
 series — hourly range, daily threshold, monthly/annual extremes, relative-value pairs —
 all 104 verified live. 8,941 active markets (dense strike ladders), 4.31% of exchange
 24h volume, BTC alone 1.46M contracts/day. But: 79% of active markets expire within a
@@ -151,8 +127,9 @@ infrastructure you have already proven at millisecond scale.
 
 ### Class 4 — same release: one macro print reprices whole families
 
-Five families (CPI ×10 series, Fed ×9, GDP ×5, U3 ×3, rate-cut ×2) — 29 series, 112
-events, 1,446 active markets. Uniquely, everything here actually trades: median
+Five families ([`release_families.csv`](../data/layer2/release_families.csv):
+[CPI](https://kalshi.com/markets/kxcpi) ×10 series, [Fed](https://kalshi.com/markets/kxfed) ×9,
+GDP ×5, U3 ×3, rate-cut ×2) — 29 series, 112 events, 1,446 active markets. Uniquely, everything here actually trades: median
 *lifetime* volume per active market is 368 contracts, versus 0 in every other class and
 2 exchange-wide (elsewhere volume concentrates in a few legs while ladder tails sit
 untouched). The catalyst is
@@ -178,7 +155,7 @@ Every partisan race loads on one national factor, and the exchange itself prices
 loading: the nine state Governor×Senate combo grids imply a joint distribution. Recomputed
 from snapshot mids (renormalised 2×2 grids, Pearson φ on Dem-win indicators):
 
-| KS | OH | MN | MI | IA | AK | GA | ME | NH |
+| [KS](https://kalshi.com/markets/kxkssengovcombo) | [OH](https://kalshi.com/markets/kxohsengovcombo) | [MN](https://kalshi.com/markets/kxmnsengovcombo) | [MI](https://kalshi.com/markets/kxmisengovcombo) | [IA](https://kalshi.com/markets/kxiasengovcombo) | [AK](https://kalshi.com/markets/kxaksengovcombo) | [GA](https://kalshi.com/markets/kxgasengovcombo) | [ME](https://kalshi.com/markets/kxmesengovcombo) | [NH](https://kalshi.com/markets/kxnhsengovcombo) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | +0.57 | +0.56 | +0.56* | +0.55 | +0.45 | +0.44 | +0.37 | +0.24 | **−0.13** |
 
@@ -201,7 +178,7 @@ venue's politics prices move first — is an obvious, untouched study.
 
 ## Starting a study (the intended first experiment)
 
-1. Pick pairs from `data/layer2/race_clusters.csv` — start with the 320 fully-
+1. Pick pairs from [`race_clusters.csv`](../data/layer2/race_clusters.csv) — start with the 320 fully-
    instrumented races; the OH-07/VA-06 rows are worked examples of what to look for.
 2. Pull both legs' history: `GET /series/{s}/markets/{t}/candlesticks` (daily reaches
    back to 2024-11, hourly covers months; `src/kalshi_structure/history.py` is a
