@@ -5,7 +5,8 @@ archetypes, settlement-rule grammar, fee surface, and the cross-market logical c
 those things imply — derived from the public trade API rather than from the website's
 marketing surface.
 
-**Status:** active research. Private by design (see [Data policy](#data-policy)).
+**Status:** research handoff. **New readers: begin at [docs/START-HERE.md](docs/START-HERE.md)** —
+it routes you to the arbitrage track, the correlation track, or the audit record.
 
 ## Why this exists
 
