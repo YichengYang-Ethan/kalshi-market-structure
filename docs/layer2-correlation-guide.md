@@ -1,7 +1,5 @@
 # Layer 2: the correlation track
 
-> **[中文版 →](layer2-correlation-guide.zh.md)**
-
 This document is the research map of the project. Its job is to answer three questions
 with measured numbers: **which groups of Kalshi markets share a driver without being
 bound by settlement rules, how much money each group can actually hold, and therefore

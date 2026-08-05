@@ -1,7 +1,5 @@
 # Layer 1: the arbitrage track
 
-> **[中文版 →](layer1-arbitrage-guide.zh.md)**
-
 The catalogue of every family of Kalshi markets whose settlement rules bind their
 prices together — the exchange's arbitrage-capable surface, found by scanning all
 ~9,800 open events and verified through four audit rounds. The families and their
