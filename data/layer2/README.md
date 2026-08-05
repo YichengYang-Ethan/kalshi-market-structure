@@ -49,14 +49,21 @@ richest lead-lag candidates.
 
 ## underlying_windows.csv — 20 rows, one per price underlying
 
+Definition note (audit 2026-08-04): cross-underlying relative series (`VS*` suffixes:
+KXBTCVSGOLD, KXINXVSBTC, KXWTIVSBRENT, …) and index-composition series (KXDJIAREMOVE)
+match the ticker grammar but are not functions of one price path — the builder now
+excludes them. Likewise release_families.csv excludes prefix-collision impostors
+(KXFEDEMPLOYEES — federal employees, not the Federal Reserve; KXFEDTWEETS,
+KXGDPUSMAX, KXGDPSHAREMANU).
+
 | Column | Meaning |
 | --- | --- |
 | `underlying` | the price process (BTC, INX=S&P, WTI…) |
 | `n_window_series` | how many observation-window series exist on it |
-| `window_suffixes` | `BASE`=hourly range, `D`=daily threshold, `Y`=annual, `MAXY/MINY`=running extremes, `VSGOLD`=relative, … |
+| `window_suffixes` | `BASE`=hourly range, `D`=daily threshold, `Y`=annual, `MAXY/MINY`=running extremes, … |
 
-**How to read a row.** `BTC, 8, BASE|D|MAXMON|MAXY|MINMON|MINY|VSGOLD|Y` — one spot path
-feeds eight market families with different windows/transformations. They are near-
+**How to read a row.** `BTC, 7, BASE|D|MAXMON|MAXY|MINMON|MINY|Y` — one spot path
+feeds seven market families with different windows/transformations. They are near-
 perfectly co-driven but **not** mutually bound (each window anchors its own issuance —
 the monthly-max ⊄ annual-max trap is documented in the taxonomy). Curve/window RV
 material.

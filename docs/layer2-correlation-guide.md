@@ -7,12 +7,21 @@ with measured numbers: **which groups of Kalshi markets share a driver without b
 bound by settlement rules, how much money each group can actually hold, and therefore
 which directions deserve research investment next.**
 
+**Status: exploratory research map** (externally audited 2026-08-04; corrections
+incorporated). It identifies candidate clusters and verified case studies. It does not
+yet establish out-of-sample lead-lag predictability, execution-level alpha, or
+executable capacity — those are the open research tasks it maps.
+
 The premise comes from Layer 1: everywhere the rules *bind* two markets, the market
 already holds them tight — that surface is catalogued, and its capacity is small.
-Layer 2 is everything the rules do **not** bind — different functions of
-one state variable, with nothing forcing them to agree. No binding means no riskless
-correction, no arbitrage capital closing gaps, and mispricings that persist for days to
-weeks instead of milliseconds. That persistence is measured below, not assumed.
+Layer 2 is everything the rules do **not** bind — different functions of one state
+variable. Be precise about what "no binding" buys: it means no *model-free two-leg
+price bound* forces convergence. It does not mean nobody trades these books — market
+makers, stat-arb and fundamental traders may still enforce co-movement, and an observed
+spread is not automatically a mispricing. Whether coherence is in fact enforced, where,
+and how fast is an **empirical question** — and the measurements below answer it with
+"asynchronous quote updating on the thin end, near-zero daily co-movement off-season on
+the statewide pairs."
 
 Every number here was computed on the 2026-08-04 census snapshot (9,820 open events,
 77,784 active markets) or re-measured against fresh public-API candlesticks the same
@@ -24,8 +33,8 @@ day. Nothing is carried forward on faith.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 same game | 539 | 10,803 | 5.85M (11.7%) | 5.5M | **1.06** | 85.6% | median 5 days | **charged** on flagship series |
 | 2 same race | 505 | 7,404 | 153k (0.31%) | **13.2M** | **0.012** | **98.9%** | election 2026-11-03 | **0** on all 67 series |
-| 3 same underlying | 20 | 8,941 | 2.16M (4.31%) | 23.8M | 0.091 | 29.0% | 79% expire < 1 day | 0 (hourly) |
-| 4 same release | 5 | 1,446 | 303k (0.61%) | 9.5M | 0.032 | 74.2% | scheduled prints | **charged** on 7 headline series |
+| 3 same underlying | 20 | 8,904 | 2.16M (4.31%) | 23.7M | 0.091 | 29.0% | 79% expire < 1 day | 0 (hourly) |
+| 4 same release | 5 | 1,432 | 303k (0.61%) | 9.5M | 0.032 | 74.0% | scheduled prints | **charged** on 7 headline series |
 
 Volumes above are contracts. Two measurement traps: race markets all carry the
 placeholder `close_time` 2027-11-03 (the economic horizon is election day, 2026-11-03 —
@@ -34,12 +43,17 @@ depth must come from `yes_bid_size`/`yes_ask_size`.
 
 ## What each direction can hold (measured capacity, in dollars)
 
-Premium = contracts × price. "Deploy now" = the dollars executable against the standing
-top-of-book (`Σ ask_size×ask + Σ bid_size×bid`). "Envelope" = a stated-assumption
-sustainable book: 10% participation of premium ADV × class-typical holding days — a
-heuristic, not an impact model.
+Premium = contracts × price. "Top-of-book premium" = `Σ ask_size×ask + Σ bid_size×bid`
+— the premium quoted at the touch across the class, a **scale indicator, not a
+deployable amount**: it sums two opposite directions across thousands of markets, and
+opening a NO position by hitting a YES bid at b ties up (1−b) per contract, more than
+the b this sum counts for cheap legs. A multi-leg package's true capacity is the
+bottleneck min(qᵢ/|hᵢ|) across its legs at simultaneous quotes, counted only where
+edge survives fees, spread and slippage. "Envelope" = 10% participation of premium ADV
+× class-typical holding days — a scenario heuristic, not an impact model; halve it
+again if positions must exit through the market rather than expiry.
 
-| Class | Premium $/day | Deploy now | OI value | Envelope (holding assumption) |
+| Class | Premium $/day | Top-of-book premium | OI mark value | Envelope (holding assumption) |
 | --- | --- | --- | --- | --- |
 | 1 games | $2.85M | $8.6M | $2.6M | ~$57k (0.2d intra-game) |
 | 2 races | $75.6k | $857k | **$6.2M** | ~$38k (5d recycle) — ~$227k (30d news hold) |
@@ -48,7 +62,8 @@ heuristic, not an impact model.
 
 *Class 3's sell side quotes $17.4M but it is dominated by 99¢ deep-ITM resting bids on
 KXBTCD threshold markets — technically executable, zero edge capacity; the $1.4M
-buy-side is the honest gauge.
+buy-side is the honest gauge. "OI mark value" = OI × price, the mark of open YES
+claims — a size-of-book indicator, **not** available inventory or exit liquidity.
 
 **The honest headline: today, the entire Layer-2 surface supports book sizes in the
 tens to low hundreds of thousands of dollars — this is a research field, not an
@@ -124,7 +139,7 @@ research time at current liquidity.
 U3 ($38.1k/day), CPI ($32.8k), FED ($32.1k) are the working surface — three roughly
 equal complexes with real depth ($72k–$292k top-of-book). RATECUT trades little
 ($6.1k/day) but holds the class's largest inventory ($918k OI value — long-duration
-positioning). GDP is the weakest ($4.6k/day). Release-chain research = U3/CPI/FED
+positioning). GDP is the weakest ($4.5k/day). Release-chain research = U3/CPI/FED
 first; remember all three headline series charge maker fees.
 
 ### Class 1 — the game complexes (top series, aggregated across games)
@@ -142,7 +157,9 @@ first; remember all three headline series charge maker fees.
 The useful surprise: the maker-fee flagships (MLB, ATP, WNBA) are *not* where the
 per-game density is. Argentine second-division soccer, LoL esports, club friendlies and
 KBO run comparable dollar flow **maker-free** — those are the venues where an intra-game
-lead-lag model can quote passively without paying the 2.94¢ round-trip. Game keys churn
+lead-lag model can quote passively without paying taker fees (1.47¢/contract/leg at
+30¢ — a two-leg package entered and exited as taker costs ~5.9¢, ~7¢ near 50¢). Game
+keys churn
 daily; the durable research direction is the series complex, not the individual game.
 
 ## Class-by-class detail
@@ -171,28 +188,34 @@ latent variable — the race's polling/news state. What is actually measured (fr
 candles, 2026-04-01 → 2026-08-04; both exemplar races are rows in
 [`race_clusters.csv`](../data/layer2/race_clusters.csv)):
 
-- **The base leads the derivative, by days.** OH-07: the
+- **Quote updating is asynchronous, by days (one case study, not a law).** OH-07: the
   [winner market](https://kalshi.com/markets/kxhouserace/house-race-winner/kxhouserace-oh07-26)
-  moved +25.5¢ (mid 0.365 → 0.620, Jul 26 → 29, volume-confirmed). The same-party
+  moved +25.5¢ (mid 0.365 → 0.620, Jul 26 → 29, volume-confirmed) while the same-party
   [margin leg](https://kalshi.com/markets/kxmidtermmov/midterm-margin-of-victory/kxmidtermmov-oh07d)
-  (OH07D-P2) captured 18% of that move on day one, then sat frozen through Aug 1 —
-  it first reached even 25% of the base move on Aug 2, **4 days after the move
-  completed**. And the window was liftable, not just visible at mid: P2's ask sat
-  unmoved at 34¢ from Jul 28 through Aug 1 with zero contracts printed, then traded
-  600 contracts on Aug 2 and bid 47¢ on Aug 3 — a standing +13¢ repricing available
-  for four days. (Quoted size is not recorded in daily candles, so the depth of that
-  window is the one thing this measurement cannot pin.)
-- **Mispricings stay open for weeks.** VA-06: the
+  (OH07D-P2) did not update at all: its ask sat at 34¢ from Jul 28 through Aug 1 with
+  zero contracts printed, then traded 600 contracts on Aug 2 and bid 47¢ on Aug 3.
+  Read it precisely: P(win by 2+) = P(win)·P(2+ | win), so a winner move does not
+  model-independently require any particular ladder move — the new probability mass
+  could sit in the 0–2pt bucket. What the episode documents is a *book that did not
+  reprice for four days and then jumped +13¢*: asynchronous attention, not a measured
+  riskless violation. And daily candles carry no size, so whether the standing ask was
+  liftable in meaningful quantity is unverified — settling that needs forward-collected
+  order-book data with timestamps and depth, which is exactly the proposed experiment.
+- **A near-implication spread stays crossed for weeks.** VA-06: the
   [D-by-3+ margin leg](https://kalshi.com/markets/kxmidtermmov/midterm-margin-of-victory/kxmidtermmov-va06d)
   has priced *above* the
   [D-winner leg](https://kalshi.com/markets/kxhouserace/house-race-winner/kxhouserace-va06-26)
-  (which it logically implies) for **47 consecutive days at mid, 15 consecutive days
-  tradably (margin bid > winner ask), and was still crossed in the snapshot**.
-  (Quote-based: whether a real lift fades or partial-fills is untested — one micro-lift
-  would convert this from quote evidence to execution evidence.) Net of fees the recent
-  edge is ~0–2¢ on 15–100 contracts — not an income stream, but a standing sign that
-  nobody is enforcing coherence here — or that the prize is too small for any resident
-  to bother, which at this size is indistinguishable.
+  across 47 calendar days at mid (27 of them actual book updates on the margin leg,
+  the rest carried forward), 15 days with margin bid > winner ask, still crossed in
+  the snapshot. Call it what it is: a **conditional** relation, not a logical one —
+  MOV settles on the certified election result, the winner market on the party of the
+  member *sworn in* in Jan 2027, so death/withdrawal/party-switch opens an A=1,B=0
+  tail; the Layer-1 catalogue grades this exact family BROKEN for that reason. At
+  ~0–2¢ net of fees on 15–100 contracts, a tail probability of a few basis points
+  rationalizes the entire gap. So this is *not* free money and only weak evidence of
+  neglect; its research value is as a persistent, dateable spread whose width a model
+  of the tail should explain — and whether a real lift fades or partial-fills is
+  untested.
 - **The lag is conditional, not universal.** VA-06's own +40¢ repricing in May was
   tracked by every margin leg with 0-day lag; OH-07's opposite-party ladder was also
   fast (0–1 days). The slow legs are the thin, same-party, off-focus ones. Modelling
@@ -223,13 +246,17 @@ are stage-one paper-trading measurements. And the empty-lane reading was taken
 off-season; the same seasonal volume that brings fills can bring competition, so
 occupancy must be re-measured as volume arrives.
 
-### Class 3 — same underlying, many windows: one price path, 104 series
+### Class 3 — same underlying, many windows: one price path, 98 series
 
 20 underlyings ([`underlying_windows.csv`](../data/layer2/underlying_windows.csv) —
 [BTC](https://kalshi.com/markets/kxbtc), ETH, S&P, Nasdaq, WTI, gold, silver, …) each
-feed 2–11 window series — hourly range, daily threshold, monthly/annual extremes,
-relative-value pairs — all 104 verified live. 8,941 active markets (dense strike
-ladders), $951k/day premium of which BTC is 71%. But: 79% of active markets expire
+feed 2–8 window series — hourly range, daily threshold, monthly/annual extremes —
+all 98 verified live. The family definition is audited: cross-underlying relative
+contracts (KXBTCVSGOLD, KXINXVSBTC, KXWTIVSBRENT, …) and index-composition series
+(KXDJIAREMOVE) matched the ticker grammar but are not functions of one price path, so
+they are excluded — worth $136/day of the class's premium, i.e. the cleaning changed
+the economics by 0.014%. 8,904 active markets (dense strike ladders), $951k/day premium
+of which BTC is 71%. But: 79% of active markets expire
 within a day (KXNASDAQ100U alone is 2,800 markets), only 29% are two-sided at any
 moment, and the identity-arb harvester measured at 22.97ms operates in the adjacent
 Layer-1 space — this is the speed lane. Capacity: ~$48k envelope at intraday holding;
@@ -242,8 +269,13 @@ trade it only with infrastructure already proven at millisecond scale.
 ### Class 4 — same release: one macro print reprices whole families
 
 Five families ([`release_families.csv`](../data/layer2/release_families.csv):
-[CPI](https://kalshi.com/markets/kxcpi) ×10 series, [Fed](https://kalshi.com/markets/kxfed) ×9,
-GDP ×5, U3 ×3, rate-cut ×2) — 29 series, 112 events, 1,446 active markets. Uniquely,
+[CPI](https://kalshi.com/markets/kxcpi) ×10 series, [Fed](https://kalshi.com/markets/kxfed) ×7,
+GDP ×3, U3 ×3, rate-cut ×2) — 25 series, 108 events, 1,432 active markets. The family
+definition is audited: ticker-prefix matching had dragged in impostors — "FED" caught
+KXFEDEMPLOYEES (Trump cutting *federal employees*, nothing to do with the Federal
+Reserve) and KXFEDTWEETS; "GDP" caught boom/manufacturing novelty questions
+(KXGDPUSMAX, KXGDPSHAREMANU). All four are excluded; they carried 0.03% of family
+premium, so the numbers survive but the definitions needed the fix. Uniquely,
 everything here actually trades: median *lifetime* volume per active market is 368
 contracts, versus 0 in every other class and 2 exchange-wide. The catalyst is scheduled
 to the minute, the family repricing is simultaneous and cross-checkable (headline vs
@@ -251,7 +283,7 @@ core vs YoY ladders vs point-mass menus vs combo grids), and 72% of the book is
 long-dated strips, so positioning ahead of a print is structurally possible. Capacity:
 ~$34k envelope on a 3-day straddle window, $703k standing at top-of-book. The tax: the
 7 headline series charge maker fees, so release-day passive quoting pays; chain trades
-that cross spreads pay 2.94¢ round-trip at mid-range prices. Second-best direction: the
+that cross spreads pay ~5.9¢ for a two-leg package in and out at 30¢ (~7¢ near 50¢). Second-best direction: the
 known-catalyst structure compensates the fee drag, and the point-mass ⊆ ladder
 relations inside each family double as free risk checks (those pairs are Layer-1
 bindings; the rest of the family is shared-driver).
@@ -289,8 +321,14 @@ senate response). That gap — priced φ ≈ +0.5 against realized ≈ 0 — is 
 research object this class offers. And one measurement trap: a naive NH computation
 reproduces the implied −0.13 almost exactly (−0.128) from a week of empty ask books —
 always spread-filter candle data before believing a realized correlation.
-Use: hedge ratios for cross-race books, and a live wave-factor gauge no poll aggregator
-publishes.
+
+Use φ for what it is: the implied correlation of two *final binary outcomes within one
+state*. It is not a national-factor loading (that claim needs a cross-state time-series
+factor model, which has not been built), not a dynamic hedge ratio (that needs return
+covariances — measured near zero off-season above), and NH's negative value is
+*consistent with* split-ticket voting, not proof of it. What survives: a per-state,
+outcome-level correlation surface that no poll aggregator publishes, and the
+implied-vs-realized gap as the class's cleanest research object.
 
 ### Class 7 — same question, two venues: unexplored
 

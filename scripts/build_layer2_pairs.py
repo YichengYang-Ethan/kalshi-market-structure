@@ -17,6 +17,13 @@ races = defaultdict(set)
 windows = defaultdict(set)
 releases = defaultdict(set)
 
+# Ticker-grammar matching alone drags in impostors (external audit, 2026-08-04):
+# cross-underlying relative contracts are not one price path, index-composition and
+# prefix-collision series are not the release stream ("FED" caught federal-employee
+# markets about Trump, "GDP" caught boom/manufacturing novelty questions).
+WINDOW_SUFFIX_EXCLUDE = re.compile(r"VS[A-Z]+$|^AREMOVE$")
+RELEASE_SERIES_EXCLUDE = {"KXFEDTWEETS", "KXFEDEMPLOYEES", "KXGDPSHAREMANU", "KXGDPUSMAX"}
+
 for e in iter_all_events():
     tk = e["event_ticker"]; cat = e.get("category", "")
     if cat == "Sports":
@@ -37,11 +44,15 @@ for e in iter_all_events():
         m = re.match(r"KX(BTC|ETH|SOL|XRP|DOGE|BNB|HYPE|SHIBA|ZEC|NEAR|INX|NASDAQ100|DJI|"
                      r"WTI|SILVER|NATGAS|COPPER|PLATINUM|GOLD|EURUSD|USDJPY|GBPUSD)([A-Z]*)-", tk)
         if m:
-            windows[m.group(1)].add(m.group(2) or "BASE")
+            suf = m.group(2) or "BASE"
+            if not WINDOW_SUFFIX_EXCLUDE.search(suf):
+                windows[m.group(1)].add(suf)
     if cat == "Economics":
         m = re.match(r"KX(ECONSTAT)?(CPI|U3|PAYROLLS|GDP|FED|RATECUT)\w*-", tk)
         if m:
-            releases[m.group(2)].add(tk.split("-")[0])
+            series = tk.split("-")[0]
+            if series not in RELEASE_SERIES_EXCLUDE:
+                releases[m.group(2)].add(series)
 
 with open(f"{OUT}/game_clusters.csv", "w", newline="") as f:
     w = csv.writer(f); w.writerow(["game_key", "n_market_types", "series"])
