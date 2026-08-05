@@ -75,15 +75,20 @@ where the liquidity actually is:
 ### Class 2 — the races worth studying (top of 505, by premium $/day)
 
 What is correlated with what: each row is one cluster of distinct markets repricing on
-the same reality — the correlation lives *between the members inside the row*. Statewide
-rows (MI, TX, GA, NE, ME) pair the governor-party market with the senate-party market:
-one state, one election day, one electorate, so both load on state mood plus the
-national wave — and the class-6 combo grids price exactly that correlation (MI implied
-φ ≈ +0.55). District rows (OH-07, TX-15, TX-28) hold one race's winner market, both
-parties' margin ladders, and turnout — four functions of one polling state; OH-07's
-4-day ladder lag (below) is what that correlation looks like when nobody enforces it.
-Member tickers for every row are in `race_clusters.csv`'s `members` column; the dollar
-columns are only the screen for where research time pays.
+the same reality — the correlation lives *between the members inside the row* — and the
+two row types carry different evidence. **District rows** (OH-07, TX-15, TX-28) hold
+one race's winner market, both parties' margin ladders, and turnout — four functions of
+one polling state. Their co-movement is confirmed in prices (measured 2026-08-04,
+detail below): every sign comes out as theory predicts, and the response is partial and
+sluggish — which is precisely the lead-lag opportunity. **Statewide rows** (MI, TX, GA,
+NE, ME) pair the governor-party market with the senate-party market. The combo grids
+price a strong *outcome* correlation there (MI implied φ ≈ +0.55), but measured *daily*
+co-movement is near zero off-season (MI −0.11, TX +0.07, GA +0.13; MI's largest joint
+day moved the two books in **opposite** directions on candidate-specific news) — treat
+statewide rows as outcome-correlation and hedging material, not daily lead-lag
+material, until state-level shocks say otherwise. Member tickers for every row are in
+`race_clusters.csv`'s `members` column; the dollar columns are only the screen for
+where research time pays.
 
 | Race | Families | Premium $/day | OI value | Top-of-book depth |
 | --- | --- | --- | --- | --- |
@@ -193,6 +198,16 @@ candles, 2026-04-01 → 2026-08-04; both exemplar races are rows in
   fast (0–1 days). The slow legs are the thin, same-party, off-focus ones. Modelling
   *when* the ladder is slow is the actual research problem — and the reason this is a
   strategy space rather than a mechanical harvest.
+- **Within-district coupling is sign-perfect but partial (TX-15/TX-28).** Winner-leg
+  shocks (mean ~4.4¢, 28 trigger days) push same-party margin rungs up and
+  opposite-party rungs down in both districts — every sign as theory predicts — but
+  only ¼–½ of the shock arrives within 3 days, often on a 1-day lag, and roughly half
+  of trigger days produce no margin response at all. The method's sensitivity is
+  validated by the mechanical D/R winner complement (−0.81/−0.88 measured); the gap
+  between that and the +0.03..+0.27 realized winner-margin correlations is the
+  unharvested slack. One instrument warning: all ten turnout legs have zero lifetime
+  volume and their books died in June — "three families listed" does not mean three
+  families alive.
 
 Execution profile: 98.9% two-sided (an MM quotes essentially every race) but thin —
 median top depth 200 contracts, volume concentrated (top-10 markets = 69% of class
@@ -265,6 +280,15 @@ race alongside a Democratic-favorite Senate race; ME's low +0.24 is Collins-spec
 (*MN is weakly identified — both cross legs one-sided. GA, ME and MI each carry one
 one-sided near-zero leg, and ME has the largest renormalisation slack, mids summing
 1.055; NH is the firm one — all four legs two-sided, corner range entirely negative.)
+
+Implied is not realized: the same states' governor and senate books, measured daily
+over Apr–Aug 2026, co-move at only −0.11 (MI), +0.07 (TX), +0.13 (GA) — the combo
+grids price the election-day *outcome* correlation, while day to day the two books
+reprice independently (MI's biggest governor move, +16.5¢, drew exactly zero same-day
+senate response). That gap — priced φ ≈ +0.5 against realized ≈ 0 — is the cleanest
+research object this class offers. And one measurement trap: a naive NH computation
+reproduces the implied −0.13 almost exactly (−0.128) from a week of empty ask books —
+always spread-filter candle data before believing a realized correlation.
 Use: hedge ratios for cross-race books, and a live wave-factor gauge no poll aggregator
 publishes.
 
@@ -307,7 +331,8 @@ venue's politics prices move first — is an obvious, untouched study.
   sizing anything.
 - **Instrument traps.** Race `close_time` is a placeholder a year past the election;
   `liquidity_dollars` is dead in the census; thin legs quote one-sided and bias mids;
-  class 3's sell-side depth is inflated by 99¢ deep-ITM bids.
+  class 3's sell-side depth is inflated by 99¢ deep-ITM bids; unfiltered wide-spread
+  candle days can fabricate realized correlations (the NH −0.128 artifact).
 - **Check the [Layer-3 trap list](correlation-taxonomy.md) first.** Several "obvious"
   co-movers (spot vs daily-extremum, monthly-max vs annual-max) are look-alikes with
   different observation windows, not shared drivers.
