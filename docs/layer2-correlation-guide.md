@@ -74,6 +74,17 @@ where the liquidity actually is:
 
 ### Class 2 — the races worth studying (top of 505, by premium $/day)
 
+What is correlated with what: each row is one cluster of distinct markets repricing on
+the same reality — the correlation lives *between the members inside the row*. Statewide
+rows (MI, TX, GA, NE, ME) pair the governor-party market with the senate-party market:
+one state, one election day, one electorate, so both load on state mood plus the
+national wave — and the class-6 combo grids price exactly that correlation (MI implied
+φ ≈ +0.55). District rows (OH-07, TX-15, TX-28) hold one race's winner market, both
+parties' margin ladders, and turnout — four functions of one polling state; OH-07's
+4-day ladder lag (below) is what that correlation looks like when nobody enforces it.
+Member tickers for every row are in `race_clusters.csv`'s `members` column; the dollar
+columns are only the screen for where research time pays.
+
 | Race | Families | Premium $/day | OI value | Top-of-book depth |
 | --- | --- | --- | --- | --- |
 | MI (Gov+Sen) | 2 | $20,970 | $181k | $4.8k |
