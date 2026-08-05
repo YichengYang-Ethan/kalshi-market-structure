@@ -7,15 +7,17 @@ public trade API; every claim mechanically verified.
 ## Start here
 
 - ### [Layer 1 — Arbitrage](docs/layer1-arbitrage-guide.md)
-  ~28,000 independent rule-forced price constraints, organized into verified families.
-  The honest capacity answer: standing riskless ≈ $0, transient exact arb ~$0.64 best
-  observed. Read this before building anything.
+  The catalogue of arbitrage-capable events: ~28,000 independent rule-forced price
+  constraints, organized into 42 verified families, machine-readable in `data/`.
+  Strategy capacity is small — this surface cannot absorb large capital — so it serves
+  as a monitoring book and the risk-check library for Layer 2.
 
 - ### [Layer 2 — Correlation](docs/layer2-correlation-guide.md)
   Seven shared-driver classes where markets co-move without binding — lead-lag, relative
   value, cross-hedging. Re-measured 2026-08-04: a 4-day ladder lag and a 47-day (ongoing)
   crossing on the slow end. Machine-readable pair
-  universes ship in [`data/layer2/`](data/layer2/). **This is the open strategy space.**
+  universes ship in [`data/layer2/`](data/layer2/), with measured dollar capacity and a
+  ranked research agenda per direction. **This is the open strategy space.**
 
 Supporting references: [correlation-taxonomy.md](docs/correlation-taxonomy.md) (the layer
 definitions and the trap list), [data-model.md](docs/data-model.md) (API objects and their

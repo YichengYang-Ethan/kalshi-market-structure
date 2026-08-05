@@ -1,21 +1,28 @@
 # Layer 1: the arbitrage track
 
-Everything needed to work the settlement-bound surface, in one place. Numbers dated
-2026-08-04 drift with listings; methods do not.
+The catalogue of every family of Kalshi markets whose settlement rules bind their
+prices together — the exchange's arbitrage-capable surface, found by scanning all
+~9,800 open events and verified through four audit rounds. The families and their
+member events are machine-readable in `data/` and rebuildable with the tooling below.
+Numbers dated 2026-08-04 drift with listings; methods do not.
 
-## 1. What is verified tradeable-grade
+## 1. What was found
 
-From 42 discovered families plus 9 base mechanisms, after four audit rounds and a
+42 discovered families plus 9 base mechanisms, graded after four audit rounds and a
 16-agent reality check (`data/discovered_families.csv`, columns `reaudit_verdict` +
 `reality_check`):
 
-| Grade | Families | Use |
+| Grade | Families | What the binding is |
 | --- | --- | --- |
-| REAL-EXACT | chart-rank equality (+ within-event ladders, the base mechanisms) | pure locks |
-| REAL-ONE-DIRECTIONAL | ~13 incl. award⇒nomination, matchup-outcome splits (the live $0.64 basket), spread⇒moneyline, pointmass⊆ladder | one-way locks |
+| REAL-EXACT | chart-rank equality (+ within-event ladders, the base mechanisms) | two-sided locks |
+| REAL-ONE-DIRECTIONAL | ~13 incl. award⇒nomination, matchup-outcome splits, spread⇒moneyline, pointmass⊆ladder | one-way locks |
 | CONDITIONAL | ~20 incl. the whole same-game sports lattice | locks **after** the named condition dies (see §3) |
 | Salvaged-BROKEN | 8 conditional forms (player starts, game played…) | same treatment |
-| NOT-REAL | 1 (pres-vp mutex) + 10 rejected look-alikes | never trade — [the trap list](correlation-taxonomy.md) |
+| NOT-REAL | 1 (pres-vp mutex) + 10 rejected look-alikes | not rule-bound — [the trap list](correlation-taxonomy.md) |
+
+Together these generate ~28,000 independent rule-bound price constraints across the
+open surface — every one a machine-checkable invariant that any pricing model, market
+maker, or Layer-2 book can use as a free consistency check.
 
 ## 2. The four verification axes — run ALL before trusting any pair
 
@@ -48,10 +55,11 @@ python3 scripts/run_catalog.py              # price-free watchlist (relation_cat
 `Partition.evaluate_buy_all()` refuses non-explicit exhaustiveness and quote/leg
 mismatches by construction — both were audit findings, do not bypass them.
 
-## 5. The capacity answer, so nobody rediscovers it
+## 5. Capacity
 
-Standing riskless ≈ **$0** (22,110 identity instances, zero violated — identities are
-priced correctly *because someone harvests them*; the tape shows a 22.97 ms two-leg
-execution). Transient exact arb exists (~$0.64 best observed, in a one-directional
-family the first capacity pass wrongly excluded). Monitoring yield: hundreds to low
-thousands $/yr.
+Strategy capacity on this surface is small: the bindings are tightly priced and the
+fast end is competitive, so it cannot absorb large capital. Right-sized uses: a
+monitoring-scale book over the family watchlist (transient violations do appear —
+a live multi-leg basket was observed and verified during this project), the
+condition-expiry promotions of §3, and — the highest-leverage use — as the risk-check
+library that gates every Layer-2 correlation trade.
